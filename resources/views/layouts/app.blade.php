@@ -48,24 +48,10 @@
     <script src="{{ asset('js/theme/app.init.js') }}"></script>
     <script src="{{ asset('js/theme/theme.js') }}"></script>
     <script src="{{ asset('js/theme/app.min.js') }}"></script>
-    <script src="{{ asset('js/theme/sidebarmenu.js') }}"></script>
 
     <!-- solar icons -->
     <script src="https://cdn.jsdelivr.net/npm/iconify-icon@1.0.8/dist/iconify-icon.min.js"></script>
 
-    <!-- highlight.js (code view) -->
-    <script src="{{ asset('js/highlights/highlight.min.js') }}"></script>
-    <script>
-        hljs.initHighlightingOnLoad();
-
-
-        document.querySelectorAll("pre.code-view > code").forEach((codeBlock) => {
-            codeBlock.textContent = codeBlock.innerHTML;
-        });
-    </script>
-    <script src="{{ asset('libs/apexcharts/dist/apexcharts.min.js') }}"></script>
-    <script src="{{ asset('js/dashboards/dashboard1.js') }}"></script>
-    <script src="{{ asset('libs/fullcalendar/index.global.min.js') }}"></script>
 </body>
 
 </html>
