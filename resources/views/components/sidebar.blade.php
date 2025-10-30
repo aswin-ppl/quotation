@@ -10,13 +10,12 @@
                             <iconify-icon icon="solar:hamburger-menu-line-duotone" class="fs-7"></iconify-icon>
                         </a>
                     </div>
-                    <p>{{ $parent_title  }}</p>
                     <ul class="mini-nav-ul" data-simplebar>
 
                         <!-- --------------------------------------------------------------------------------------------------------- -->
                         <!-- Dashboards -->
                         <!-- --------------------------------------------------------------------------------------------------------- -->
-                        <li class="mini-nav-item {{ request()->is('dashboard*') ? 'selected' : '' }}" id="mini-1">
+                        <li class="mini-nav-item {{ ($parent_title ?? 'Dashboard') === 'Dashboard' ? 'selected' : '' }}" id="mini-1">
                             <a href="javascript:void(0)" data-bs-toggle="tooltip" data-bs-custom-class="custom-tooltip"
                                 data-bs-placement="right" data-bs-title="Dashboards">
                                 <iconify-icon icon="solar:layers-line-duotone" class="fs-7"></iconify-icon>
@@ -26,10 +25,20 @@
                         <!-- --------------------------------------------------------------------------------------------------------- -->
                         <!-- Master -->
                         <!-- --------------------------------------------------------------------------------------------------------- -->
-                        <li class="mini-nav-item {{ request()->is('products*') ? 'selected' : '' }}" id="mini-7">
+                        <li class="mini-nav-item {{ ($parent_title ?? 'Dashboard') === 'Master' ? 'selected' : '' }}" id="mini-2">
                             <a href="javascript:void(0)" data-bs-toggle="tooltip" data-bs-custom-class="custom-tooltip"
                                 data-bs-placement="right" data-bs-title="Master">
                                 <iconify-icon icon="solar:widget-6-line-duotone" class="fs-7"></iconify-icon>
+                            </a>
+                        </li>
+
+                        <!-- --------------------------------------------------------------------------------------------------------- -->
+                        <!-- User & Permissions -->
+                        <!-- --------------------------------------------------------------------------------------------------------- -->
+                        <li class="mini-nav-item {{ ($parent_title ?? 'Dashboard') === 'User & Permissions' ? 'selected' : '' }}" id="mini-3">
+                            <a href="javascript:void(0)" data-bs-toggle="tooltip" data-bs-custom-class="custom-tooltip"
+                                data-bs-placement="right" data-bs-title="User & Permissions">
+                                <iconify-icon icon="solar:shield-user-line-duotone" class="fs-7"></iconify-icon>
                             </a>
                         </li>
                 </div>
@@ -46,13 +55,13 @@
                     <nav class="sidebar-nav" id="menu-right-mini-1" data-simplebar>
                         <ul class="sidebar-menu" id="sidebarnav">
                             <!-- ---------------------------------- -->
-                            <!-- Home -->
+                            <!-- Header -->
                             <!-- ---------------------------------- -->
                             <li class="nav-small-cap">
                                 <span class="hide-menu">Dashboards</span>
                             </li>
                             <!-- ---------------------------------- -->
-                            <!-- Dashboard -->
+                            <!-- Side bar -->
                             <!-- ---------------------------------- -->
                             <li class="sidebar-item">
                                 <a href="index.php" class="sidebar-link {{ ($parent_title ?? 'Dashboard') === 'Dashboard' ? 'active' : '' }}">
@@ -66,22 +75,52 @@
                     <!-- ---------------------------------- -->
                     <!-- Master -->
                     <!-- ---------------------------------- -->
-                    <nav class="sidebar-nav scroll-sidebar" id="menu-right-mini-7" data-simplebar>
+                    <nav class="sidebar-nav scroll-sidebar" id="menu-right-mini-2" data-simplebar>
                         <ul class="sidebar-menu" id="sidebarnav">
                             <!-- ---------------------------------- -->
-                            <!-- Home -->
+                            <!-- Header -->
                             <!-- ---------------------------------- -->
                             <li class="nav-small-cap">
                                 <span class="hide-menu">Master</span>
                             </li>
                             <!-- ---------------------------------- -->
-                            <!-- Dashboard -->
+                            <!-- Side bar -->
                             <!-- ---------------------------------- -->
 
                             <li class="sidebar-item">
                                 <a href="/products" class="sidebar-link {{ ($parent_title ?? 'Dashboard') === 'Master' ? 'active' : '' }}">
                                     <iconify-icon icon="solar:waterdrops-line-duotone"></iconify-icon>
                                     <span class="hide-menu">Products</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+
+                    <!-- ---------------------------------- -->
+                    <!-- User & Permissions -->
+                    <!-- ---------------------------------- -->
+                    <nav class="sidebar-nav scroll-sidebar" id="menu-right-mini-3" data-simplebar>
+                        <ul class="sidebar-menu" id="sidebarnav">
+                            <!-- ---------------------------------- -->
+                            <!-- Header -->
+                            <!-- ---------------------------------- -->
+                            <li class="nav-small-cap">
+                                <span class="hide-menu">User & Permissions</span>
+                            </li>
+                            <!-- ---------------------------------- -->
+                            <!-- Side bar -->
+                            <!-- ---------------------------------- -->
+
+                            <li class="sidebar-item">
+                                <a href="/users" class="sidebar-link {{ ($parent_title ?? 'Dashboard') === 'Users' ? 'active' : '' }}">
+                                    <iconify-icon icon="solar:user-bold-duotone"></iconify-icon>
+                                    <span class="hide-menu">Users</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-item">
+                                <a href="/roles" class="sidebar-link {{ ($parent_title ?? 'Dashboard') === 'Users' ? 'active' : '' }}">
+                                    <iconify-icon icon="solar:clipboard-text-bold-duotone"></iconify-icon>
+                                    <span class="hide-menu">Roles & Permissions</span>
                                 </a>
                             </li>
                         </ul>

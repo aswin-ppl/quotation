@@ -21,6 +21,7 @@ Route::middleware('auth')->group(function () {
 
     // Products
     Route::resource('products', ProductController::class);
+    Route::get('products/restore/{id}', [ProductController::class, 'restore'])->name('products.restore');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

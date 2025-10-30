@@ -418,12 +418,12 @@
                                                         class="rounded-circle" width="56" height="56"
                                                         alt="matdash-img" />
                                                     <div>
-                                                        <h5 class="mb-0 fs-12">David McMichael <span
-                                                                class="text-success fs-11">Pro</span>
-                                                        </h5>
+                                                        <h5 class="mb-0 fs-12">{{ Auth::check() ? Auth::user()->name : 'Guest' }}</h5>
+                                                        @auth
                                                         <p class="mb-0 text-dark">
-                                                            david@wrappixel.com
+                                                            {{ Auth::check() ? Auth::user()->email : '' }}
                                                         </p>
+                                                        @endauth
                                                     </div>
                                                 </div>
                                                 <div class="message-body">

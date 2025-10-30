@@ -8,10 +8,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ProductDescription extends Model
 {
-    use HasFactory, SoftDeletes;
-
+    use HasFactory; // Remove SoftDeletes
+    
     protected $fillable = ['product_id', 'key', 'value'];
-
+    
     public function product() {
         return $this->belongsTo(Product::class);
     }

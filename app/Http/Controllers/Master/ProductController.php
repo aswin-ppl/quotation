@@ -8,12 +8,13 @@ use App\Models\Master\Product;
 use App\Models\ProductDescription;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::with('descriptions')->get();
+        $products = Product::withTrashed()->with('descriptions')->get();
         return view('master.products.index', compact('products'));
     }
 
@@ -34,7 +35,7 @@ class ProductController extends Controller
                 $path = $image->storeAs('images/product', $imageName, 'public');
 
                 // Save just the path (without 'public/' prefix)
-                $imagePath = $path; // This will be 'images/product/1761740072.jpeg'
+                $imagePath = $path;
             }
 
 
@@ -56,8 +57,61 @@ class ProductController extends Controller
             }
         });
 
-        return response()->json(['status' => true, 'message' => 'Product saved successfully!']);
+        return redirect()->route('products.create')
+            ->with('success', 'Product created successfully');
     }
+
+
+    // public function store(Request $request)
+    // {
+    //     $request->validate([
+    //         'name' => 'required|string|max:255',
+    //         'size_mm' => 'nullable|string|max:255',
+    //         'r_units' => 'nullable|integer|min:0',
+    //         'product_price' => 'nullable|numeric|min:0',
+    //         'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+    //         'descriptions' => 'nullable|array',
+    //         'descriptions.*.key' => 'nullable|string|max:255',
+    //         'descriptions.*.value' => 'nullable|string|max:255',
+    //     ]);
+
+    //     try {
+    //         DB::transaction(function () use ($request) {
+    //             //  Handle image upload
+    //             $imagePath = $request->hasFile('image')
+    //                 ? $request->file('image')->storeAs(
+    //                     'images/product',
+    //                     time() . '.' . $request->file('image')->getClientOriginalExtension(),
+    //                     'public'
+    //                 )
+    //                 : null;
+
+    //             // ✅ Create Product
+    //             $product = Product::create([
+    //                 'name' => $request->name,
+    //                 'image' => $imagePath,
+    //                 'size_mm' => $request->size_mm,
+    //                 'r_units' => $request->r_units ?? 0,
+    //                 'product_price' => $request->product_price ?? 0,
+    //             ]);
+
+    //             // ✅ Create Descriptions
+    //             if ($request->filled('descriptions')) {
+    //                 foreach ($request->descriptions as $desc) {
+    //                     if (!empty($desc['key']) || !empty($desc['value'])) {
+    //                         $product->descriptions()->create($desc);
+    //                     }
+    //                 }
+    //             }
+    //         });
+
+    //         return redirect()->route('products.index')
+    //             ->with('success', 'Product created successfully!');
+    //     } catch (\Throwable $e) {
+    //         Log::error('Product creation failed: ' . $e->getMessage());
+    //         return back()->with('error', 'Failed to create product 😬 Try again.');
+    //     }
+    // }
 
 
     public function show(Product $product)
@@ -112,13 +166,30 @@ class ProductController extends Controller
             }
         });
 
-        return response()->json(['status' => true, 'message' => 'Product updated successfully!']);
+
+        return redirect()->route('products.index')
+            ->with('success', 'Product updated successfully');
     }
 
 
     public function destroy(Product $product)
     {
-        $product->delete();
-        return response()->json(['status' => true, 'message' => 'Product deleted successfully!']);
+        try {
+            $product->delete();
+            return back()->with('success', 'Product deleted successfully.');
+        } catch (\Throwable $e) {
+            \Log::error($e);
+            return back()->with('error', 'Failed to delete product.');
+        }
     }
+
+    // Your restore method should look like this:
+    public function restore($id)
+    {
+        $product = Product::onlyTrashed()->findOrFail($id);
+        $product->restore(); // This should trigger the restoring event
+
+        return back()->with('success', 'Product restored successfully.');
+    }
+
 }

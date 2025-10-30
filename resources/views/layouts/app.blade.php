@@ -15,6 +15,7 @@
 
     <title>Admin</title>
 
+    @yield('styles')
 </head>
 
 <body>
@@ -44,13 +45,14 @@
             <!--  Header Start -->
             <x-header />
             <!--  Header End -->
-            
+            @include('components.horizontal-sidebar')
+
             @yield('content')
-            
+
             <!--  Theme start Start -->
             <x-theme />
             <!--  Theme end Start -->
-            
+
             <!--  Search Modal Start -->
             <x-search-modal />
             <!--  Search Modal End -->
@@ -78,11 +80,14 @@
         document.querySelectorAll("pre.code-view > code").forEach((codeBlock) => {
             codeBlock.textContent = codeBlock.innerHTML;
         });
+
+        
     </script>
     {{-- <script src="{{ asset('libs/apexcharts/dist/apexcharts.min.js') }}"></script> --}}
     {{-- <script src="{{ asset('js/dashboards/dashboard1.js') }}"></script> --}}
     <script src="{{ asset('libs/fullcalendar/index.global.min.js') }}"></script>
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 
     @yield('scripts')
 </body>

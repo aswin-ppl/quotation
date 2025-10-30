@@ -11,30 +11,47 @@ class RolesAndPermissionsSeeder extends Seeder
 {
     public function run()
     {
-        // Reset cached roles and permissions
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
-        // Create permissions
-        Permission::create(['name' => 'view-users']);
-        Permission::create(['name' => 'create-users']);
-        Permission::create(['name' => 'edit-users']);
-        Permission::create(['name' => 'delete-users']);
-        Permission::create(['name' => 'restore-users']);
-        Permission::create(['name' => 'export-users']);
+        $modules = [
+            ['model' => 'Users', 'permissions' => ['View', 'Create', 'Edit', 'Delete', 'Restore', 'Export']],
+            ['model' => 'Roles & Permission', 'permissions' => ['View', 'Create', 'Edit', 'Delete', 'Restore', 'Export', 'Import']],
+            ['model' => 'Products', 'permissions' => ['View', 'Create', 'Edit', 'Delete', 'Restore', 'Export']],
+        ];
 
-        // Create roles and assign permissions
-        $role = Role::create(['name' => 'admin']);
-        $role->givePermissionTo(Permission::all());
+        // Loop through modules and create permissions
+        foreach ($modules as $module) {
+            foreach ($module['permissions'] as $permission) {
+                Permission::firstOrCreate([
+                    'name' => strtolower($permission) . '-' . strtolower(str_replace(' ', '-', $module['model'])),
+                    'guard_name' => 'web',
+                ]);
+            }
+        }
 
-        $role = Role::create(['name' => 'user']);
-        $role->givePermissionTo(['view-users']);
+        // Create roles
+        $admin = Role::firstOrCreate(['name' => 'admin']);
+        $user = Role::firstOrCreate(['name' => 'user']);
+
+        // Give all perms to admin
+        $admin->givePermissionTo(Permission::all());
+
+        // Give limited perms to user
+        $user->givePermissionTo([
+            'view-users',
+            'view-products',
+        ]);
 
         // Create admin user
-        $user = User::create([
-            'name' => 'Admin',
-            'email' => 'aswinproplus@gmail.com',
-            'password' => bcrypt('admin123'),
-        ]);
-        $user->assignRole('admin');
+        $adminUser = User::firstOrCreate(
+            ['email' => 'aswinproplus@gmail.com'],
+            [
+                'name' => 'Admin',
+                'password' => bcrypt('admin123'),
+            ]
+        );
+
+        $adminUser->assignRole('admin');
     }
+
 }

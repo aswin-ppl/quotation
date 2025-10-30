@@ -18,13 +18,13 @@
                 <input type="radio" class="btn-check light-layout" name="theme-layout" id="light-layout"
                     autocomplete="off" />
                 <label class="btn p-9 btn-outline-primary rounded-2" for="light-layout">
-                    <i class="icon ti ti-brightness-up fs-7 me-2"></i>Light
+                    <i class="icon ti ti-brightness-up fs-7 me-2" id="theme-icon-sun"></i>Light
                 </label>
 
                 <input type="radio" class="btn-check dark-layout" name="theme-layout" id="dark-layout"
                     autocomplete="off" />
                 <label class="btn p-9 btn-outline-primary rounded-2" for="dark-layout">
-                    <i class="icon ti ti-moon fs-7 me-2"></i>Dark
+                    <i class="icon ti ti-moon fs-7 me-2" id="theme-icon-moon"></i>Dark
                 </label>
             </div>
 
@@ -138,13 +138,15 @@
             <h6 class="fw-semibold fs-4 mb-2 mt-5">Sidebar Type</h6>
             <div class="d-flex flex-row gap-3 customizer-box" role="group">
                 <a href="javascript:void(0)" class="fullsidebar">
-                    <input type="radio" class="btn-check" name="sidebar-type" id="full-sidebar" autocomplete="off" />
+                    <input type="radio" class="btn-check" name="sidebar-type" id="full-sidebar"
+                        autocomplete="off" />
                     <label class="btn p-9 btn-outline-primary rounded-2" for="full-sidebar">
                         <i class="icon ti ti-layout-sidebar-right fs-7 me-2"></i>Full
                     </label>
                 </a>
                 <div>
-                    <input type="radio" class="btn-check" name="sidebar-type" id="mini-sidebar" autocomplete="off" />
+                    <input type="radio" class="btn-check" name="sidebar-type" id="mini-sidebar"
+                        autocomplete="off" />
                     <label class="btn p-9 btn-outline-primary rounded-2" for="mini-sidebar">
                         <i class="icon ti ti-layout-sidebar fs-7 me-2"></i>Collapse
                     </label>
@@ -154,7 +156,8 @@
             <h6 class="mt-5 fw-semibold fs-4 mb-2">Card With</h6>
 
             <div class="d-flex flex-row gap-3 customizer-box" role="group">
-                <input type="radio" class="btn-check" name="card-layout" id="card-with-border" autocomplete="off" />
+                <input type="radio" class="btn-check" name="card-layout" id="card-with-border"
+                    autocomplete="off" />
                 <label class="btn p-9 btn-outline-primary rounded-2" for="card-with-border">
                     <i class="icon ti ti-border-outer fs-7 me-2"></i>Border
                 </label>
@@ -169,7 +172,72 @@
     </div>
 
     <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const moonBtn = document.querySelector(".dark-layout");
+            const moonBtnIcon = document.querySelector(".dark-layout").querySelector("iconify-icon");
+            const themeMoonBtn = document.querySelector("#theme-icon-moon");
+
+            const sunBtn = document.querySelector(".light-layout");
+            const sunBtnIcon = document.querySelector(".light-layout").querySelector("iconify-icon");
+            const themeSunBtn = document.querySelector("#theme-icon-sun");
+
+            const blueTheme = document.querySelector("label[for='Blue_Theme']");
+
+
+
+            // Set theme + save in localStorage
+            function setTheme(theme) {
+                document.documentElement.setAttribute("data-bs-theme", theme);
+                localStorage.setItem("theme", theme);
+
+                if (theme === "dark") {
+                    moonBtn.style.display = "none";
+                    moonBtnIcon.style.display = "none";
+                    themeMoonBtn.style.color = "var(--bs-primary)";
+                    themeSunBtn.style.color = "unset";
+
+                    sunBtn.style.display = "inline-flex";
+                    sunBtnIcon.style.display = "flex";
+                } else {
+                    sunBtn.style.display = "none";
+                    sunBtnIcon.style.display = "none";
+                    themeSunBtn.style.color = "var(--bs-primary)";
+                    themeMoonBtn.style.color = "unset";
+
+                    moonBtn.style.display = "inline-flex";
+                    moonBtnIcon.style.display = "flex";
+                }
+            }
+
+            // Click handlers
+            moonBtn.addEventListener("click", () => setTheme("dark"));
+            sunBtn.addEventListener("click", () => setTheme("light"));
+            
+            blueTheme.addEventListener("click", () => function(){
+                console.log('asas');
+            });
+
+            // On load — check saved theme
+            const savedTheme = localStorage.getItem("theme") || "light";
+            setTheme(savedTheme);
+            document.documentElement.setAttribute("data-color-theme", localStorage.getItem("data-color-theme"));
+            document.documentElement.setAttribute("data-layout", localStorage.getItem("data-layout"));
+        });
+
         function handleColorTheme(e) {
+            localStorage.setItem("data-color-theme", e);
             document.documentElement.setAttribute("data-color-theme", e);
         }
+
+        // handle layout
+
+        const horizontalBtn = document.querySelector("label[for='horizontal-layout']");
+        const verticalBtn = document.querySelector("label[for='vertical-layout']");
+        
+        horizontalBtn.addEventListener("click", () => {
+            localStorage.setItem("data-layout", "horizontal");
+        });
+        verticalBtn.addEventListener("click", () => {
+            localStorage.setItem("data-layout", "vertical");
+        });
     </script>
