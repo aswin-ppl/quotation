@@ -64,7 +64,7 @@
                             <!-- Side bar -->
                             <!-- ---------------------------------- -->
                             <li class="sidebar-item">
-                                <a href="index.php" class="sidebar-link {{ ($parent_title ?? 'Dashboard') === 'Dashboard' ? 'active' : '' }}">
+                                <a href="/" class="sidebar-link {{ ($parent_title ?? 'Dashboard') === 'Dashboard' ? 'active' : '' }}">
                                     <iconify-icon icon="solar:atom-line-duotone"></iconify-icon>
                                     <span class="hide-menu">Dashboard</span>
                                 </a>

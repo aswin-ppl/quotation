@@ -1,24 +1,29 @@
 <?php
 
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Master\ProductController;
 
-Route::get('/', function () {
-    return view('dashboard');
-});
 
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
+
+    // dashboard
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    
+    Route::get('/quotation-preview', [Controller::class, 'generateQuotation'])->name('quotation.preview');
     // User and Roles
     Route::resource('users', UserController::class);
     Route::resource('roles', RoleController::class)->middleware('auth');
-
+    
+    Route::view('/quotation','quotation.view')->name('quotation.view');
     // Products
     Route::resource('products', ProductController::class);
     Route::get('products/restore/{id}', [ProductController::class, 'restore'])->name('products.restore');
@@ -28,4 +33,4 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
