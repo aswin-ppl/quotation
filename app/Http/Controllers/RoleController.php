@@ -10,12 +10,16 @@ class RoleController extends Controller
 {
     public function index()
     {
+        $this->authorize('view-roles-&-permission');
+        
         $roles = Role::with('permissions')->get();
         return view('user-and-permissions.roles.index', compact('roles'));
     }
 
     public function create()
     {
+        $this->authorize('create-roles-&-permission');
+
         $permissions = Permission::all()->groupBy(function ($permission) {
             // Extract module name (everything after the dash)
             return ucfirst(explode('-', $permission->name)[1] ?? 'Misc');
@@ -26,6 +30,8 @@ class RoleController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorize('create-roles-&-permission');
+
         $request->validate([
             'name' => 'required|unique:roles,name',
             'permissions' => 'required|array',
@@ -42,6 +48,8 @@ class RoleController extends Controller
 
     public function edit(Role $role)
     {
+        $this->authorize('edit-roles-&-permission');
+
         $permissions = Permission::all()->groupBy(function ($permission) {
             // Extract module name (everything after the dash)
             return ucfirst(explode('-', $permission->name)[1] ?? 'Misc');
@@ -54,6 +62,8 @@ class RoleController extends Controller
 
     public function update(Request $request, Role $role)
     {
+        $this->authorize('edit-roles-&-permission');
+
         $request->validate([
             'name' => 'required|string|max:255',
             'permissions' => 'array|required'
@@ -71,6 +81,8 @@ class RoleController extends Controller
 
     public function destroy(Role $role)
     {
+        $this->authorize('delete-roles-&-permission');
+
         // Optional: block delete if role is assigned to users
         if (method_exists($role, 'users') && $role->users()->count() > 0) {
             return redirect()->back()->with('error', 'Cannot delete a role that is assigned to users.');

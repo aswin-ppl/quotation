@@ -37,7 +37,7 @@
                             <nav aria-label="breadcrumb" class="ms-auto">
                                 <ol class="breadcrumb">
                                     <li class="breadcrumb-item d-flex align-items-center">
-                                        <a class="text-muted text-decoration-none d-flex" href="../main/index.html">
+                                        <a class="text-muted text-decoration-none d-flex" href="/">
                                             <iconify-icon icon="solar:home-2-line-duotone" class="fs-6"></iconify-icon>
                                         </a>
                                     </li>
@@ -181,7 +181,7 @@
             <div class="btn-group" role="group">
                 <button class="btn btn-sm btn-outline-primary btn-decrease" data-id="${productId}">-</button>
                 <button class="btn btn-sm btn-light px-3 disabled" data-product='${productJson}'>${product.qty}</button>
-                <button class="btn btn-sm btn-outline-primary btn-increase" data-id="${productId}">+</button>
+                <button class="btn btn-sm btn-primary btn-increase" data-id="${productId}">+</button>
             </div>
         `;
             } else {

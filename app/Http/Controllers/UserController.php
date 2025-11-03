@@ -10,9 +10,6 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    /**
-     * Create a new controller instance.
-     */
     public function __construct()
     {
         $this->middleware(['auth']);
@@ -37,7 +34,6 @@ class UserController extends Controller
         $this->authorize('create-users');
 
         try {
-            // Validate inputs
             $validated = $request->validate([
                 'name' => 'required|string|max:255',
                 'email' => 'required|string|email|max:255|unique:users',

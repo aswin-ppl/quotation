@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Master;
 use DB;
 use Illuminate\Http\Request;
 use App\Models\Master\Product;
-use App\Models\ProductDescription;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
@@ -14,32 +13,35 @@ class ProductController extends Controller
 {
     public function index()
     {
+        $this->authorize('view-products');
+
         $products = Product::withTrashed()->with('descriptions')->get();
         return view('master.products.index', compact('products'));
     }
 
     public function create()
     {
+        $this->authorize('create-products');
         return view('master.products.create');
     }
 
     public function store(Request $request)
     {
+        $this->authorize('create-products');
+
         DB::transaction(function () use ($request) {
             $imagePath = null;
             if ($request->hasFile('image')) {
                 $image = $request->file('image');
                 $imageName = time() . '.' . $image->getClientOriginalExtension();
 
-                // Store in storage/app/public/images/product/
+                // Store in storage
                 $path = $image->storeAs('images/product', $imageName, 'public');
 
-                // Save just the path (without 'public/' prefix)
+                // Save just the path
                 $imagePath = $path;
             }
 
-
-            // Step 2: create product
             $product = Product::create([
                 'name' => $request->name,
                 'image' => $imagePath,
@@ -48,7 +50,6 @@ class ProductController extends Controller
                 'product_price' => $request->product_price,
             ]);
 
-            // Step 3: create related descriptions
             foreach ($request->descriptions as $desc) {
                 $product->descriptions()->create([
                     'key' => $desc['key'],
@@ -61,74 +62,26 @@ class ProductController extends Controller
             ->with('success', 'Product created successfully');
     }
 
-
-    // public function store(Request $request)
-    // {
-    //     $request->validate([
-    //         'name' => 'required|string|max:255',
-    //         'size_mm' => 'nullable|string|max:255',
-    //         'r_units' => 'nullable|integer|min:0',
-    //         'product_price' => 'nullable|numeric|min:0',
-    //         'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-    //         'descriptions' => 'nullable|array',
-    //         'descriptions.*.key' => 'nullable|string|max:255',
-    //         'descriptions.*.value' => 'nullable|string|max:255',
-    //     ]);
-
-    //     try {
-    //         DB::transaction(function () use ($request) {
-    //             //  Handle image upload
-    //             $imagePath = $request->hasFile('image')
-    //                 ? $request->file('image')->storeAs(
-    //                     'images/product',
-    //                     time() . '.' . $request->file('image')->getClientOriginalExtension(),
-    //                     'public'
-    //                 )
-    //                 : null;
-
-    //             // ✅ Create Product
-    //             $product = Product::create([
-    //                 'name' => $request->name,
-    //                 'image' => $imagePath,
-    //                 'size_mm' => $request->size_mm,
-    //                 'r_units' => $request->r_units ?? 0,
-    //                 'product_price' => $request->product_price ?? 0,
-    //             ]);
-
-    //             // ✅ Create Descriptions
-    //             if ($request->filled('descriptions')) {
-    //                 foreach ($request->descriptions as $desc) {
-    //                     if (!empty($desc['key']) || !empty($desc['value'])) {
-    //                         $product->descriptions()->create($desc);
-    //                     }
-    //                 }
-    //             }
-    //         });
-
-    //         return redirect()->route('products.index')
-    //             ->with('success', 'Product created successfully!');
-    //     } catch (\Throwable $e) {
-    //         Log::error('Product creation failed: ' . $e->getMessage());
-    //         return back()->with('error', 'Failed to create product 😬 Try again.');
-    //     }
-    // }
-
-
     public function show(Product $product)
     {
+        $this->authorize('view-products');
         return view('master.products.show', compact('product'));
     }
 
     public function edit(Product $product)
     {
+        $this->authorize('edit-products');
+
         $product->load('descriptions');
         return view('master.products.edit', compact('product'));
     }
 
     public function update(Request $request, Product $product)
     {
+        $this->authorize('update-products');
+
         DB::transaction(function () use ($request, $product) {
-            // Step 1: handle new image upload (if provided)
+
             $imagePath = $product->image; // keep the old one by default
 
             if ($request->hasFile('image')) {
@@ -141,12 +94,9 @@ class ProductController extends Controller
                 $image = $request->file('image');
                 $imageName = time() . '.' . $image->getClientOriginalExtension();
 
-                // Store using the public disk
                 $imagePath = $image->storeAs('images/product', $imageName, 'public');
-                // This returns 'images/product/1761740072.jpeg'
             }
 
-            // Step 2: update product info
             $product->update([
                 'name' => $request->name,
                 'image' => $imagePath,
@@ -155,7 +105,6 @@ class ProductController extends Controller
                 'product_price' => $request->product_price,
             ]);
 
-            // Step 3: refresh descriptions
             $product->descriptions()->delete();
 
             foreach ($request->descriptions as $desc) {
@@ -166,14 +115,14 @@ class ProductController extends Controller
             }
         });
 
-
         return redirect()->route('products.index')
             ->with('success', 'Product updated successfully');
     }
 
-
     public function destroy(Product $product)
     {
+        $this->authorize('delete-products');
+
         try {
             $product->delete();
             return back()->with('success', 'Product deleted successfully.');
@@ -183,11 +132,12 @@ class ProductController extends Controller
         }
     }
 
-    // Your restore method should look like this:
     public function restore($id)
     {
+        $this->authorize('restore-products');
+
         $product = Product::onlyTrashed()->findOrFail($id);
-        $product->restore(); // This should trigger the restoring event
+        $product->restore();
 
         return back()->with('success', 'Product restored successfully.');
     }

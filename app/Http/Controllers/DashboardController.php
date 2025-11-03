@@ -12,5 +12,4 @@ class DashboardController extends Controller
         $products = Product::withTrashed()->with('descriptions')->get();
         return view('dashboard', compact('products'));
     }
-
 }

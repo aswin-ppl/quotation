@@ -52,6 +52,17 @@ class RolesAndPermissionsSeeder extends Seeder
         );
 
         $adminUser->assignRole('admin');
+
+        // Create normal user
+        $normalUser = User::firstOrCreate(
+            ['email' => 'user@gmail.com'],
+            [
+                'name' => 'User',
+                'password' => bcrypt('user123'),
+            ]
+        );
+
+        $normalUser->assignRole('user');
     }
 
 }

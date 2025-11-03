@@ -18,7 +18,7 @@ Route::middleware('auth')->group(function () {
     // dashboard
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     
-    Route::get('/quotation-preview', [Controller::class, 'generateQuotation'])->name('quotation.preview');
+    // Route::get('/quotation-preview', [Controller::class, 'generateQuotation'])->name('quotation.preview');
     // User and Roles
     Route::resource('users', UserController::class);
     Route::resource('roles', RoleController::class)->middleware('auth');
