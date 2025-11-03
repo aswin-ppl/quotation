@@ -141,6 +141,15 @@
     <script src="{{ asset('js/plugins/toastr-init.js') }}"></script>
 
     <script>
+
+        // toaster
+        toastr.options = {
+            "closeButton": true,
+            "progressBar": true,
+            "positionClass": "toast-bottom-right",
+            "timeOut": "3000"
+        };
+
         function updateCartCount() {
             let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
@@ -221,21 +230,21 @@
         });
 
         document.addEventListener('DOMContentLoaded', () => {
-            updateCartCount();
-            updateCardDropDown();
+            // updateCartCount();
+            // updateCardDropDown();
         });
 
         // remove products
-        document.addEventListener('click', function(e) {
-            if (e.target.classList.contains('remove-btn')) {
-                let id = parseInt(e.target.getAttribute('data-id'));
-                let cart = JSON.parse(localStorage.getItem('cart')) || [];
-                cart = cart.filter(p => p.id !== id);
-                localStorage.setItem('cart', JSON.stringify(cart));
-                e.target.closest('.dropdown-item').remove();
-                updateCartCount();
-            }
-        });
+        // document.addEventListener('click', function(e) {
+        //     if (e.target.classList.contains('remove-btn')) {
+        //         let id = parseInt(e.target.getAttribute('data-id'));
+        //         let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        //         cart = cart.filter(p => p.id !== id);
+        //         localStorage.setItem('cart', JSON.stringify(cart));
+        //         e.target.closest('.dropdown-item').remove();
+        //         updateCartCount();
+        //     }
+        // });
 
         // localStorage.removeItem('cart');
     </script>

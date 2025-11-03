@@ -44,7 +44,7 @@
                 </div>
                 <div class="sidebarmenu">
                     <div class="brand-logo d-flex align-items-center nav-logo">
-                        <a href="index.html" class="text-nowrap logo-img">
+                        <a href="/" class="text-nowrap logo-img">
                             <img src="{{ asset('images/logos/logo.svg') }}" alt="Logo" />
                         </a>
 
@@ -52,7 +52,7 @@
                     <!-- ---------------------------------- -->
                     <!-- Dashboard -->
                     <!-- ---------------------------------- -->
-                    <nav class="sidebar-nav" id="menu-right-mini-1" data-simplebar>
+                    <nav class="sidebar-nav {{ ($parent_title ?? 'Dashboard') === 'Dashboard' ? 'd-block' : '' }}" id="menu-right-mini-1" data-simplebar>
                         <ul class="sidebar-menu" id="sidebarnav">
                             <!-- ---------------------------------- -->
                             <!-- Header -->
@@ -75,7 +75,7 @@
                     <!-- ---------------------------------- -->
                     <!-- Master -->
                     <!-- ---------------------------------- -->
-                    <nav class="sidebar-nav scroll-sidebar" id="menu-right-mini-2" data-simplebar>
+                    <nav class="sidebar-nav scroll-sidebar {{ ($parent_title ?? 'Dashboard') === 'Master' ? 'd-block' : '' }}" id="menu-right-mini-2" data-simplebar>
                         <ul class="sidebar-menu" id="sidebarnav">
                             <!-- ---------------------------------- -->
                             <!-- Header -->
@@ -88,7 +88,7 @@
                             <!-- ---------------------------------- -->
 
                             <li class="sidebar-item">
-                                <a href="/products" class="sidebar-link {{ ($parent_title ?? 'Dashboard') === 'Master' ? 'active' : '' }}">
+                                <a href="/products" class="sidebar-link {{ ($page_title ?? 'Dashboard') === 'Product' ? 'active' : '' }}">
                                     <iconify-icon icon="solar:waterdrops-line-duotone"></iconify-icon>
                                     <span class="hide-menu">Products</span>
                                 </a>
@@ -99,7 +99,7 @@
                     <!-- ---------------------------------- -->
                     <!-- User & Permissions -->
                     <!-- ---------------------------------- -->
-                    <nav class="sidebar-nav scroll-sidebar" id="menu-right-mini-3" data-simplebar>
+                    <nav class="sidebar-nav scroll-sidebar {{ ($parent_title ?? 'Dashboard') === 'User & Permissions' ? 'd-block' : '' }}" id="menu-right-mini-3" data-simplebar>
                         <ul class="sidebar-menu" id="sidebarnav">
                             <!-- ---------------------------------- -->
                             <!-- Header -->
@@ -112,13 +112,13 @@
                             <!-- ---------------------------------- -->
 
                             <li class="sidebar-item">
-                                <a href="/users" class="sidebar-link {{ ($parent_title ?? 'Dashboard') === 'Users' ? 'active' : '' }}">
+                                <a href="/users" class="sidebar-link {{ ($page_title ?? 'Dashboard') === 'Users' ? 'active' : '' }}">
                                     <iconify-icon icon="solar:user-bold-duotone"></iconify-icon>
                                     <span class="hide-menu">Users</span>
                                 </a>
                             </li>
                             <li class="sidebar-item">
-                                <a href="/roles" class="sidebar-link {{ ($parent_title ?? 'Dashboard') === 'Users' ? 'active' : '' }}">
+                                <a href="/roles" class="sidebar-link {{ ($page_title ?? 'Dashboard') === 'Roles & Permission' ? 'active' : '' }}">
                                     <iconify-icon icon="solar:clipboard-text-bold-duotone"></iconify-icon>
                                     <span class="hide-menu">Roles & Permissions</span>
                                 </a>
@@ -128,4 +128,5 @@
                 </div>
             </div>
         </div>
+        <span class="d-none" href="#" id="get-url"></span>
     </aside>
