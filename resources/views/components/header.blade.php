@@ -11,11 +11,6 @@
                         <iconify-icon icon="solar:hamburger-menu-line-duotone" class="fs-6"></iconify-icon>
                     </a>
                 </li>
-                <li class="nav-item d-none d-xl-flex nav-icon-hover-bg rounded-circle">
-                    <a class="nav-link" href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                        <iconify-icon icon="solar:magnifer-linear" class="fs-6"></iconify-icon>
-                    </a>
-                </li>
                 <li class="nav-item d-none d-lg-flex dropdown nav-icon-hover-bg rounded-circle">
                     <div class="hover-dd">
                         <a class="nav-link" id="drop2" href="javascript:void(0)" aria-haspopup="true"
@@ -32,20 +27,19 @@
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <div class="position-relative">
-                                                        <a href="app-chat.html"
+                                                        <a href="{{ route('dashboard') }}"
                                                             class="d-flex align-items-center pb-9 position-relative">
                                                             <div
                                                                 class="bg-primary-subtle rounded round-48 me-3 d-flex align-items-center justify-content-center">
-                                                                <iconify-icon icon="solar:chat-line-bold-duotone"
+                                                                <iconify-icon icon="solar:home-2-bold"
                                                                     class="fs-7 text-primary"></iconify-icon>
                                                             </div>
                                                             <div>
-                                                                <h6 class="mb-0">Chat Application</h6>
-                                                                <span class="fs-11 d-block text-body-color">New
-                                                                    messages arrived</span>
+                                                                <h6 class="mb-0">Dashboard</h6>
+                                                                <span class="fs-11 d-block text-body-color">Get all products overview</span>
                                                             </div>
                                                         </a>
-                                                        <a href="app-invoice.html"
+                                                        <a href="{{ route('products.index') }}"
                                                             class="d-flex align-items-center pb-9 position-relative">
                                                             <div
                                                                 class="bg-secondary-subtle rounded round-48 me-3 d-flex align-items-center justify-content-center">
@@ -53,43 +47,15 @@
                                                                     class="fs-7 text-secondary"></iconify-icon>
                                                             </div>
                                                             <div>
-                                                                <h6 class="mb-0">Invoice App</h6>
-                                                                <span class="fs-11 d-block text-body-color">Get
-                                                                    latest invoice</span>
-                                                            </div>
-                                                        </a>
-                                                        <a href="app-contact2.html"
-                                                            class="d-flex align-items-center pb-9 position-relative">
-                                                            <div
-                                                                class="bg-warning-subtle rounded round-48 me-3 d-flex align-items-center justify-content-center">
-                                                                <iconify-icon
-                                                                    icon="solar:phone-calling-rounded-bold-duotone"
-                                                                    class="fs-7 text-warning"></iconify-icon>
-                                                            </div>
-                                                            <div>
-                                                                <h6 class="mb-0">Contact Application</h6>
-                                                                <span class="fs-11 d-block text-body-color">2
-                                                                    Unsaved Contacts</span>
-                                                            </div>
-                                                        </a>
-                                                        <a href="app-email.html"
-                                                            class="d-flex align-items-center pb-9 position-relative">
-                                                            <div
-                                                                class="bg-danger-subtle rounded round-48 me-3 d-flex align-items-center justify-content-center">
-                                                                <iconify-icon icon="solar:letter-bold-duotone"
-                                                                    class="fs-7 text-danger"></iconify-icon>
-                                                            </div>
-                                                            <div>
-                                                                <h6 class="mb-0">Email App</h6>
-                                                                <span class="fs-11 d-block text-body-color">Get
-                                                                    new emails</span>
+                                                                <h6 class="mb-0">Products</h6>
+                                                                <span class="fs-11 d-block text-body-color">Create and manage products</span>
                                                             </div>
                                                         </a>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <div class="position-relative">
-                                                        <a href="page-user-profile.html"
+                                                        <a href="{{ route('users.index') }}"
                                                             class="d-flex align-items-center pb-9 position-relative">
                                                             <div
                                                                 class="bg-success-subtle rounded round-48 me-3 d-flex align-items-center justify-content-center">
@@ -97,49 +63,21 @@
                                                                     class="fs-7 text-success"></iconify-icon>
                                                             </div>
                                                             <div>
-                                                                <h6 class="mb-0">User Profile</h6>
-                                                                <span class="fs-11 d-block text-body-color">learn
-                                                                    more information</span>
+                                                                <h6 class="mb-0">Users</h6>
+                                                                <span class="fs-11 d-block text-body-color">Create and manage users</span>
                                                             </div>
                                                         </a>
-                                                        <a href="app-calendar.html"
+                                                        <a href="{{ route('roles.index') }}"
                                                             class="d-flex align-items-center pb-9 position-relative">
                                                             <div
                                                                 class="bg-primary-subtle rounded round-48 me-3 d-flex align-items-center justify-content-center">
                                                                 <iconify-icon
-                                                                    icon="solar:calendar-minimalistic-bold-duotone"
+                                                                    icon="solar:tuning-3-line-duotone"
                                                                     class="fs-7 text-primary"></iconify-icon>
                                                             </div>
                                                             <div>
-                                                                <h6 class="mb-0">Calendar App</h6>
-                                                                <span class="fs-11 d-block text-body-color">Get
-                                                                    dates</span>
-                                                            </div>
-                                                        </a>
-                                                        <a href="app-contact.html"
-                                                            class="d-flex align-items-center pb-9 position-relative">
-                                                            <div
-                                                                class="bg-secondary-subtle rounded round-48 me-3 d-flex align-items-center justify-content-center">
-                                                                <iconify-icon icon="solar:smartphone-2-bold-duotone"
-                                                                    class="fs-7 text-secondary"></iconify-icon>
-                                                            </div>
-                                                            <div>
-                                                                <h6 class="mb-0">Contact List Table</h6>
-                                                                <span class="fs-11 d-block text-body-color">Add
-                                                                    new contact</span>
-                                                            </div>
-                                                        </a>
-                                                        <a href="app-notes.html"
-                                                            class="d-flex align-items-center pb-9 position-relative">
-                                                            <div
-                                                                class="bg-warning-subtle rounded round-48 me-3 d-flex align-items-center justify-content-center">
-                                                                <iconify-icon icon="solar:notes-bold-duotone"
-                                                                    class="fs-7 text-warning"></iconify-icon>
-                                                            </div>
-                                                            <div>
-                                                                <h6 class="mb-0">Notes Application</h6>
-                                                                <span class="fs-11 d-block text-body-color">To-do
-                                                                    and Daily tasks</span>
+                                                                <h6 class="mb-0">Roles & Permissions</h6>
+                                                                <span class="fs-11 d-block text-body-color">Assign and manage permissions</span>
                                                             </div>
                                                         </a>
                                                     </div>
@@ -303,7 +241,7 @@
                                     </a> --}}
                                 </div>
                                 <div class="py-6 px-7 mb-1">
-                                    <a href="{{ route('quotation.view') }}" class="btn btn-primary w-100">Download Quotation</a>
+                                    <a href="{{ route('quotation.view') }}" class="btn btn-primary w-100">Convert to Quotation</a>
                                 </div>
 
                             </div>
@@ -528,12 +466,6 @@
                 <li class="nav-item d-none d-xl-flex align-items-center">
                     <a href="index.html" class="text-nowrap nav-link">
                         <img src="{{ asset('images/logos/logo.svg') }}" alt="matdash-img" />
-                    </a>
-                </li>
-                <li class="nav-item d-none d-xl-flex align-items-center nav-icon-hover-bg rounded-circle">
-                    <a class="nav-link" href="javascript:void(0)" data-bs-toggle="modal"
-                        data-bs-target="#exampleModal">
-                        <iconify-icon icon="solar:magnifer-linear" class="fs-6"></iconify-icon>
                     </a>
                 </li>
                 <li class="nav-item d-none d-lg-flex align-items-center dropdown nav-icon-hover-bg rounded-circle">
