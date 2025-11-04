@@ -91,13 +91,11 @@ class UserController extends Controller
             ]);
 
             DB::transaction(function () use ($validated, $request, $user) {
-                // Update basic info
                 $user->update([
                     'name' => $validated['name'],
                     'email' => $validated['email'],
                 ]);
 
-                // Update password if provided
                 if ($request->filled('password')) {
                     $request->validate([
                         'password' => 'string|min:8|confirmed',
@@ -114,7 +112,6 @@ class UserController extends Controller
             return redirect()->route('users.index')
                 ->with('success', 'User updated successfully');
         } catch (\Illuminate\Validation\ValidationException $e) {
-            // Laravel will auto-redirect back with errors, no need to handle manually
             throw $e;
         } catch (\Throwable $e) {
             \Log::error('User update failed: ' . $e->getMessage(), [

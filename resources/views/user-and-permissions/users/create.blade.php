@@ -19,7 +19,7 @@
                         <a href="javascript:void(0)" class="text-primary">{{ $parent_title }}</a>
                     </li>
                     <li class="breadcrumb-item active text-primary " aria-current="page">
-                        {{ $page_title }}
+                        <a href="{{ route('users.index') }}" class="text-primary">{{ $page_title }}</a>
                     </li>
                     <li class="breadcrumb-item active text-primary " aria-current="page">
                         Create

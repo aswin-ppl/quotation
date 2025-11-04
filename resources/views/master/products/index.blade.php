@@ -12,7 +12,7 @@
             <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: '&gt;'" class="mb-3">
                 <ol class="breadcrumb bg-primary-subtle px-3 py-2 rounded">
                     <li class="breadcrumb-item">
-                        <a href="javascript:void(0)" class="text-primary d-flex align-items-center"><i
+                        <a href="/" class="text-primary d-flex align-items-center"><i
                                 class="ti ti-home fs-4 mt-1"></i></a>
                     </li>
                     <li class="breadcrumb-item">
