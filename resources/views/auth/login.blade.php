@@ -2,46 +2,182 @@
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
-    <form method="POST" action="{{ route('login') }}">
-        @csrf
+    <!-- Preloader -->
+    <div class="preloader">
+        <img src="{{ asset('images/logos/favicon.png') }}" alt="loader" class="lds-ripple img-fluid" />
+    </div>
+    <div id="main-wrapper">
+        <div
+            class="position-relative overflow-hidden auth-bg min-vh-100 w-100 d-flex align-items-center justify-content-center">
+            <div class="d-flex align-items-center justify-content-center w-100">
+                <div class="row justify-content-center w-100 my-5 my-xl-0">
+                    <div class="col-md-9 d-flex flex-column justify-content-center">
+                        <div class="card mb-0 bg-body auth-login m-auto w-100">
+                            <div class="row gx-0">
+                                <!-- ------------------------------------------------- -->
+                                <!-- Part 1 -->
+                                <!-- ------------------------------------------------- -->
+                                <div class="col-xl-6 border-end">
+                                    <div class="row justify-content-center py-4">
+                                        <div class="col-lg-11">
+                                            <div class="card-body">
+                                                <a href="../dark/index.html"
+                                                    class="text-nowrap logo-img d-block mb-4 w-100">
+                                                    <img src="{{ asset('images/logos/logo.svg') }}" class="dark-logo"
+                                                        alt="Logo-Dark" />
+                                                </a>
+                                                {{-- <h2 class="lh-base mb-4">Let's get you signed in</h2> --}}
+                                                {{-- <div class="row">
+                                                    <div class="col-6 mb-2 mb-sm-0">
+                                                        <a class="btn btn-white shadow-sm text-dark link-primary border fw-semibold d-flex align-items-center justify-content-center rounded-1 py-6"
+                                                            href="javascript:void(0)" role="button">
+                                                            <img src="{{ asset('images/svgs/facebook-icon.svg') }}"
+                                                                alt="matdash-img" class="img-fluid me-2" width="18"
+                                                                height="18">
+                                                            <span class="d-none d-xxl-inline-flex"> Sign in with
+                                                            </span>&nbsp; Facebook
+                                                        </a>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <a class="btn btn-white shadow-sm text-dark link-primary border fw-semibold d-flex align-items-center justify-content-center rounded-1 py-6"
+                                                            href="javascript:void(0)" role="button">
+                                                            <img src="{{ asset('images/svgs/google-icon.svg') }}"
+                                                                alt="matdash-img" class="img-fluid me-2" width="18"
+                                                                height="18">
+                                                            <span class="d-none d-xxl-inline-flex"> Sign in with
+                                                            </span>&nbsp; Google
+                                                        </a>
 
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+                                                    </div>
+                                                </div>
+                                                <div class="position-relative text-center my-4">
+                                                    <p
+                                                        class="mb-0 fs-12 px-3 d-inline-block bg-body z-index-5 position-relative">
+                                                        Or sign in with
+                                                        email
+                                                    </p>
+                                                    <span
+                                                        class="border-top w-100 position-absolute top-50 start-50 translate-middle"></span>
+                                                </div> --}}
+                                                
+                                                <form method="POST" action="{{ route('login') }}">
+                                                    @csrf
+                                                    
+                                                    <div class="mb-3">
+                                                        <label for="email" class="form-label" >Email
+                                                            Address</label>
+                                                        <input type="email" class="form-control"
+                                                            id="email" name="email" placeholder="Enter your email" :value="old('email')" autocomplete="username"
+                                                            aria-describedby="emailHelp" required autofocus>
+                                                        <x-input-error :messages="$errors->get('email')" class="mt-2" />
+                                                    </div>
+                                                    <div class="mb-4">
+                                                        <div class="d-flex align-items-center justify-content-between">
+                                                            <label for="password" class="form-label">Password</label>
+                                                            {{-- <a class="text-primary link-dark fs-2"
+                                                                href="../dark/authentication-forgot-password2.html">Forgot
+                                                                Password ?</a> --}}
+                                                        </div>
+                                                        <input type="password" class="form-control"
+                                                            id="password" name="password"
+                                                            placeholder="Enter your password" required autocomplete="current-password">
+                                                        <x-input-error :messages="$errors->get('password')" class="mt-2" />
+                                                    </div>
+                                                    <div class="d-flex align-items-center justify-content-between mb-4">
+                                                        <div class="form-check">
+                                                            <input class="form-check-input primary" type="checkbox"
+                                                                value="" id="remember_me" name="remember" checked>
+                                                            <label class="form-check-label text-dark" for="remember_me">
+                                                                {{ __('Keep me logged in') }}
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                    <button type="submit" class="btn btn-dark w-100 py-8 mb-4 rounded-1">Sign In</button>
+                                                    {{-- <div class="d-flex align-items-center">
+                                                        <p class="fs-12 mb-0 fw-medium">Don’t have an account yet?</p>
+                                                        <a class="text-primary fw-bolder ms-2"
+                                                            href="../dark/authentication-register2.html">Sign Up Now</a>
+                                                    </div> --}}
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <!-- ------------------------------------------------- -->
+                                <!-- Part 2 -->
+                                <!-- ------------------------------------------------- -->
+                                <div class="col-xl-6 d-none d-xl-block">
+                                    <div class="row justify-content-center align-items-start h-100">
+                                        <div class="col-lg-9">
+                                            <div id="auth-login" class="carousel slide auth-carousel mt-5 pt-4"
+                                                data-bs-ride="carousel">
+                                                {{-- <div class="carousel-indicators">
+                                                    <button type="button" data-bs-target="#auth-login"
+                                                        data-bs-slide-to="0" class="active" aria-current="true"
+                                                        aria-label="Slide 1"></button>
+                                                    <button type="button" data-bs-target="#auth-login"
+                                                        data-bs-slide-to="1" aria-label="Slide 2"></button>
+                                                    <button type="button" data-bs-target="#auth-login"
+                                                        data-bs-slide-to="2" aria-label="Slide 3"></button>
+                                                </div> --}}
+                                                <div class="carousel-inner">
+                                                    <div class="carousel-item active">
+                                                        <div
+                                                            class="d-flex align-items-center justify-content-center w-100 h-100 flex-column gap-9 text-center">
+                                                            <img src="{{ asset('images/backgrounds/login-side.png') }}"
+                                                                alt="login-side-img" width="300"
+                                                                class="img-fluid" />
+                                                            {{-- <h4 class="mb-0">Feature Rich 3D Charts</h4> --}}
+                                                            {{-- <p class="fs-12 mb-0">Donec justo tortor, malesuada vitae
+                                                                faucibus ac, tristique sit amet
+                                                                massa.
+                                                                Aliquam dignissim nec felis quis imperdiet.</p> --}}
+                                                            {{-- <a href="javascript:void(0)"
+                                                                class="btn btn-primary rounded-1">Learn More</a> --}}
+                                                        </div>
+                                                    </div>
+                                                    {{-- <div class="carousel-item">
+                                                        <div
+                                                            class="d-flex align-items-center justify-content-center w-100 h-100 flex-column gap-9 text-center">
+                                                            <img src="{{ asset('images/backgrounds/login-side.png') }}"
+                                                                alt="login-side-img" width="300"
+                                                                class="img-fluid" />
+                                                            <h4 class="mb-0">Feature Rich 2D Charts</h4>
+                                                            <p class="fs-12 mb-0">Donec justo tortor, malesuada vitae
+                                                                faucibus ac, tristique sit amet
+                                                                massa.
+                                                                Aliquam dignissim nec felis quis imperdiet.</p>
+                                                            <a href="javascript:void(0)"
+                                                                class="btn btn-primary rounded-1">Learn More</a>
+                                                        </div>
+                                                    </div>
+                                                    <div class="carousel-item">
+                                                        <div
+                                                            class="d-flex align-items-center justify-content-center w-100 h-100 flex-column gap-9 text-center">
+                                                            <img src="{{ asset('images/backgrounds/login-side.png') }}"
+                                                                alt="login-side-img" width="300"
+                                                                class="img-fluid" />
+                                                            <h4 class="mb-0">Feature Rich 1D Charts</h4>
+                                                            <p class="fs-12 mb-0">Donec justo tortor, malesuada vitae
+                                                                faucibus ac, tristique sit amet
+                                                                massa.
+                                                                Aliquam dignissim nec felis quis imperdiet.</p>
+                                                            <a href="javascript:void(0)"
+                                                                class="btn btn-primary rounded-1">Learn More</a>
+                                                        </div>
+                                                    </div> --}}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
-
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
-
-        <!-- Remember Me -->
-        <div class="block mt-4">
-            <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
-                <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
-            </label>
-        </div>
-
-        <div class="flex items-center justify-end mt-4">
-            @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
-                    {{ __('Forgot your password?') }}
-                </a>
-            @endif
-
-            <x-primary-button class="ms-3">
-                {{ __('Log in') }}
-            </x-primary-button>
-        </div>
-    </form>
+    </div>
+    <div class="dark-transparent sidebartoggler"></div>
 </x-guest-layout>

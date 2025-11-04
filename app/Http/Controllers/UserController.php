@@ -4,14 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    /**
-     * Create a new controller instance.
-     */
     public function __construct()
     {
         $this->middleware(['auth']);
@@ -21,81 +19,126 @@ class UserController extends Controller
     {
         $this->authorize('view-users');
         $users = User::all();
-        return view('users.index', compact('users'));
+        return view('user-and-permissions.users.index', compact('users'));
     }
 
     public function create()
     {
         $this->authorize('create-users');
         $roles = Role::all();
-        return view('users.create', compact('roles'));
+        return view('user-and-permissions.users.create', compact('roles'));
     }
 
     public function store(Request $request)
     {
         $this->authorize('create-users');
-        
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-            'roles' => 'required|array'
-        ]);
 
-        $user = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
-        ]);
+        try {
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|string|email|max:255|unique:users',
+                'password' => 'required|string|min:8|confirmed',
+                'roles' => 'required'
+            ]);
 
-        $user->syncRoles($validated['roles']);
+            DB::transaction(function () use ($validated) {
+                // Create user
+                $user = User::create([
+                    'name' => $validated['name'],
+                    'email' => $validated['email'],
+                    'password' => Hash::make($validated['password']),
+                ]);
 
-        return redirect()->route('users.index')
-            ->with('success', 'User created successfully');
+                // Assign roles
+                $user->syncRoles($validated['roles']);
+            });
+
+            // Success response
+            return redirect()->route('users.index')
+                ->with('success', 'User created successfully');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Laravel already handles redirecting back with errors
+            throw $e;
+        } catch (\Throwable $e) {
+            // Log for debugging
+            \Log::error('User creation failed: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            // Friendly fail message
+            return redirect()->route('users.index')
+                ->with('error', 'Something went wrong while creating the user!');
+        }
     }
+
 
     public function edit(User $user)
     {
         $this->authorize('edit-users');
         $roles = Role::all();
-        return view('users.edit', compact('user', 'roles'));
+        return view('user-and-permissions.users.edit', compact('user', 'roles'));
     }
 
     public function update(Request $request, User $user)
     {
         $this->authorize('edit-users');
 
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
-            'roles' => 'required|array'
-        ]);
-
-        $user->update([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-        ]);
-
-        if ($request->filled('password')) {
-            $request->validate([
-                'password' => 'string|min:8|confirmed',
+        try {
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+                'roles' => 'required'
             ]);
-            $user->update([
-                'password' => Hash::make($request->password),
+
+            DB::transaction(function () use ($validated, $request, $user) {
+                // Update basic info
+                $user->update([
+                    'name' => $validated['name'],
+                    'email' => $validated['email'],
+                ]);
+
+                // Update password if provided
+                if ($request->filled('password')) {
+                    $request->validate([
+                        'password' => 'string|min:8|confirmed',
+                    ]);
+                    $user->update([
+                        'password' => Hash::make($request->password),
+                    ]);
+                }
+
+                // Update role
+                $user->syncRoles($validated['roles']);
+            });
+
+            return redirect()->route('users.index')
+                ->with('success', 'User updated successfully');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Laravel will auto-redirect back with errors, no need to handle manually
+            throw $e;
+        } catch (\Throwable $e) {
+            \Log::error('User update failed: ' . $e->getMessage(), [
+                'user_id' => $user->id,
+                'trace' => $e->getTraceAsString(),
             ]);
+
+            return redirect()->route('users.index')
+                ->with('error', 'Something went wrong while updating the user!');
         }
-
-        $user->syncRoles($validated['roles']);
-
-        return redirect()->route('users.index')
-            ->with('success', 'User updated successfully');
     }
+
 
     public function destroy(User $user)
     {
         $this->authorize('delete-users');
-        $user->delete();
-        return redirect()->route('users.index')
-            ->with('success', 'User deleted successfully');
+
+        try {
+            DB::transaction(fn() => $user->delete());
+            return back()->with('success', 'User deleted successfully');
+        } catch (\Throwable $e) {
+            \Log::error("User deletion failed: {$e->getMessage()}", ['id' => $user->id]);
+            return back()->with('error', 'Failed to delete user!');
+        }
     }
+
 }
