@@ -78,7 +78,7 @@ class ProductController extends Controller
 
     public function update(Request $request, Product $product)
     {
-        $this->authorize('update-products');
+        $this->authorize('edit-products');
 
         DB::transaction(function () use ($request, $product) {
 
@@ -140,6 +140,21 @@ class ProductController extends Controller
         $product->restore();
 
         return back()->with('success', 'Product restored successfully.');
+    }
+
+    public function getCartProducts(Request $request)
+    {
+        $ids = $request->query('ids', []);
+
+        if (!is_array($ids) || empty($ids)) {
+            return response()->json([]);
+        }
+
+        $products = Product::with('descriptions')
+            ->whereIn('id', $ids)
+            ->get();
+
+        return response()->json($products);
     }
 
 }

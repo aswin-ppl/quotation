@@ -151,97 +151,9 @@
                                     <span class="cartCount badge text-bg-primary rounded-4 px-3 py-1 lh-sm">0</span>
                                 </div>
                                 <div id="cartDropdown" class="message-body" data-simplebar>
-                                    {{-- <a href="javascript:void(0)"
-                                        class="py-6 px-7 d-flex align-items-center dropdown-item gap-3">
-                                        <span
-                                            class="flex-shrink-0 bg-danger-subtle rounded-circle round d-flex align-items-center justify-content-center fs-6 text-danger">
-                                            <iconify-icon icon="solar:widget-3-line-duotone"></iconify-icon>
-                                        </span>
-                                        <div class="w-75">
-                                            <div class="d-flex align-items-center justify-content-between">
-                                                <h6 class="mb-1 fw-semibold">product_name</h6>
-                                            </div>
-                                            <span class="d-block text-truncate text-truncate fs-11">product_price</span>
-                                        </div>
-                                    </a>
-                                    <a href="javascript:void(0)"
-                                        class="py-6 px-7 d-flex align-items-center dropdown-item gap-3">
-                                        <span
-                                            class="flex-shrink-0 bg-primary-subtle rounded-circle round d-flex align-items-center justify-content-center fs-6 text-primary">
-                                            <iconify-icon icon="solar:calendar-line-duotone"></iconify-icon>
-                                        </span>
-                                        <div class="w-75">
-                                            <div class="d-flex align-items-center justify-content-between">
-                                                <h6 class="mb-1 fw-semibold">Event today</h6>
-                                                <span class="d-block fs-2">9:15 AM</span>
-                                            </div>
-                                            <span class="d-block text-truncate text-truncate fs-11">Just a
-                                                reminder that you have event</span>
-                                        </div>
-                                    </a>
-                                    <a href="javascript:void(0)"
-                                        class="py-6 px-7 d-flex align-items-center dropdown-item gap-3">
-                                        <span
-                                            class="flex-shrink-0 bg-secondary-subtle rounded-circle round d-flex align-items-center justify-content-center fs-6 text-secondary">
-                                            <iconify-icon icon="solar:settings-line-duotone"></iconify-icon>
-                                        </span>
-                                        <div class="w-75">
-                                            <div class="d-flex align-items-center justify-content-between">
-                                                <h6 class="mb-1 fw-semibold">Settings</h6>
-                                                <span class="d-block fs-2">4:36 PM</span>
-                                            </div>
-                                            <span class="d-block text-truncate text-truncate fs-11">You can
-                                                customize this template as you want</span>
-                                        </div>
-                                    </a>
-                                    <a href="javascript:void(0)"
-                                        class="py-6 px-7 d-flex align-items-center dropdown-item gap-3">
-                                        <span
-                                            class="flex-shrink-0 bg-warning-subtle rounded-circle round d-flex align-items-center justify-content-center fs-6 text-warning">
-                                            <iconify-icon icon="solar:widget-4-line-duotone"></iconify-icon>
-                                        </span>
-                                        <div class="w-75">
-                                            <div class="d-flex align-items-center justify-content-between">
-                                                <h6 class="mb-1 fw-semibold">Launch Admin</h6>
-                                                <span class="d-block fs-2">9:30 AM</span>
-                                            </div>
-                                            <span class="d-block text-truncate text-truncate fs-11">Just
-                                                see the my new admin!</span>
-                                        </div>
-                                    </a>
-                                    <a href="javascript:void(0)"
-                                        class="py-6 px-7 d-flex align-items-center dropdown-item gap-3">
-                                        <span
-                                            class="flex-shrink-0 bg-primary-subtle rounded-circle round d-flex align-items-center justify-content-center fs-6 text-primary">
-                                            <iconify-icon icon="solar:calendar-line-duotone"></iconify-icon>
-                                        </span>
-                                        <div class="w-75">
-                                            <div class="d-flex align-items-center justify-content-between">
-                                                <h6 class="mb-1 fw-semibold">Event today</h6>
-                                                <span class="d-block fs-2">9:15 AM</span>
-                                            </div>
-                                            <span class="d-block text-truncate text-truncate fs-11">Just a
-                                                reminder that you have event</span>
-                                        </div>
-                                    </a>
-                                    <a href="javascript:void(0)"
-                                        class="py-6 px-7 d-flex align-items-center dropdown-item gap-3">
-                                        <span
-                                            class="flex-shrink-0 bg-secondary-subtle rounded-circle round d-flex align-items-center justify-content-center fs-6 text-secondary">
-                                            <iconify-icon icon="solar:settings-line-duotone"></iconify-icon>
-                                        </span>
-                                        <div class="w-75">
-                                            <div class="d-flex align-items-center justify-content-between">
-                                                <h6 class="mb-1 fw-semibold">Settings</h6>
-                                                <span class="d-block fs-2">4:36 PM</span>
-                                            </div>
-                                            <span class="d-block text-truncate text-truncate fs-11">You can
-                                                customize this template as you want</span>
-                                        </div>
-                                    </a> --}}
                                 </div>
                                 <div class="py-6 px-7 mb-1">
-                                    <a href="{{ route('quotation.view') }}" class="btn btn-primary w-100">Convert to Quotation</a>
+                                    <a href="{{ route('quotation.index') }}" class="btn btn-primary w-100">Convert to Quotation</a>
                                 </div>
 
                             </div>
