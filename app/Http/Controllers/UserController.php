@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreUserRequest;
+use App\Http\Requests\UpdateCustomerRequest;
+use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -29,43 +32,26 @@ class UserController extends Controller
         return view('user-and-permissions.users.create', compact('roles'));
     }
 
-    public function store(Request $request)
+    public function store(StoreUserRequest $request)
     {
-        $this->authorize('create-users');
-
         try {
-            $validated = $request->validate([
-                'name' => 'required|string|max:255',
-                'email' => 'required|string|email|max:255|unique:users',
-                'password' => 'required|string|min:8|confirmed',
-                'roles' => 'required'
-            ]);
-
-            DB::transaction(function () use ($validated) {
-                // Create user
+            DB::transaction(function () use ($request) {
                 $user = User::create([
-                    'name' => $validated['name'],
-                    'email' => $validated['email'],
-                    'password' => Hash::make($validated['password']),
+                    'name' => $request->name,
+                    'email' => $request->email,
+                    'password' => Hash::make($request->password),
                 ]);
 
-                // Assign roles
-                $user->syncRoles($validated['roles']);
+                $user->syncRoles($request->roles);
             });
 
-            // Success response
-            return redirect()->route('users.index')
+            return redirect()->route('users.create')
                 ->with('success', 'User created successfully');
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            // Laravel already handles redirecting back with errors
-            throw $e;
         } catch (\Throwable $e) {
-            // Log for debugging
             \Log::error('User creation failed: ' . $e->getMessage(), [
                 'trace' => $e->getTraceAsString(),
             ]);
 
-            // Friendly fail message
             return redirect()->route('users.index')
                 ->with('error', 'Something went wrong while creating the user!');
         }
@@ -79,40 +65,26 @@ class UserController extends Controller
         return view('user-and-permissions.users.edit', compact('user', 'roles'));
     }
 
-    public function update(Request $request, User $user)
+    public function update(UpdateUserRequest $request, User $user)
     {
-        $this->authorize('edit-users');
-
         try {
-            $validated = $request->validate([
-                'name' => 'required|string|max:255',
-                'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
-                'roles' => 'required'
-            ]);
-
-            DB::transaction(function () use ($validated, $request, $user) {
+            DB::transaction(function () use ($request, $user) {
                 $user->update([
-                    'name' => $validated['name'],
-                    'email' => $validated['email'],
+                    'name' => $request->name,
+                    'email' => $request->email,
                 ]);
 
                 if ($request->filled('password')) {
-                    $request->validate([
-                        'password' => 'string|min:8|confirmed',
-                    ]);
                     $user->update([
                         'password' => Hash::make($request->password),
                     ]);
                 }
 
-                // Update role
-                $user->syncRoles($validated['roles']);
+                $user->syncRoles($request->roles);
             });
 
             return redirect()->route('users.index')
                 ->with('success', 'User updated successfully');
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            throw $e;
         } catch (\Throwable $e) {
             \Log::error('User update failed: ' . $e->getMessage(), [
                 'user_id' => $user->id,
@@ -123,7 +95,6 @@ class UserController extends Controller
                 ->with('error', 'Something went wrong while updating the user!');
         }
     }
-
 
     public function destroy(User $user)
     {

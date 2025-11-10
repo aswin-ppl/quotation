@@ -132,7 +132,7 @@
     <script src="{{ asset('libs/sweetalert2/dist/sweetalert2.min.js') }}"></script>
     <script src="{{ asset('js/forms/sweet-alert.init.js') }}"></script>
 
-    {{-- <script>
+    <script>
         // swal
         $(document).on('click', '.btn-delete', function(e) {
             e.preventDefault();
@@ -169,5 +169,5 @@
         @if (session('error'))
             toastr.error("{{ session('error') }}", "Error");
         @endif
-    </script> --}}
+    </script>
 @endsection

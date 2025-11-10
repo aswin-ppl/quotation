@@ -14,6 +14,12 @@
         #to-address {
             white-space: pre-line;
         }
+
+        .quotation-preview-wrapper {
+            border: 1px solid #1e40af !important;
+            border-radius: 10px;
+            background: white;
+        }
     </style>
 @endsection
 @section('content')
@@ -64,10 +70,8 @@
                             </div>
 
                             <div class="col-md-6">
-                                <div class="d-flex mb-3 align-items-center">
-                                    <h4 class="card-title mb-0">Enter To Address</h4>
-                                </div>
-                                <div id="address-container" class="mt-3">
+                                <div id="address-container">
+                                    <label for="to-address">Enter To Address</label>
                                     {{-- optional address dropdown (shown only if >1 address) --}}
                                     <div id="address-select-wrapper" class="mb-3 d-none">
                                         <label for="addressSelect" class="form-label">Select Address</label>
@@ -85,7 +89,8 @@
                         </div>
                     </div>
 
-                    <button class="btn btn-primary mt-3" id="generatePdf">Generate Preview</button>
+                    <button class="btn btn-primary mt-3" id="generatePreview">Generate Preview</button>
+                    {{-- <button class="btn btn-primary mt-3" id="generatePdf">Generate Preview</button> --}}
 
                     {{-- <a href="{{ route('quotation.download', $quotation->id) }}" class="download-btn" target="_blank">
                         <i class="fas fa-file-pdf"></i> Download PDF
@@ -122,8 +127,13 @@
             <div class="card overflow-auto text-dark" id="pdf_content" style="display: none;color: black !important;"></div>
             <!-- Hide till ready -->
 
+            <div class="quotation-preview-wrapper" style="width:100%; height:80vh; border:none;">
+                <iframe id="quotation-preview-container" style="width:100%; height:100%; border:none;"></iframe>
+            </div>
 
-            <button id="downloadPdf" class="btn btn-primary" style="display: none;">Download PDF</button>
+            {{-- <div id="quotation-preview-container"></div>    --}}
+
+            <button id="downloadPdf" class="btn btn-primary">Download PDF</button>
         </div>
     </div>
 @endsection
@@ -137,6 +147,29 @@
     <script>
         const STORAGE_URL = '{{ asset('storage/') }}/';
         window.jsPDF = window.jspdf.jsPDF;
+
+        const iframe = document.getElementById('quotation-preview-container');
+
+        iframe.onload = function() {
+            // Get iframe's document safely
+            const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+
+            // Make sure the iframe is same-origin, otherwise you can’t touch it
+            if (!iframeDoc) {
+                console.error("Iframe content not accessible (different origin)");
+                return;
+            }
+
+            // Select all images *inside the iframe*
+            const imgs = iframeDoc.querySelectorAll("img");
+
+            // Remove that cursed absolute path
+            imgs.forEach(img => {
+                img.src = img.src.replace(/^.*\/storage\//, '/storage/');
+            });
+
+        };
+
 
         $(function() {
 
@@ -181,7 +214,7 @@
                         // Single address record - check if it has both lines
                         const addr = addresses[0];
                         if (addr.address_line_1 && addr.address_line_2 && addr.address_line_2
-                        .trim() !== '') {
+                            .trim() !== '') {
                             needsAddressLineChoice = true;
                             addressData = addr;
                         } else {
@@ -329,7 +362,7 @@
 
                     if (products.length === 0) {
                         tableBody.innerHTML = `<tr><td colspan="5" class="text-center text-danger py-4">
-            Some products no longer exist 🫠
+            Some products no longer exist 
         </td></tr>`;
                         localStorage.removeItem('cart');
                         updateCartCount(0);
@@ -372,7 +405,7 @@
                 } catch (err) {
                     console.error('Error fetching cart data:', err);
                     tableBody.innerHTML =
-                        `<tr><td colspan="5" class="text-center text-danger py-4">Failed to load cart 🫠</td></tr>`;
+                        `<tr><td colspan="5" class="text-center text-danger py-4">Failed to load cart </td></tr>`;
                 }
             }
 
@@ -404,6 +437,85 @@
             });
 
             renderCart();
+
+            $('#generatePreview').on('click', async function() {
+                const customerId = $('#customer').val();
+                const cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+                if (!customerId) {
+                    toastr.error("Please select a customer", "Missing Data");
+                    return;
+                }
+                if (cart.length === 0) {
+                    toastr.error("Your cart is empty", "Missing Items");
+                    return;
+                }
+
+                // Prepare items data
+                const items = cart.map(item => {
+                    // Convert descriptions array → { key: value }
+                    const description = {};
+                    if (Array.isArray(item.descriptions)) {
+                        item.descriptions.forEach(desc => {
+                            description[desc.key] = desc.value;
+                        });
+                    }
+
+                    return {
+                        product_id: item.id,
+                        product_name: item.name,
+                        size_mm: item.size_mm || '',
+                        r_units: item.r_units || '',
+                        description: description, // proper JSON object now
+                        quantity: item.qty || 1,
+                        unit_price: parseFloat(item.product_price) || 0,
+                        total: ((item.qty || 1) * parseFloat(item.product_price || 0))
+                    };
+                });
+
+
+                try {
+                    const response = await fetch("{{ route('quotation.store') }}", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({
+                            customer_id: customerId,
+                            items: items,
+                            defaultAddress: defaultAddress
+                        })
+                    });
+
+
+                    if (!response.ok) {
+                        throw new Error('Failed to store quotation');
+                    }
+
+                    const result = await response.json();
+                    console.log(result);
+                    const quotationId = result.id;
+
+                    // Now hit the preview route
+                    const previewUrl = `/quotation/${quotationId}/${defaultAddress}/preview`;
+
+                    const previewResponse = await fetch(previewUrl);
+                    if (!previewResponse.ok) {
+                        throw new Error('Failed to fetch quotation preview');
+                    }
+
+                    const previewHTML = await previewResponse.text();
+
+                    // Drop it into your container
+                    // document.getElementById('quotation-preview-container').innerHTML = previewHTML;
+                    document.getElementById('quotation-preview-container').src = previewUrl;
+                } catch (err) {
+                    console.error(err);
+                    toastr.error("Failed to generate quotation", "Error");
+                }
+
+            });
 
             $('#generatePdf').on('click', async function() {
                 const customerId = $('#customer').val();
@@ -582,7 +694,7 @@
 
                     if (products.length === 0) {
                         tableBody.innerHTML = `<tr><td colspan="5" class="text-center text-danger py-4">
-                Some products no longer exist 🫠
+                Some products no longer exist 
             </td></tr>`;
                         localStorage.removeItem('cart');
                         updateCartCount(0);
@@ -625,7 +737,7 @@
                 } catch (err) {
                     console.error('Error fetching cart data:', err);
                     tableBody.innerHTML =
-                        `<tr><td colspan="5" class="text-center text-danger py-4">Failed to load cart 🫠</td></tr>`;
+                        `<tr><td colspan="5" class="text-center text-danger py-4">Failed to load cart </td></tr>`;
                 }
             }
 

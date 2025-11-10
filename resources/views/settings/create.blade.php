@@ -40,77 +40,124 @@
 
                             <div class="mb-3">
                                 <label for="company_name" class="form-label">Company Name</label>
-                                <input type="text" name="company_name" id="company_name" class="form-control"
-                                    value="{{ $settings['company_name'] ?? '' }}">
+                                <input type="text" name="company_name" id="company_name"
+                                    class="form-control @error('company_name') is-invalid @enderror"
+                                    value="{{ $settings['company_name'] ?? '' }}" required>
+                                @error('company_name')
+                                    <div class="invalid-feedback d-block">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
                             </div>
 
                             <div class="col-md-6 mb-3">
                                 <label for="company_mobile" class="form-label">Mobile</label>
-                                <input type="text" name="company_mobile" id="company_mobile" class="form-control"
-                                    value="{{ $settings['company_mobile'] ?? '' }}">
+                                <input type="text" name="company_mobile" id="company_mobile"
+                                    class="form-control @error('company_mobile') is-invalid @enderror"
+                                    value="{{ $settings['company_mobile'] ?? '' }}" required>
+                                @error('company_mobile')
+                                    <div class="invalid-feedback d-block">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
                             </div>
 
                             <div class="col-md-6 mb-3">
                                 <label for="company_email" class="form-label">Email</label>
-                                <input type="email" name="company_email" id="company_email" class="form-control"
-                                    value="{{ $settings['company_email'] ?? '' }}">
+                                <input type="email" name="company_email" id="company_email"
+                                    class="form-control @error('company_email') is-invalid @enderror"
+                                    value="{{ $settings['company_email'] ?? '' }}" required>
+                                @error('company_email')
+                                    <div class="invalid-feedback d-block">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
                             </div>
 
                             {{-- Pincode --}}
                             <div class="col-md-6 mb-4">
                                 <label for="pincode">Pincode</label>
-                                <select id="pincode" name="company_pincode" class="form-select">
+                                <select id="pincode" name="company_pincode"
+                                    class="form-select @error('company_pincode') is-invalid @enderror" required>
                                     @if (!empty($settings['company_pincode']))
                                         <option value="{{ $settings['company_pincode'] }}" selected>
                                             {{ $settings['company_pincode_value'] ?? 'Current Pincode' }}
                                         </option>
                                     @endif
                                 </select>
+                                @error('company_pincode')
+                                    <div class="invalid-feedback d-block">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
                             </div>
 
                             {{-- City --}}
                             <div class="col-md-6 mb-4">
                                 <label for="city">City</label>
 
-                                <select id="city" name="company_city" class="form-select">
+                                <select id="city" name="company_city"
+                                    class="form-select @error('company_city') is-invalid @enderror" required>
                                     @if (!empty($settings['company_city']))
                                         <option value="{{ $settings['company_city'] }}" selected>
                                             {{ $settings['company_city_name'] ?? 'Current City' }}
                                         </option>
                                     @endif
                                 </select>
+                                @error('company_city_name')
+                                    <div class="invalid-feedback d-block">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
                             </div>
 
                             {{-- District --}}
                             <div class="col-md-6 mb-4">
                                 <label for="district">District</label>
-                                <select id="district" name="company_district" class="form-select">
+                                <select id="district" name="company_district"
+                                    class="form-select @error('company_district') is-invalid @enderror" required>
                                     @if (!empty($settings['company_district']))
                                         <option value="{{ $settings['company_district'] }}" selected>
                                             {{ $settings['company_district_name'] ?? 'Current District' }}
                                         </option>
                                     @endif
                                 </select>
+                                @error('company_city_name')
+                                    <div class="invalid-feedback d-block">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
                             </div>
 
                             {{-- State --}}
                             <div class="col-md-6 mb-4">
                                 <label for="state">State</label>
-                                <select id="state" name="company_state" class="form-select">
+                                <select id="state" name="company_state"
+                                    class="form-select @error('company_state') is-invalid @enderror" required>
                                     @if (!empty($settings['company_state']))
                                         <option value="{{ $settings['company_state'] }}" selected>
                                             {{ $settings['company_state_name'] ?? 'Current State' }}
                                         </option>
                                     @endif
                                 </select>
+                                @error('company_state_name')
+                                    <div class="invalid-feedback d-block">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
 
                             </div>
 
                             {{-- Address 1 --}}
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <textarea class="form-control" rows="3" name="company_address" placeholder="Door No, Street name"
-                                        >{{ $settings['company_address'] ?? '' }}</textarea>
+                                    <textarea class="form-control @error('company_address') is-invalid @enderror" rows="3" name="company_address"
+                                        placeholder="Door No, Street name" required>{{ $settings['company_address'] ?? '' }}</textarea>
+                                    @error('company_address')
+                                        <div class="invalid-feedback d-block">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
                                 </div>
                             </div>
 

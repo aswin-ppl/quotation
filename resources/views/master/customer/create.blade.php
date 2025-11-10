@@ -14,7 +14,7 @@
 @section('content')
     @php
         $parent_title = 'Master';
-        $page_title = 'Product';
+        $page_title = 'Customers';
     @endphp
     <div class="body-wrapper">
         <div class="container-fluid">
@@ -46,76 +46,128 @@
                             {{-- Name --}}
                             <div class="col-md-6">
                                 <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" id="name" name="name"
-                                        value="{{ old('name') }}" required>
+                                    <input type="text" class="form-control @error('name') is-invalid @enderror"
+                                        id="name" name="name" value="{{ old('name') }}" required>
                                     <label for="name">Name</label>
+                                    @error('name')
+                                        <div class="invalid-feedback d-block">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
                                 </div>
                             </div>
 
                             {{-- Email --}}
                             <div class="col-md-6">
                                 <div class="form-floating mb-3">
-                                    <input type="email" class="form-control" id="email" name="email"
-                                        value="{{ old('email') }}">
+                                    <input type="email" class="form-control @error('email') is-invalid @enderror"
+                                        id="email" name="email" value="{{ old('email') }}" required>
                                     <label for="email">Email</label>
+                                    @error('email')
+                                        <div class="invalid-feedback d-block">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
                                 </div>
                             </div>
 
                             {{-- Mobile --}}
                             <div class="col-md-6">
                                 <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" id="mobile" name="mobile"
-                                        value="{{ old('mobile') }}" required>
+                                    <input type="text" class="form-control @error('mobile') is-invalid @enderror"
+                                        id="mobile" name="mobile" value="{{ old('mobile') }}" required>
                                     <label for="mobile">Mobile</label>
+                                    @error('mobile')
+                                        <div class="invalid-feedback d-block">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
                                 </div>
                             </div>
 
                             {{-- Status --}}
                             <div class="col-md-6 mb-4">
-                                <select class="form-select" id="status" name="status" required>
-                                    <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>Active</option>
+                                <select class="form-select @error('status') is-invalid @enderror" id="status"
+                                    name="status" required>
+                                    <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>Active
+                                    </option>
                                     <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>Inactive
                                     </option>
                                 </select>
+                                @error('status')
+                                    <div class="invalid-feedback d-block">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
                             </div>
 
                             {{-- State --}}
                             <div class="col-md-6 mb-4">
                                 <label for="state">State *</label>
-                                <select id="state" name="state_id" class="form-select" required>
+                                <select id="state" name="state_id"
+                                    class="form-select @error('state_id') is-invalid @enderror" required>
                                     <option value="">Select State</option>
                                 </select>
+                                @error('state_id')
+                                    <div class="invalid-feedback d-block">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
                             </div>
 
                             {{-- District --}}
                             <div class="col-md-6 mb-4">
                                 <label for="district">District *</label>
-                                <select id="district" name="district_id" class="form-select" required>
+                                <select id="district" name="district_id"
+                                    class="form-select @error('district_id') is-invalid @enderror" required>
                                     <option value="">Select District</option>
                                 </select>
+                                @error('district_id')
+                                    <div class="invalid-feedback d-block">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
                             </div>
 
                             {{-- City --}}
                             <div class="col-md-6 mb-4">
                                 <label for="city">City *</label>
-                                <select id="city" name="city_id" class="form-select" required>
+                                <select id="city" name="city_id"
+                                    class="form-selec @error('city_id') is-invalid @enderror" required>
                                     <option value="">Select City</option>
                                 </select>
+                                @error('city_id')
+                                    <div class="invalid-feedback d-block">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
                             </div>
 
                             {{-- Pincode --}}
                             <div class="col-md-6 mb-4">
                                 <label for="pincode">Pincode *</label>
-                                <select id="pincode" name="pincode_id" class="form-select" required>
+                                <select id="pincode" name="pincode_id"
+                                    class="form-select @error('pincode_id') is-invalid @enderror" required>
                                     <option value="">Select Pincode</option>
                                 </select>
+                                @error('pincode_id')
+                                    <div class="invalid-feedback d-block">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
                             </div>
 
                             {{-- Address 1 --}}
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="address_line_1">Address Line 1 *</label>
-                                    <textarea class="form-control" rows="3" name="address_line_1" required>{{ old('address_line_1') }}</textarea>
+                                    <textarea class="form-control @error('address_line_1') is-invalid @enderror" rows="3" name="address_line_1"
+                                        required>{{ old('address_line_1') }}</textarea>
+                                    @error('address_line_1')
+                                        <div class="invalid-feedback d-block">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
                                 </div>
                             </div>
 
@@ -135,14 +187,15 @@
                             </div>
                         </div>
                     </form>
-
                 </div>
             </div>
         </div>
     </div>
 @endsection
 @section('scripts')
+    <script src="{{ asset('js/plugins/toastr-init.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
     <script>
         $(document).ready(function() {
             $(document).ready(function() {
@@ -290,6 +343,21 @@
                 }
             });
 
+            // toaster
+            toastr.options = {
+                "closeButton": true,
+                "progressBar": true,
+                "positionClass": "toast-top-right",
+                "timeOut": "3000"
+            };
+
+            @if (session('success'))
+                toastr.success("{{ session('success') }}", "Success");
+            @endif
+
+            @if (session('error'))
+                toastr.error("{{ session('error') }}", "Error");
+            @endif
         });
     </script>
 @endsection

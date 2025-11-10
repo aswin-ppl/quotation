@@ -24,11 +24,11 @@ class QuotationController extends Controller
         $quotation = Quotation::with(['items.product', 'customer.addresses'])
             ->findOrFail($id);
         $settings = Setting::getCompanyDetails();
-        $pdf = Pdf::loadView('pdf.quotation', compact('quotation', 'settings','defaultAddress'));
-        
-        // return view('pdf.quotation', compact('quotation', 'settings','defaultAddress'));
-        
-        return $pdf->download('quotation_' . $quotation->id . '.pdf');
+        $pdf = Pdf::loadView('pdf.quotation', compact('quotation', 'settings', 'defaultAddress'));
+
+        return view('pdf.quotation', compact('quotation', 'settings', 'defaultAddress'));
+
+        // return $pdf->download('quotation_' . $quotation->id . '.pdf');
     }
 
     public function download($id)
@@ -46,10 +46,14 @@ class QuotationController extends Controller
         }
     }
 
-    public function preview($id)
+    public function preview($id, $defaultAddress)
     {
-        $quotation = Quotation::with('items.product')->findOrFail($id);
-        return view('pdf.quotation', compact('quotation'));
+        $quotation = Quotation::with(['items.product', 'customer.addresses'])
+            ->findOrFail($id);
+        $settings = Setting::getCompanyDetails();
+        $pdf = Pdf::loadView('pdf.quotation', compact('quotation', 'settings', 'defaultAddress'));
+
+        return view('pdf.quotation', compact('quotation', 'settings', 'defaultAddress'));
     }
 
     public function store(Request $request)
@@ -102,6 +106,7 @@ class QuotationController extends Controller
 
             return response()->json([
                 'success' => true,
+                'id'=> $quotation->id,
                 'redirect' => route('quotation.pdf', [$quotation->id, $request->defaultAddress]),
             ]);
         } catch (\Throwable $th) {

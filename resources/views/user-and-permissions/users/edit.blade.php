@@ -52,8 +52,7 @@
                             <div class="col-md-6">
                                 <div class="form-floating mb-3">
                                     <input type="email" class="form-control @error('email') is-invalid @enderror"
-                                        id="email" name="email" value="{{ old('email', $user->email) }}" required
-                                        autocomplete="email">
+                                        id="email" name="email" value="{{ old('email', $user->email) }}" autocomplete="email" required>
                                     <label for="email">Email</label>
                                     @error('email')
                                         <span class="invalid-feedback" role="alert">
@@ -78,7 +77,6 @@
                                 </div>
                             </div>
 
-
                             {{-- Confirm Password --}}
                             <div class="col-md-6">
                                 <div class="form-floating mb-3">
@@ -94,7 +92,7 @@
                                     <div class="form-group mb-4">
                                         <label class="mr-sm-2" for="inlineFormCustomSelect">Select</label>
                                         <select class="form-select mr-sm-2" name="roles" id="inlineFormCustomSelect">
-                                            <option selected="">Choose roles...</option>
+                                            <option selected="" value="">Choose roles...</option>
                                             @foreach ($roles as $role)
                                                 <option value="{{ $role->name }}"
                                                     {{ $user->hasRole($role->name) ? 'selected' : '' }}>

@@ -24,6 +24,14 @@
             line-height: 1.6;
         }
 
+        /* Main Container with Border */
+        .page-container {
+            /* border: 2px solid #1e40af; */
+            border: 2px solid transparent;
+            padding: 20px;
+            margin: 0 auto;
+        }
+
         /* Professional Header with Brand Identity */
         .header-wrapper {
             border-bottom: 3px solid #1e40af;
@@ -407,6 +415,14 @@
             page-break-after: always;
         }
 
+        /* Page Break Container for Multi-page */
+        .page-break-container {
+            border: 2px solid #1e40af;
+            padding: 20px;
+            margin: 0 auto;
+            margin-top: 10mm;
+        }
+
         /* Utility Classes */
         .text-right {
             text-align: right;
@@ -431,196 +447,200 @@
 </head>
 
 <body>
-    <!-- Professional Header -->
-    <div class="header-wrapper">
-        <div class="header-top">
-            <div class="company-info">
-                <h1>{{ $settings['company_name'] ?? '' }}</h1>
-                <p class="company-tagline">Your Trusted Business Partner</p>
-            </div>
-            <div class="quotation-info">
-                <div class="quotation-badge">QUOTATION</div>
-                <div class="quotation-meta">
-                    <p><strong>Quote ID:</strong> {{ $quotation->id }}</p>
-                    <p><strong>Date:</strong> {{ \Carbon\Carbon::parse($quotation->date)->format('d M Y') }}</p>
-                    <p><strong>Valid Until:</strong>
-                        {{ \Carbon\Carbon::parse($quotation->date)->addDays(30)->format('d M Y') }}</p>
+    <div class="page-container">
+        <!-- Professional Header -->
+        <div class="header-wrapper">
+            <div class="header-top">
+                <div class="company-info">
+                    <h1>{{ $settings['company_name'] ?? '' }}</h1>
+                    <p class="company-tagline">Your Trusted Business Partner</p>
+                </div>
+                <div class="quotation-info">
+                    <div class="quotation-badge">QUOTATION</div>
+                    <div class="quotation-meta">
+                        <p><strong>Quote ID:</strong> {{ $quotation->id }}</p>
+                        <p><strong>Date:</strong> {{ \Carbon\Carbon::parse($quotation->date)->format('d M Y') }}</p>
+                        <p><strong>Valid Until:</strong>
+                            {{ \Carbon\Carbon::parse($quotation->date)->addDays(30)->format('d M Y') }}</p>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Address Section -->
-    <div class="address-section">
-        <div class="address-box">
-            <h3>Bill To</h3>
-            <span class="company-name">{{ $quotation->customer->name ?? 'Unknown Customer' }}</span>
-            <p>
-                @php
-                    $address = $quotation->customer->addresses->first();
-                @endphp
-                @if ($address)
-                    @if ($defaultAddress == 1)
-                        {{ $address->address_line_1 }},<br>
-                    @else
-                        {{ $address->address_line_2 }},<br>
-                    @endif
-                    {{ $address->city->name }}, {{ $address->district->name }}<br>
-                    {{ $address->state->name }} - {{ $address->pincode->code }}
-                @else
-                    <em>No address found</em>
-                @endif
-            </p>
-        </div>
-
-        <div class="address-box">
-            <h3>From</h3>
-
-            <span class="company-name">{{ $settings['company_name'] ?? '' }}</span>
-            <p>
-                {{ $settings['company_address'] ?? 'Company Street' }}<br>
-                {{ $settings['company_city_name'] ?? 'City' }}, {{ $settings['company_district_name'] ?? 'District' }}<br>
-                {{ $settings['company_state_name'] ?? 'State' }} - {{ $settings['company_pincode_value'] ?? '000000' }}<br>
-                <strong>Email:</strong> {{ $settings['company_email'] ?? 'info@company.com' }}<br>
-                <strong>Phone:</strong> {{ $settings['company_mobile'] ?? '+91 XXXXX XXXXX' }}
-            </p>
-        </div>
-    </div>
-
-    <!-- Product Table -->
-    <div class="table-wrapper">
-        <table class="product-table">
-            <thead>
-                <tr>
-                    <th style="width: 5%;">No.</th>
-                    <th style="width: 10%;">Image</th>
-                    <th style="width: 18%;">Product</th>
-                    <th style="width: 32%;">Specifications</th>
-                    <th style="width: 8%;">Qty</th>
-                    <th style="width: 13%;">Unit Price</th>
-                    <th style="width: 14%;">Amount</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($quotation->items as $i => $item)
-                    <tr>
-                        <td><span class="serial-number">{{ $i + 1 }}</span></td>
-                        <td>
-                            <img src="{{ optional($item->product)->image ? public_path('storage/' . $item->product->image) : public_path('images/no-image.png') }}"
-                                alt="{{ $item->product_name }}">
-                        </td>
-                        <td class="text-left">
-                            <span class="product-name">{{ $item->product_name }}</span>
-                        </td>
-                        <td style="padding: 8px;">
-                            @php
-                                $desc = is_string($item->description)
-                                    ? json_decode($item->description, true)
-                                    : (is_array($item->description)
-                                        ? $item->description
-                                        : []);
-                            @endphp
-
-                            @if (!empty($desc))
-                                <table class="desc-table">
-                                    @foreach ($desc as $key => $value)
-                                        <tr>
-                                            <td>{{ ucfirst(str_replace('_', ' ', $key)) }}</td>
-                                            <td>{{ $value }}</td>
-                                        </tr>
-                                    @endforeach
-                                </table>
-                            @else
-                                <span style="color: #94a3b8; font-style: italic;">No specifications</span>
-                            @endif
-                        </td>
-                        <td><strong>{{ $item->quantity }}</strong></td>
-                        <td>₹{{ number_format($item->unit_price, 2) }}</td>
-                        <td><strong style="color: #1e40af;">₹{{ number_format($item->total, 2) }}</strong></td>
-                    </tr>
-
-                    @if (($i + 1) % 10 == 0 && $i + 1 < count($quotation->items))
-            </tbody>
-        </table>
-    </div>
-    <div class="page-break"></div>
-    <div class="table-wrapper">
-        <table class="product-table">
-            <thead>
-                <tr>
-                    <th style="width: 5%;">No.</th>
-                    <th style="width: 10%;">Image</th>
-                    <th style="width: 18%;">Product</th>
-                    <th style="width: 32%;">Specifications</th>
-                    <th style="width: 8%;">Qty</th>
-                    <th style="width: 13%;">Unit Price</th>
-                    <th style="width: 14%;">Amount</th>
-                </tr>
-            </thead>
-            <tbody>
-                @endif
-                @endforeach
-            </tbody>
-        </table>
-    </div>
-
-    <!-- Totals Section -->
-    <div class="totals-section">
-        <div class="totals-left">
-            <div class="notes-box">
-                <h4>Terms & Conditions</h4>
+        <!-- Address Section -->
+        <div class="address-section">
+            <div class="address-box">
+                <h3>Bill To</h3>
+                <span class="company-name">{{ $quotation->customer->name ?? 'Unknown Customer' }}</span>
                 <p>
-                    • This quotation is valid for 30 days from the date of issue.<br>
-                    • Prices are subject to change without prior notice.<br>
-                    • Payment terms: As per agreement.<br>
-                    • Delivery timeline will be confirmed upon order confirmation.<br>
-                    • All disputes subject to jurisdiction only.
+                    @php
+                        $address = $quotation->customer->addresses->first();
+                    @endphp
+                    @if ($address)
+                        @if ($defaultAddress == 1)
+                            {{ $address->address_line_1 }},<br>
+                        @else
+                            {{ $address->address_line_2 }},<br>
+                        @endif
+                        {{ $address->city->name }}, {{ $address->district->name }}<br>
+                        {{ $address->state->name }} - {{ $address->pincode->code }}
+                    @else
+                        <em>No address found</em>
+                    @endif
+                </p>
+            </div>
+
+            <div class="address-box">
+                <h3>From</h3>
+
+                <span class="company-name">{{ $settings['company_name'] ?? '' }}</span>
+                <p>
+                    {{ $settings['company_address'] ?? 'Company Street' }}<br>
+                    {{ $settings['company_city_name'] ?? 'City' }}, {{ $settings['company_district_name'] ?? 'District' }}<br>
+                    {{ $settings['company_state_name'] ?? 'State' }} - {{ $settings['company_pincode_value'] ?? '000000' }}<br>
+                    <strong>Email:</strong> {{ $settings['company_email'] ?? 'info@company.com' }}<br>
+                    <strong>Phone:</strong> {{ $settings['company_mobile'] ?? '+91 XXXXX XXXXX' }}
                 </p>
             </div>
         </div>
-        <div class="totals-right">
-            <table class="totals-table">
-                <tr class="subtotal-row">
-                    <td>Subtotal</td>
-                    <td>₹{{ number_format($quotation->sub_total, 2) }}</td>
-                </tr>
-                <tr>
-                    <td>Discount</td>
-                    <td>- ₹{{ number_format($quotation->discount, 2) }}</td>
-                </tr>
-                <tr>
-                    <td>Tax (GST)</td>
-                    <td>+ ₹{{ number_format($quotation->tax, 2) }}</td>
-                </tr>
-                <tr class="grand-total">
-                    <td>GRAND TOTAL</td>
-                    <td>₹{{ number_format($quotation->grand_total, 2) }}</td>
-                </tr>
+
+        <!-- Product Table -->
+        <div class="table-wrapper">
+            <table class="product-table">
+                <thead>
+                    <tr>
+                        <th style="width: 5%;">No.</th>
+                        <th style="width: 10%;">Image</th>
+                        <th style="width: 18%;">Product</th>
+                        <th style="width: 32%;">Specifications</th>
+                        <th style="width: 8%;">Qty</th>
+                        <th style="width: 13%;">Unit Price</th>
+                        <th style="width: 14%;">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($quotation->items as $i => $item)
+                        <tr>
+                            <td><span class="serial-number">{{ $i + 1 }}</span></td>
+                            <td>
+                                <img src="{{ optional($item->product)->image ? public_path('storage/' . $item->product->image) : public_path('images/no-image.png') }}"
+                                    alt="{{ $item->product_name }}">
+                            </td>
+                            <td class="text-left">
+                                <span class="product-name">{{ $item->product_name }}</span>
+                            </td>
+                            <td style="padding: 8px;">
+                                @php
+                                    $desc = is_string($item->description)
+                                        ? json_decode($item->description, true)
+                                        : (is_array($item->description)
+                                            ? $item->description
+                                            : []);
+                                @endphp
+
+                                @if (!empty($desc))
+                                    <table class="desc-table">
+                                        @foreach ($desc as $key => $value)
+                                            <tr>
+                                                <td>{{ ucfirst(str_replace('_', ' ', $key)) }}</td>
+                                                <td>{{ $value }}</td>
+                                            </tr>
+                                        @endforeach
+                                    </table>
+                                @else
+                                    <span style="color: #94a3b8; font-style: italic;">No specifications</span>
+                                @endif
+                            </td>
+                            <td><strong>{{ $item->quantity }}</strong></td>
+                            <td>₹{{ number_format($item->unit_price, 2) }}</td>
+                            <td><strong style="color: #1e40af;">₹{{ number_format($item->total, 2) }}</strong></td>
+                        </tr>
+
+                        @if (($i + 1) % 10 == 0 && $i + 1 < count($quotation->items))
+                </tbody>
             </table>
         </div>
     </div>
+    <div class="page-break"></div>
+    <div class="page-break-container">
+        <div class="table-wrapper">
+            <table class="product-table">
+                <thead>
+                    <tr>
+                        <th style="width: 5%;">No.</th>
+                        <th style="width: 10%;">Image</th>
+                        <th style="width: 18%;">Product</th>
+                        <th style="width: 32%;">Specifications</th>
+                        <th style="width: 8%;">Qty</th>
+                        <th style="width: 13%;">Unit Price</th>
+                        <th style="width: 14%;">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @endif
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
 
-    <!-- Professional Footer -->
-    <div class="footer">
-        <div class="footer-content">
-            <div class="footer-left">
-                <h4>Payment Information</h4>
-                <p>
-                    Bank Name: {{ config('app.bank_name', 'Your Bank Name') }}<br>
-                    Account Number: {{ config('app.account_number', 'XXXXXXXXXXXX') }}<br>
-                    IFSC Code: {{ config('app.ifsc_code', 'XXXXXX') }}<br>
-                    Account Name: {{ config('app.name') }}
-                </p>
-            </div>
-            <div class="footer-right">
-                <div class="signature-line">
-                    <p>Authorized Signature</p>
+        <!-- Totals Section -->
+        <div class="totals-section">
+            <div class="totals-left">
+                <div class="notes-box">
+                    <h4>Terms & Conditions</h4>
+                    <p>
+                        • This quotation is valid for 30 days from the date of issue.<br>
+                        • Prices are subject to change without prior notice.<br>
+                        • Payment terms: As per agreement.<br>
+                        • Delivery timeline will be confirmed upon order confirmation.<br>
+                        • All disputes subject to jurisdiction only.
+                    </p>
                 </div>
             </div>
+            <div class="totals-right">
+                <table class="totals-table">
+                    <tr class="subtotal-row">
+                        <td>Subtotal</td>
+                        <td>₹{{ number_format($quotation->sub_total, 2) }}</td>
+                    </tr>
+                    <tr>
+                        <td>Discount</td>
+                        <td>- ₹{{ number_format($quotation->discount, 2) }}</td>
+                    </tr>
+                    <tr>
+                        <td>Tax (GST)</td>
+                        <td>+ ₹{{ number_format($quotation->tax, 2) }}</td>
+                    </tr>
+                    <tr class="grand-total">
+                        <td>GRAND TOTAL</td>
+                        <td>₹{{ number_format($quotation->grand_total, 2) }}</td>
+                    </tr>
+                </table>
+            </div>
         </div>
-        <p style="text-align: center; margin-top: 20px; font-size: 9px; color: #94a3b8; font-style: italic;">
-            Thank you for your business! For any queries, please contact us.
-        </p>
+
+        <!-- Professional Footer -->
+        <div class="footer">
+            <div class="footer-content">
+                <div class="footer-left">
+                    <h4>Payment Information</h4>
+                    <p>
+                        Bank Name: {{ config('app.bank_name', 'Your Bank Name') }}<br>
+                        Account Number: {{ config('app.account_number', 'XXXXXXXXXXXX') }}<br>
+                        IFSC Code: {{ config('app.ifsc_code', 'XXXXXX') }}<br>
+                        Account Name: {{ config('app.name') }}
+                    </p>
+                </div>
+                <div class="footer-right">
+                    <div class="signature-line">
+                        <p>Authorized Signature</p>
+                    </div>
+                </div>
+            </div>
+            <p style="text-align: center; margin-top: 20px; font-size: 9px; color: #94a3b8; font-style: italic;">
+                Thank you for your business! For any queries, please contact us.
+            </p>
+        </div>
     </div>
 </body>
 

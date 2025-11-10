@@ -38,38 +38,62 @@
                             {{-- Name --}}
                             <div class="col-md-6">
                                 <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" id="name" name="name"
-                                        value="{{ old('name', $product->name) }}" placeholder="e.g. Aluminium Doors"
-                                        required>
+                                    <input type="text" class="form-control  @error('name') is-invalid @enderror"
+                                        id="name" name="name" value="{{ old('name', $product->name) }}"
+                                        placeholder="e.g. Aluminium Doors" required>
                                     <label for="name">Name</label>
+                                    @error('name')
+                                        <div class="invalid-feedback d-block">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
                                 </div>
                             </div>
 
                             {{-- Size --}}
                             <div class="col-md-6">
                                 <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" id="size_mm" name="size_mm"
-                                        value="{{ old('size_mm', $product->size_mm) }}" placeholder="e.g. 250x300">
+                                    <input type="text" class="form-control @error('size_mm') is-invalid @enderror"
+                                        id="size_mm" name="size_mm" value="{{ old('size_mm', $product->size_mm) }}"
+                                        placeholder="e.g. 250x300" required>
                                     <label for="size_mm">Size (mm)</label>
+                                    @error('size_mm')
+                                        <div class="invalid-feedback d-block">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
                                 </div>
                             </div>
 
                             {{-- R/Units --}}
                             <div class="col-md-6">
                                 <div class="form-floating mb-3">
-                                    <input type="number" class="form-control" id="r_units" name="r_units"
-                                        value="{{ old('r_units', $product->r_units) }}" min="0">
+                                    <input type="number" class="form-control @error('r_units') is-invalid @enderror"
+                                        id="r_units" name="r_units" value="{{ old('r_units', $product->r_units) }}"
+                                        min="0" required>
                                     <label for="r_units">R/Units</label>
+                                    @error('r_units')
+                                        <div class="invalid-feedback d-block">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
                                 </div>
                             </div>
 
                             {{-- Product Price --}}
                             <div class="col-md-6">
                                 <div class="form-floating mb-3">
-                                    <input type="number" class="form-control" id="product_price" name="product_price"
+                                    <input type="number"
+                                        class="form-control @error('product_price') is-invalid @enderror"
+                                        id="product_price" name="product_price"
                                         value="{{ old('product_price', $product->product_price) }}" step="0.01"
-                                        min="0">
+                                        min="0" required>
                                     <label for="product_price">Product Price</label>
+                                    @error('product_price')
+                                        <div class="invalid-feedback d-block">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
                                 </div>
                             </div>
 
@@ -83,6 +107,11 @@
                                             width="120" class="rounded shadow">
                                     </div>
                                 @endif
+                                @error('image')
+                                    <div class="invalid-feedback d-block">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
                             </div>
 
                             {{-- Descriptions --}}
@@ -107,11 +136,21 @@
                                                     <input type="text" name="descriptions[{{ $i }}][key]"
                                                         value="{{ $desc['key'] ?? '' }}" class="form-control"
                                                         placeholder="e.g. Brand">
+                                                    @foreach ($errors->get('descriptions.*.key') as $error)
+                                                        <div class="invalid-feedback d-block">
+                                                            <p>The descriptions field is required.</p>
+                                                        </div>
+                                                    @endforeach
                                                 </td>
                                                 <td>
                                                     <input type="text" name="descriptions[{{ $i }}][value]"
                                                         value="{{ $desc['value'] ?? '' }}" class="form-control"
                                                         placeholder="e.g. Bosch">
+                                                    @foreach ($errors->get('descriptions.*.value') as $error)
+                                                        <div class="invalid-feedback d-block">
+                                                            <p>The descriptions field is required.</p>
+                                                        </div>
+                                                    @endforeach
                                                 </td>
                                                 <td class="text-center">
                                                     @if ($loop->first)

@@ -37,18 +37,28 @@
                             {{-- Name --}}
                             <div class="col-md-6">
                                 <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" id="name" name="name"
-                                        placeholder="e.g. Aluminium Doors">
+                                    <input type="text" class="form-control @error('name') is-invalid @enderror"
+                                        id="name" name="name" value="{{ old('name') }}" placeholder="e.g. Aluminium Doors" required>
                                     <label for="name">Name</label>
+                                    @error('name')
+                                        <div class="invalid-feedback d-block">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
                                 </div>
                             </div>
 
                             {{-- Size --}}
                             <div class="col-md-6">
                                 <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" id="size_mm" name="size_mm"
-                                        placeholder="e.g. 250x300" required>
+                                    <input type="text" class="form-control @error('size_mm') is-invalid @enderror"
+                                        id="size_mm" name="size_mm" value="{{ old('size_mm') }}" placeholder="e.g. 250x300" required>
                                     <label for="size_mm">Size (mm)</label>
+                                    @error('size_mm')
+                                        <div class="invalid-feedback d-block">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
                                 </div>
                             </div>
 
@@ -56,17 +66,29 @@
                             {{-- R/Units --}}
                             <div class="col-md-6">
                                 <div class="form-floating mb-3">
-                                    <input type="number" class="form-control" id="r_units" name="r_units" min="0">
+                                    <input type="number" class="form-control @error('r_units') is-invalid @enderror"
+                                        id="r_units" name="r_units" value="{{ old('r_units') }}" min="0" required>
                                     <label for="r_units">R/Units</label>
+                                    @error('r_units')
+                                        <div class="invalid-feedback d-block">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
                                 </div>
                             </div>
 
                             {{-- Product Price --}}
                             <div class="col-md-6">
                                 <div class="form-floating mb-3">
-                                    <input type="number" class="form-control" id="product_price" name="product_price"
-                                        step="0.01" min="0">
+                                    <input type="number"
+                                        class="form-control @error('product_price') is-invalid @enderror"
+                                        id="product_price" name="product_price" value="{{ old('product_price') }}" step="0.01" min="0" required>
                                     <label for="product_price">Product Price</label>
+                                    @error('product_price')
+                                        <div class="invalid-feedback d-block">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
                                 </div>
                             </div>
 
@@ -75,6 +97,11 @@
                                 <div class="mb-3">
                                     <label for="image" class="form-label fw-semibold">Product Image</label>
                                     <input type="file" name="image" id="image" class="form-control">
+                                    @error('image')
+                                        <div class="invalid-feedback d-block">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
                                 </div>
                             </div>
 
@@ -93,9 +120,21 @@
                                     <tbody id="descBody">
                                         <tr>
                                             <td><input type="text" name="descriptions[0][key]" class="form-control"
-                                                    placeholder="e.g. Brand"></td>
+                                                    placeholder="e.g. Brand">
+                                                @foreach ($errors->get('descriptions.*.key') as $error)
+                                                    <div class="invalid-feedback d-block">
+                                                        <p>The descriptions field is required.</p>
+                                                    </div>
+                                                @endforeach
+                                            </td>
                                             <td><input type="text" name="descriptions[0][value]" class="form-control"
-                                                    placeholder="e.g. Bosch"></td>
+                                                    placeholder="e.g. Bosch">
+                                                @foreach ($errors->get('descriptions.*.value') as $error)
+                                                    <div class="invalid-feedback d-block">
+                                                        <p>The descriptions field is required.</p>
+                                                    </div>
+                                                @endforeach
+                                            </td>
                                             <td class="text-center">
                                                 <button type="button" class="btn btn-primary btn-sm addRow">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
@@ -132,6 +171,8 @@
     </div>
 @endsection
 @section('scripts')
+    <script src="{{ asset('js/plugins/toastr-init.js') }}"></script>
+
     <script>
         $(document).ready(function() {
             let rowIdx = 1;
@@ -155,38 +196,21 @@
                 $(this).closest('tr').remove();
             });
 
-            // Optional: Ajax submission (prevent full reload)
-            // $('#productForm').on('submit', function(e) {
-            //     e.preventDefault();
-            //     const formData = new FormData(this);
+            // toaster
+            toastr.options = {
+                "closeButton": true,
+                "progressBar": true,
+                "positionClass": "toast-top-right",
+                "timeOut": "3000"
+            };
 
-            //     $.ajax({
-            //         url: $(this).attr('action'),
-            //         type: 'POST',
-            //         data: formData,
-            //         processData: false,
-            //         contentType: false,
-            //         success: function(res) {
-            //             if (res.status) {
-            //                 alert(res.message);
-            //                 $('#productForm')[0].reset();
-            //                 $('#descBody').html(`
-            //             <tr>
-            //                 <td><input type="text" name="descriptions[0][key]" class="form-control"></td>
-            //                 <td><input type="text" name="descriptions[0][value]" class="form-control"></td>
-            //                 <td class="text-center">
-            //                     <button type="button" class="btn btn-primary btn-sm addRow"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M12 22c-4.714 0-7.071 0-8.536-1.465C2 19.072 2 16.714 2 12s0-7.071 1.464-8.536C4.93 2 7.286 2 12 2s7.071 0 8.535 1.464C22 4.93 22 7.286 22 12s0 7.071-1.465 8.535C19.072 22 16.714 22 12 22" opacity="0.5"/><path fill="currentColor" d="M12 8.25a.75.75 0 0 1 .75.75v2.25H15a.75.75 0 0 1 0 1.5h-2.25V15a.75.75 0 0 1-1.5 0v-2.25H9a.75.75 0 0 1 0-1.5h2.25V9a.75.75 0 0 1 .75-.75"/></svg></button>
-            //                 </td>
-            //             </tr>
-            //         `);
-            //             }
-            //         },
-            //         error: function(xhr) {
-            //             console.error(xhr.responseText);
-            //             alert('Something went wrong 🫠');
-            //         }
-            //     });
-            // });
+            @if (session('success'))
+                toastr.success("{{ session('success') }}", "Success");
+            @endif
+
+            @if (session('error'))
+                toastr.error("{{ session('error') }}", "Error");
+            @endif
         });
     </script>
 @endsection

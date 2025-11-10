@@ -18,6 +18,7 @@ class RolesAndPermissionsSeeder extends Seeder
             ['model' => 'Roles & Permission', 'permissions' => ['View', 'Create', 'Edit', 'Delete', 'Restore', 'Export', 'Import']],
             ['model' => 'Products', 'permissions' => ['View', 'Create', 'Edit', 'Delete', 'Restore', 'Export']],
             ['model' => 'Customers', 'permissions' => ['View', 'Create', 'Edit', 'Delete', 'Restore', 'Export']],
+            ['model' => 'Settings', 'permissions' => ['View', 'Edit']],
         ];
 
         // Loop through modules and create permissions

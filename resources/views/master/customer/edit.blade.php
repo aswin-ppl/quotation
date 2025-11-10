@@ -16,7 +16,7 @@
 @section('content')
     @php
         $parent_title = 'Master';
-        $page_title = 'Customer';
+        $page_title = 'Customers';
     @endphp
 
     <div class="body-wrapper">
@@ -49,93 +49,148 @@
                             {{-- Name --}}
                             <div class="col-md-6">
                                 <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" id="name" name="name"
-                                        value="{{ old('name', $customer->name) }}" placeholder="Customer Name" required>
+                                    <input type="text" class="form-control @error('name') is-invalid @enderror"
+                                        id="name" name="name" value="{{ old('name', $customer->name) }}"
+                                        placeholder="Customer Name" required>
                                     <label for="name">Name</label>
+                                    @error('name')
+                                        <div class="invalid-feedback d-block">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
                                 </div>
                             </div>
 
                             {{-- Email --}}
                             <div class="col-md-6">
                                 <div class="form-floating mb-3">
-                                    <input type="email" class="form-control" id="email" name="email"
-                                        value="{{ old('email', $customer->email) }}" placeholder="example@gmail.com">
+                                    <input type="email" class="form-control @error('email') is-invalid @enderror"
+                                        id="email" name="email" value="{{ old('email', $customer->email) }}"
+                                        placeholder="example@gmail.com" required>
                                     <label for="email">Email</label>
+                                    @error('email')
+                                        <div class="invalid-feedback d-block">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
                                 </div>
                             </div>
 
                             {{-- Mobile --}}
                             <div class="col-md-6">
                                 <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" id="mobile" name="mobile"
-                                        value="{{ old('mobile', $customer->mobile) }}" placeholder="Mobile Number">
+                                    <input type="text" class="form-control @error('mobile') is-invalid @enderror"
+                                        id="mobile" name="mobile" value="{{ old('mobile', $customer->mobile) }}"
+                                        placeholder="Mobile Number" required>
                                     <label for="mobile">Mobile</label>
+                                    @error('mobile')
+                                        <div class="invalid-feedback d-block">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
                                 </div>
                             </div>
 
                             {{-- Status --}}
                             <div class="col-md-6 mb-4">
-                                <select class="form-select" id="status" name="status">
+                                <select class="form-select @error('status') is-invalid @enderror"" id="status"
+                                    name="status">
                                     <option value="active"
-                                        {{ old('status', $customer->status) == 'active' ? 'selected' : '' }}>Active</option>
+                                        {{ old('status', $customer->status) == 'active' ? 'selected' : '' }}>Active
+                                    </option>
                                     <option value="inactive"
                                         {{ old('status', $customer->status) == 'inactive' ? 'selected' : '' }}>Inactive
                                     </option>
                                 </select>
+                                @error('status')
+                                    <div class="invalid-feedback d-block">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
                             </div>
 
                             {{-- State --}}
                             <div class="col-md-6 mb-4">
                                 <label for="state">State</label>
-                                <select id="state" name="state_id" class="form-select">
+                                <select id="state" name="state_id"
+                                    class="form-select @error('state_id') is-invalid @enderror">
                                     @if ($state)
                                         <option value="{{ $state->id }}" selected>{{ $state->name }}</option>
                                     @else
                                         <option value="" selected>Select State</option>
                                     @endif
                                 </select>
+                                @error('state_id')
+                                    <div class="invalid-feedback d-block">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
                             </div>
 
                             {{-- District --}}
                             <div class="col-md-6 mb-4">
                                 <label for="district">District</label>
-                                <select id="district" name="district_id" class="form-select">
+                                <select id="district" name="district_id"
+                                    class="form-select @error('district_id') is-invalid @enderror">
                                     @if ($district)
                                         <option value="{{ $district->id }}" selected>{{ $district->name }}</option>
                                     @else
                                         <option value="" selected>Select District</option>
                                     @endif
                                 </select>
+                                @error('district_id')
+                                    <div class="invalid-feedback d-block">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
                             </div>
 
                             {{-- City --}}
                             <div class="col-md-6 mb-4">
                                 <label for="city">City</label>
-                                <select id="city" name="city_id" class="form-select">
+                                <select id="city" name="city_id"
+                                    class="form-select @error('city_id') is-invalid @enderror">
                                     @if ($city)
                                         <option value="{{ $city->id }}" selected>{{ $city->name }}</option>
                                     @else
                                         <option value="" selected>Select City</option>
                                     @endif
                                 </select>
+                                @error('city_id')
+                                    <div class="invalid-feedback d-block">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
                             </div>
 
                             {{-- Pincode --}}
                             <div class="col-md-6 mb-4">
                                 <label for="pincode">Pincode</label>
-                                <select id="pincode" name="pincode_id" class="form-select">
+                                <select id="pincode" name="pincode_id"
+                                    class="form-select @error('pincode_id') is-invalid @enderror">
                                     @if ($pincode)
                                         <option value="{{ $pincode->id }}" selected>{{ $pincode->code }}</option>
                                     @else
                                         <option value="" selected>Select Pincode</option>
                                     @endif
                                 </select>
+                                @error('pincode_id')
+                                    <div class="invalid-feedback d-block">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
                             </div>
 
                             {{-- Address 1 --}}
                             <div class="col-md-6 mb-3">
                                 <div class="form-group">
-                                    <textarea class="form-control" rows="3" name="address_line_1" placeholder="Address 1..">{{ old('address_line_1', $address->address_line_1 ?? '') }}</textarea>
+                                    <textarea class="form-control @error('address_line_1') is-invalid @enderror" rows="3" name="address_line_1"
+                                        placeholder="Address 1..">{{ old('address_line_1', $address->address_line_1 ?? '') }}</textarea>
+                                    @error('address_line_1')
+                                        <div class="invalid-feedback d-block">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
                                 </div>
                             </div>
 

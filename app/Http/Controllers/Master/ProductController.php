@@ -8,6 +8,7 @@ use App\Models\Master\Product;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use App\Http\Requests\ProductRequest;
 
 class ProductController extends Controller
 {
@@ -25,10 +26,8 @@ class ProductController extends Controller
         return view('master.products.create');
     }
 
-    public function store(Request $request)
+    public function store(ProductRequest $request)
     {
-        $this->authorize('create-products');
-
         DB::transaction(function () use ($request) {
             $imagePath = null;
             if ($request->hasFile('image')) {
@@ -76,10 +75,8 @@ class ProductController extends Controller
         return view('master.products.edit', compact('product'));
     }
 
-    public function update(Request $request, Product $product)
+    public function update(ProductRequest $request, Product $product)
     {
-        $this->authorize('edit-products');
-
         DB::transaction(function () use ($request, $product) {
 
             $imagePath = $product->image; // keep the old one by default

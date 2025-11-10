@@ -22,7 +22,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('roles', RoleController::class)->middleware('auth');
     
     Route::get('/quotation/{id}/{address}/pdf', [QuotationController::class, 'generatePdf'])->name('quotation.pdf');
-    Route::get('/quotation/{id}/preview', [QuotationController::class, 'preview'])->name('quotation.preview');
+    Route::get('/quotation/{id}/{address}/preview', [QuotationController::class, 'preview'])->name('quotation.preview');
     // Route::get('/quotation/{id}/download', [QuotationController::class, 'download'])->name('quotation.download');
     Route::get('/quotation/{id}/download', [QuotationController::class, 'download'])->name('quotation.download');
     Route::resource('quotation', QuotationController::class);

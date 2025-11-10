@@ -6,11 +6,11 @@ use App\Models\City;
 use App\Models\State;
 use App\Models\Pincode;
 use App\Models\District;
-use Illuminate\Http\Request;
 use App\Models\Master\Customer;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use App\Models\Master\CustomerAddress;
+use App\Http\Requests\StoreCustomerRequest;
+use App\Http\Requests\UpdateCustomerRequest;
 
 class CustomerController extends Controller
 {
@@ -25,25 +25,10 @@ class CustomerController extends Controller
         return view('master.customer.create');
     }
 
-    public function store(Request $request)
+    public function store(StoreCustomerRequest $request)
     {
-        logger($request);
 
-        // Validate customer + address fields
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'nullable|email|unique:customers,email',
-            'mobile' => 'required|string',
-            'status' => 'required|in:active,inactive',
-
-            // Address fields
-            'address_line_1' => 'required|string|max:255',
-            'address_line_2' => 'nullable|string|max:255',
-            'city_id' => 'required|exists:cities,id',
-            'district_id' => 'required|exists:districts,id',
-            'state_id' => 'required|exists:states,id',
-            'pincode_id' => 'required|exists:pincodes,id',
-        ]);
+        $validated = $request->validated();
 
         DB::beginTransaction();
 
@@ -56,7 +41,6 @@ class CustomerController extends Controller
                 'status' => $validated['status'],
             ]);
 
-            // Create address (first address is always default)
             $customer->addresses()->create([
                 'address_line_1' => $validated['address_line_1'],
                 'address_line_2' => $validated['address_line_2'] ?? null,
@@ -64,22 +48,21 @@ class CustomerController extends Controller
                 'district_id' => $validated['district_id'],
                 'state_id' => $validated['state_id'],
                 'pincode_id' => $validated['pincode_id'],
-                'country' => 'India', // or get from request
-                'type' => 'home', // or get from request
-                'is_default' => true, // first address = default
+                'country' => 'India',
+                'type' => 'home',
+                'is_default' => true,
             ]);
 
             DB::commit();
 
-            return redirect()->route('customers.index')
+            return redirect()->route('customers.create')
                 ->with('success', 'Customer created successfully!');
 
         } catch (\Exception $e) {
             DB::rollBack();
             logger('Customer store failed:', ['message' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
-            throw $e; // rethrow so we can actually see the exception in the browser
+            throw $e;
         }
-
     }
 
     public function edit(Customer $customer)
@@ -101,24 +84,9 @@ class CustomerController extends Controller
         return view('master.customer.edit', compact('customer', 'address', 'state', 'district', 'city', 'pincode'));
     }
 
-    public function update(Request $request, Customer $customer)
+    public function update(UpdateCustomerRequest $request, Customer $customer)
     {
-        $validated = $request->validate([
-            // Customer fields
-            'name' => 'required|string|max:255',
-            'email' => 'nullable|email|unique:customers,email,' . $customer->id,
-            'mobile' => 'required|string|max:15|unique:customers,mobile,' . $customer->id,
-            'status' => 'required|in:active,inactive',
-
-            // Address fields
-            'address_line_1' => 'required|string|max:255',
-            'address_line_2' => 'nullable|string|max:255',
-            'city_id' => 'required|exists:cities,id',
-            'district_id' => 'required|exists:districts,id',
-            'state_id' => 'required|exists:states,id',
-            'pincode_id' => 'required|exists:pincodes,id',
-            'country' => 'nullable|string|max:100',
-        ]);
+        $validated = $request->validated();
 
         DB::beginTransaction();
 
@@ -156,7 +124,6 @@ class CustomerController extends Controller
             return back()->withErrors(['error' => 'Update failed: ' . $e->getMessage()]);
         }
     }
-
 
     public function destroy(Customer $customer)
     {

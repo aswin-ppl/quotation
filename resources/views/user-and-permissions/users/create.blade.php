@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('styles')
-  <link rel="stylesheet" href="{{ asset('libs/sweetalert2/dist/sweetalert2.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('libs/sweetalert2/dist/sweetalert2.min.css') }}">
 @endsection
 @section('content')
     @php
@@ -38,8 +38,9 @@
                             {{-- Name --}}
                             <div class="col-md-6">
                                 <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" id="name" name="name"
-                                        value="{{ old('name') }}" required autocomplete="name" autofocus>
+                                    <input type="text" class="form-control @error('name') is-invalid @enderror"
+                                        id="name" name="name" value="{{ old('name') }}" autocomplete="name"
+                                        autofocus>
                                     <label for="name">Name</label>
                                     @error('name')
                                         <span class="invalid-feedback" role="alert">
@@ -52,8 +53,8 @@
                             {{-- Email --}}
                             <div class="col-md-6">
                                 <div class="form-floating mb-3">
-                                    <input type="email" class="form-control" id="email" name="email"
-                                        value="{{ old('email') }}" required autocomplete="email">
+                                    <input type="email" class="form-control @error('email') is-invalid @enderror"
+                                        id="email" name="email" value="{{ old('email') }}" autocomplete="email">
                                     <label for="email">Email</label>
                                     @error('email')
                                         <span class="invalid-feedback" role="alert">
@@ -67,7 +68,7 @@
                             <div class="col-md-6">
                                 <div class="form-floating mb-3">
                                     <input type="password" class="form-control @error('password') is-invalid @enderror"
-                                        id="password" name="password" required autocomplete="new-password">
+                                        id="password" name="password" autocomplete="new-password">
                                     <label for="password">Password</label>
                                     @error('password')
                                         <span class="invalid-feedback" role="alert">
@@ -81,7 +82,7 @@
                             <div class="col-md-6">
                                 <div class="form-floating mb-3">
                                     <input type="password" class="form-control" id="password-confirm"
-                                        name="password_confirmation" required autocomplete="new-password">
+                                        name="password_confirmation" autocomplete="new-password">
                                     <label for="password-confirm">Confirm Password</label>
                                 </div>
                             </div>
@@ -91,21 +92,21 @@
                                 <div class="col-md-6">
                                     <div class="form-group mb-4">
                                         <label class="mr-sm-2" for="inlineFormCustomSelect">Select</label>
-                                        <select class="form-select mr-sm-2" name="roles" id="inlineFormCustomSelect">
-                                            <option selected="">Choose roles...</option>
+                                        <select class="form-select mr-sm-2" name="roles" id="inlineFormCustomSelect"
+                                            required>
+                                            <option selected="" value="">Choose roles...</option>
                                             @foreach ($roles as $role)
                                                 <option value="{{ $role->name }}"> {{ ucfirst($role->name) }}</option>
                                             @endforeach
                                         </select>
                                         @error('roles')
-                                            <span class="invalid-feedback d-block" role="alert">
+                                            <span class="invalid-feedback" role="alert">
                                                 <strong>{{ $message }}</strong>
                                             </span>
                                         @enderror
                                     </div>
                                 </div>
                             </div>
-
                             <div class="col-md-12">
                                 <div class="d-flex justify-content-between">
                                     <a href="{{ route('users.index') }}" class="btn btn-light">Cancel</a>
@@ -115,7 +116,6 @@
                                 </div>
                             </div>
                         </div>
-
                     </form>
                 </div>
             </div>
@@ -123,16 +123,22 @@
     </div>
 @endsection
 @section('scripts')
-<script>
-toastr.options = {
-    "closeButton": true,
-    "progressBar": true,
-    "positionClass": "toast-top-right",
-    "timeOut": "3000"
-};
+    <script src="{{ asset('js/plugins/toastr-init.js') }}"></script>
 
-@if (session('success'))
-    toastr.success("{{ session('success') }}", "Success");
-@endif
-</script>
+    <script>
+        toastr.options = {
+            "closeButton": true,
+            "progressBar": true,
+            "positionClass": "toast-top-right",
+            "timeOut": "3000"
+        };
+
+        @if (session('success'))
+            toastr.success("{{ session('success') }}", "Success");
+        @endif
+
+        @if (session('error'))
+            toastr.error("{{ session('error') }}", "Error");
+        @endif
+    </script>
 @endsection
