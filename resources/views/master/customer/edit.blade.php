@@ -52,7 +52,7 @@
                                     <input type="text" class="form-control @error('name') is-invalid @enderror"
                                         id="name" name="name" value="{{ old('name', $customer->name) }}"
                                         placeholder="Customer Name" required>
-                                    <label for="name">Name</label>
+                                    <label for="name">Name <span class="text-danger">*</span></label>
                                     @error('name')
                                         <div class="invalid-feedback d-block">
                                             {{ $message }}
@@ -67,7 +67,7 @@
                                     <input type="email" class="form-control @error('email') is-invalid @enderror"
                                         id="email" name="email" value="{{ old('email', $customer->email) }}"
                                         placeholder="example@gmail.com" required>
-                                    <label for="email">Email</label>
+                                    <label for="email">Email <span class="text-danger">*</span></label>
                                     @error('email')
                                         <div class="invalid-feedback d-block">
                                             {{ $message }}
@@ -82,7 +82,7 @@
                                     <input type="text" class="form-control @error('mobile') is-invalid @enderror"
                                         id="mobile" name="mobile" value="{{ old('mobile', $customer->mobile) }}"
                                         placeholder="Mobile Number" required>
-                                    <label for="mobile">Mobile</label>
+                                    <label for="mobile">Mobile <span class="text-danger">*</span></label>
                                     @error('mobile')
                                         <div class="invalid-feedback d-block">
                                             {{ $message }}
@@ -93,7 +93,7 @@
 
                             {{-- Status --}}
                             <div class="col-md-6 mb-4">
-                                <select class="form-select @error('status') is-invalid @enderror"" id="status"
+                                <select class="form-select @error('status') is-invalid @enderror" id="status"
                                     name="status">
                                     <option value="active"
                                         {{ old('status', $customer->status) == 'active' ? 'selected' : '' }}>Active
@@ -111,7 +111,7 @@
 
                             {{-- State --}}
                             <div class="col-md-6 mb-4">
-                                <label for="state">State</label>
+                                <label for="state">State <span class="text-danger">*</span></label>
                                 <select id="state" name="state_id"
                                     class="form-select @error('state_id') is-invalid @enderror">
                                     @if ($state)
@@ -129,7 +129,7 @@
 
                             {{-- District --}}
                             <div class="col-md-6 mb-4">
-                                <label for="district">District</label>
+                                <label for="district">District <span class="text-danger">*</span></label>
                                 <select id="district" name="district_id"
                                     class="form-select @error('district_id') is-invalid @enderror">
                                     @if ($district)
@@ -147,7 +147,7 @@
 
                             {{-- City --}}
                             <div class="col-md-6 mb-4">
-                                <label for="city">City</label>
+                                <label for="city">City <span class="text-danger">*</span></label>
                                 <select id="city" name="city_id"
                                     class="form-select @error('city_id') is-invalid @enderror">
                                     @if ($city)
@@ -165,7 +165,7 @@
 
                             {{-- Pincode --}}
                             <div class="col-md-6 mb-4">
-                                <label for="pincode">Pincode</label>
+                                <label for="pincode">Pincode <span class="text-danger">*</span></label>
                                 <select id="pincode" name="pincode_id"
                                     class="form-select @error('pincode_id') is-invalid @enderror">
                                     @if ($pincode)
@@ -184,6 +184,7 @@
                             {{-- Address 1 --}}
                             <div class="col-md-6 mb-3">
                                 <div class="form-group">
+                                    <label for="address_line_1">Address Line 1 <span class="text-danger">*</span></label>
                                     <textarea class="form-control @error('address_line_1') is-invalid @enderror" rows="3" name="address_line_1"
                                         placeholder="Address 1..">{{ old('address_line_1', $address->address_line_1 ?? '') }}</textarea>
                                     @error('address_line_1')
@@ -197,6 +198,7 @@
                             {{-- Address 2 --}}
                             <div class="col-md-6 mb-3">
                                 <div class="form-group">
+                                    <label for="address_line_2">Address Line 2</label>
                                     <textarea class="form-control" rows="3" name="address_line_2" placeholder="Address 2..">{{ old('address_line_2', $address->address_line_2 ?? '') }}</textarea>
                                 </div>
                             </div>

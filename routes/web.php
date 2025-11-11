@@ -16,25 +16,35 @@ Route::middleware('auth')->group(function () {
 
     // dashboard
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    // AJAX partial for products on dashboard (used by live search)
+    Route::get('/dashboard/products', [DashboardController::class, 'productsPartial'])->name('dashboard.products');
 
     // User and Roles
+    // Data endpoint for DataTables AJAX loading (place before resource to avoid wildcard capture)
+    Route::get('users/data', [UserController::class, 'data'])->name('users.data');
     Route::resource('users', UserController::class);
     Route::resource('roles', RoleController::class)->middleware('auth');
     
     Route::get('/quotation/{id}/{address}/pdf', [QuotationController::class, 'generatePdf'])->name('quotation.pdf');
     Route::get('/quotation/{id}/{address}/preview', [QuotationController::class, 'preview'])->name('quotation.preview');
     // Route::get('/quotation/{id}/download', [QuotationController::class, 'download'])->name('quotation.download');
-    Route::get('/quotation/{id}/download', [QuotationController::class, 'download'])->name('quotation.download');
+    Route::get('/quotation/{id}/{address}/download', [QuotationController::class, 'download'])->name('quotation.download');
     Route::resource('quotation', QuotationController::class);
 
     // Products
-    Route::resource('products', ProductController::class);
+    // Special routes that must come before the resource to avoid being captured by products/{product}
+    // Data endpoint for DataTables AJAX loading
+    Route::get('products/data', [ProductController::class, 'data'])->name('products.data');
     Route::get('products/restore/{id}', [ProductController::class, 'restore'])->name('products.restore');
     Route::get('/cart/products', [ProductController::class, 'getCartProducts'])->name('cart.products');
+    Route::resource('products', ProductController::class);
 
     // Customers
-    Route::resource('customers', CustomerController::class);
+    // Special customer routes (place before resource to avoid wildcard capture)
+    Route::get('customers/data', [CustomerController::class, 'data'])->name('customers.data');
+    Route::get('customers/restore/{id}', [CustomerController::class, 'restore'])->name('customers.restore');
     Route::get('/customers/{id}/addresses', [CustomerController::class, 'getAddresses']);
+    Route::resource('customers', CustomerController::class);
 
     //Search Locations
     Route::get('/districts/search', [LocationController::class, 'searchDistricts']);

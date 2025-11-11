@@ -31,15 +31,16 @@ class QuotationController extends Controller
         // return $pdf->download('quotation_' . $quotation->id . '.pdf');
     }
 
-    public function download($id)
+    public function download($id, $defaultAddress)
     {
         try {
             $quotation = Quotation::with(['items.product', 'customer.addresses'])
                 ->findOrFail($id);
+            $settings = Setting::getCompanyDetails();
+            $pdf = Pdf::loadView('pdf.quotation', compact('quotation', 'settings', 'defaultAddress'));
 
-            return \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.quotation', compact('quotation'))
-                ->setPaper('a4')
-                ->download("quotation_{$quotation->id}.pdf");
+            return $pdf->download('Quotation_' . $quotation->id . '.pdf');
+
         } catch (\Exception $e) {
             Log::error('PDF generation failed: ' . $e->getMessage());
             return back()->with('error', 'Failed to generate PDF.');
@@ -106,7 +107,7 @@ class QuotationController extends Controller
 
             return response()->json([
                 'success' => true,
-                'id'=> $quotation->id,
+                'id' => $quotation->id,
                 'redirect' => route('quotation.pdf', [$quotation->id, $request->defaultAddress]),
             ]);
         } catch (\Throwable $th) {

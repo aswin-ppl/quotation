@@ -33,7 +33,7 @@
                         <div class="row">
                             <div class="col-md-12 row justify-content-center mb-3">
                                 <div class="col-md-6">
-                                    <label>Role Name</label>
+                                    <label>Role Name <span class="text-danger">*</span></label>
                                     <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}" required>
                                     @error('name')
                                         <div class="invalid-feedback d-block">
@@ -43,7 +43,7 @@
                                 </div>
 
                                 <div class="mb-3">
-                                    <label class="fw-bold mb-2">Assign Permissions</label>
+                                    <label class="fw-bold mb-2">Assign Permissions <span class="text-danger">*</span></label>
                                     @error('permissions')
                                         <div class="invalid-feedback d-block">
                                             {{ $message }}

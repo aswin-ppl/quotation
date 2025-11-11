@@ -41,7 +41,7 @@
                                     <input type="text" class="form-control  @error('name') is-invalid @enderror"
                                         id="name" name="name" value="{{ old('name', $product->name) }}"
                                         placeholder="e.g. Aluminium Doors" required>
-                                    <label for="name">Name</label>
+                                    <label for="name">Name <span class="text-danger">*</span></label>
                                     @error('name')
                                         <div class="invalid-feedback d-block">
                                             {{ $message }}
@@ -56,7 +56,7 @@
                                     <input type="text" class="form-control @error('size_mm') is-invalid @enderror"
                                         id="size_mm" name="size_mm" value="{{ old('size_mm', $product->size_mm) }}"
                                         placeholder="e.g. 250x300" required>
-                                    <label for="size_mm">Size (mm)</label>
+                                    <label for="size_mm">Size (mm) <span class="text-danger">*</span></label>
                                     @error('size_mm')
                                         <div class="invalid-feedback d-block">
                                             {{ $message }}
@@ -71,7 +71,7 @@
                                     <input type="number" class="form-control @error('r_units') is-invalid @enderror"
                                         id="r_units" name="r_units" value="{{ old('r_units', $product->r_units) }}"
                                         min="0" required>
-                                    <label for="r_units">R/Units</label>
+                                    <label for="r_units">R/Units <span class="text-danger">*</span></label>
                                     @error('r_units')
                                         <div class="invalid-feedback d-block">
                                             {{ $message }}
@@ -88,7 +88,7 @@
                                         id="product_price" name="product_price"
                                         value="{{ old('product_price', $product->product_price) }}" step="0.01"
                                         min="0" required>
-                                    <label for="product_price">Product Price</label>
+                                    <label for="product_price">Product Price <span class="text-danger">*</span></label>
                                     @error('product_price')
                                         <div class="invalid-feedback d-block">
                                             {{ $message }}
@@ -99,7 +99,7 @@
 
                             {{-- Image --}}
                             <div class="col-md-12 mb-3">
-                                <label for="image" class="form-label fw-semibold">Product Image</label>
+                                <label for="image" class="form-label fw-semibold">Product Image <span class="text-danger">*</span></label>
                                 <input type="file" name="image" id="image" class="form-control">
                                 @if ($product->image)
                                     <div class="mt-3">
@@ -116,7 +116,7 @@
 
                             {{-- Descriptions --}}
                             <div class="mb-4">
-                                <label class="form-label fw-semibold">Description (Key - Value)</label>
+                                <label class="form-label fw-semibold">Description (Key - Value) <span class="text-danger">*</span></label>
 
                                 <table class="table table-bordered align-middle" id="descriptionTable">
                                     <thead class="table-light">
@@ -207,7 +207,7 @@
 
                             <div class="col-12">
                                 <div class="d-md-flex justify-content-between align-items-center">
-                                    <a href="{{ route('products.index') }}" class="btn btn-light hstack gap-6">
+                                    <a href="{{ route('products.index') }}" class="btn btn-dark hstack gap-6">
                                         Back
                                     </a>
                                     <button type="submit" class="btn btn-secondary hstack gap-6">

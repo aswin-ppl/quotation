@@ -90,12 +90,6 @@
                     </div>
 
                     <button class="btn btn-primary mt-3" id="generatePreview">Generate Preview</button>
-                    {{-- <button class="btn btn-primary mt-3" id="generatePdf">Generate Preview</button> --}}
-
-                    {{-- <a href="{{ route('quotation.download', $quotation->id) }}" class="download-btn" target="_blank">
-                        <i class="fas fa-file-pdf"></i> Download PDF
-                    </a> --}}
-                    <!-- Renamed for clarity -->
                 </div>
             </div>
             <div class="card">
@@ -127,13 +121,21 @@
             <div class="card overflow-auto text-dark" id="pdf_content" style="display: none;color: black !important;"></div>
             <!-- Hide till ready -->
 
-            <div class="quotation-preview-wrapper" style="width:100%; height:80vh; border:none;">
-                <iframe id="quotation-preview-container" style="width:100%; height:100%; border:none;"></iframe>
+            <div class="preview-container d-none">
+                <div class="row text-center my-2">
+                    <h2>Quotation Preview</h2>
+                </div>
+                <div class="quotation-preview-wrapper" style="width:100%; height:80vh; border:none;">
+                    <iframe id="quotation-preview-container" style="width:100%; height:100%; border:none;"></iframe>
+                </div>
+
+                {{-- <div id="quotation-preview-container"></div>    --}}
+                <div class="row align-items-center mt-3 justify-content-center">
+                    <div class="col-md-6 text-center">
+                        <button id="downloadPdf" data-id="" data-address="" class="btn btn-primary">Download PDF</button>
+                    </div>
+                </div>
             </div>
-
-            {{-- <div id="quotation-preview-container"></div>    --}}
-
-            <button id="downloadPdf" class="btn btn-primary">Download PDF</button>
         </div>
     </div>
 @endsection
@@ -167,9 +169,7 @@
             imgs.forEach(img => {
                 img.src = img.src.replace(/^.*\/storage\//, '/storage/');
             });
-
         };
-
 
         $(function() {
 
@@ -319,8 +319,6 @@
 
                 return formattedAddress;
             }
-
-
 
             /* ------------------------------------
                CART MANAGEMENT
@@ -473,7 +471,6 @@
                     };
                 });
 
-
                 try {
                     const response = await fetch("{{ route('quotation.store') }}", {
                         method: 'POST',
@@ -488,13 +485,11 @@
                         })
                     });
 
-
                     if (!response.ok) {
                         throw new Error('Failed to store quotation');
                     }
 
                     const result = await response.json();
-                    console.log(result);
                     const quotationId = result.id;
 
                     // Now hit the preview route
@@ -507,9 +502,10 @@
 
                     const previewHTML = await previewResponse.text();
 
-                    // Drop it into your container
-                    // document.getElementById('quotation-preview-container').innerHTML = previewHTML;
+                    document.getElementById('downloadPdf').setAttribute('data-id', quotationId);
+                    document.getElementById('downloadPdf').setAttribute('data-address', defaultAddress);
                     document.getElementById('quotation-preview-container').src = previewUrl;
+                    document.querySelector('.preview-container').classList.remove('d-none');
                 } catch (err) {
                     console.error(err);
                     toastr.error("Failed to generate quotation", "Error");
@@ -517,325 +513,14 @@
 
             });
 
-            $('#generatePdf').on('click', async function() {
-                const customerId = $('#customer').val();
-                const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            $('#downloadPdf').on('click', async function() {
+                let quotationId = this.getAttribute('data-id');
+                let defaultAddress = this.getAttribute('data-address');
 
-                if (!customerId) {
-                    toastr.error("Please select a customer", "Missing Data");
-                    return;
-                }
-                if (cart.length === 0) {
-                    toastr.error("Your cart is empty", "Missing Items");
-                    return;
-                }
-
-                // Prepare items data
-                const items = cart.map(item => {
-                    // Convert descriptions array → { key: value }
-                    const description = {};
-                    if (Array.isArray(item.descriptions)) {
-                        item.descriptions.forEach(desc => {
-                            description[desc.key] = desc.value;
-                        });
-                    }
-
-                    return {
-                        product_id: item.id,
-                        product_name: item.name,
-                        size_mm: item.size_mm || '',
-                        r_units: item.r_units || '',
-                        description: description, // proper JSON object now
-                        quantity: item.qty || 1,
-                        unit_price: parseFloat(item.product_price) || 0,
-                        total: ((item.qty || 1) * parseFloat(item.product_price || 0))
-                    };
-                });
-
-
-                try {
-                    const response = await fetch("{{ route('quotation.store') }}", {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        },
-                        body: JSON.stringify({
-                            customer_id: customerId,
-                            items: items,
-                            defaultAddress: defaultAddress
-                        })
-                    });
-
-                    const data = await response.json();
-
-                    if (data.success) {
-                        // localStorage.removeItem('cart'); // clear cart
-                        console.log(data);
-                        window.location.href = data.redirect; // redirect to preview
-                    } else {
-                        toastr.error(data.message || "Something went wrong", "Error");
-                    }
-                } catch (err) {
-                    console.error(err);
-                    toastr.error("Failed to generate quotation", "Error");
-                }
+                window.location.href = `/quotation/${quotationId}/${defaultAddress}/download`;
+                localStorage.removeItem('cart');
             });
-
 
         });
     </script>
-
-    {{-- <script>
-        const STORAGE_URL = '{{ asset('storage/') }}/';
-        window.jsPDF = window.jspdf.jsPDF;
-
-        $(function() {
-
-            /* ------------------------------------
-               CUSTOMER & ADDRESS HANDLING
-            ------------------------------------ */
-            const $customer = $('#customer');
-            const $addressSelect = $('#addressSelect');
-            const $wrapper = $('#address-select-wrapper');
-            const $textarea = $('#to-address');
-
-            // initialize customer dropdown
-            $customer.select2({
-                width: '100%',
-                placeholder: 'Select a customer',
-                allowClear: true
-            });
-
-            // when a customer is selected
-            $customer.on('change', function() {
-                const customerId = $(this).val();
-                $textarea.val('');
-                $wrapper.addClass('d-none');
-                $addressSelect.empty();
-
-                if (!customerId) return;
-
-                $.get(`/customers/${customerId}/addresses`, function(addresses) {
-                    if (!addresses || addresses.length === 0) {
-                        $textarea.val('No address found.');
-                        return;
-                    }
-
-                    if (addresses.length === 1) {
-                        $textarea.val(formatAddress(addresses[0]));
-                    } else {
-                        $wrapper.removeClass('d-none');
-                        $addressSelect.append('<option value="">Select an address</option>');
-                        addresses.forEach(a => {
-                            const text =
-                                `${a.address_line_1}${a.address_line_2 ? ', ' + a.address_line_2 : ''}, ${a.city}`;
-                            $addressSelect.append(new Option(text, a.id));
-                        });
-                        $addressSelect.data('addresses', addresses);
-                    }
-                });
-            });
-
-            // address dropdown change handler
-            $addressSelect.on('change', function() {
-                const id = $(this).val();
-                const addresses = $(this).data('addresses') || [];
-                const selected = addresses.find(a => a.id == id);
-                if (selected) $textarea.val(formatAddress(selected));
-            });
-
-            // format address for textarea
-            function formatAddress(a) {
-                return `   ${a.address_line_1 || ''},
-   ${a.city || ''} ,
-   ${a.district || ''}${a.state ? ', ' + a.state : ''}${a.pincode ? ' - ' + a.pincode : ''}.`;
-            }
-
-
-
-            /* ------------------------------------
-               CART MANAGEMENT
-            ------------------------------------ */
-            const tableBody = document.getElementById('cartTableBody');
-
-            function getCart() {
-                return JSON.parse(localStorage.getItem('cart')) || [];
-            }
-
-            function saveCart(cart) {
-                localStorage.setItem('cart', JSON.stringify(cart));
-            }
-
-            function updateCartCount(count) {
-                document.querySelectorAll('.cartCount').forEach(el => {
-                    el.textContent = count;
-                    el.style.display = count > 0 ? 'inline-block' : 'none';
-                });
-            }
-
-            async function renderCart() {
-                const cart = getCart();
-                tableBody.innerHTML = '';
-
-                if (cart.length === 0) {
-                    tableBody.innerHTML =
-                        `<tr><td colspan="5" class="text-center text-muted py-4">Your cart is empty 🛒</td></tr>`;
-                    return;
-                }
-
-                // Extract all IDs
-                const ids = cart.map(item => item.id);
-
-                try {
-                    // Fetch product data from backend
-                    const response = await fetch(`/cart/products?ids[]=${ids.join('&ids[]=')}`);
-                    const products = await response.json();
-
-                    if (products.length === 0) {
-                        tableBody.innerHTML = `<tr><td colspan="5" class="text-center text-danger py-4">
-                Some products no longer exist 
-            </td></tr>`;
-                        localStorage.removeItem('cart');
-                        updateCartCount(0);
-                        return;
-                    }
-
-                    // Render rows
-                    products.forEach(product => {
-                        const cartItem = cart.find(p => p.id == product.id);
-                        const qty = cartItem ? cartItem.qty : 1;
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                <td>
-                    <div class="d-flex align-items-center">
-                        <img src="/storage/${product.image || 'images/no-image.png'}"
-                             class="rounded-2" width="42" height="42" alt="${product.name}">
-                        <div class="ms-3">
-                            <h6 class="fw-semibold mb-1 text-capitalize">${product.name}</h6>
-                            <span class="fw-normal">${product.size_mm || ''} mm</span>
-                        </div>
-                    </div>
-                </td>
-                <td><span class="fw-normal">${parseFloat(product.r_units || 0).toFixed(2)}</span></td>
-                <td><span class="fw-normal">₹${parseFloat(product.product_price || 0).toFixed(2)}</span></td>
-                <td>
-                    <div class="d-flex align-items-center gap-2">
-                        <button class="btn btn-sm btn-outline-primary btn-qty-decrease" data-id="${product.id}">-</button>
-                        <span class="fw-semibold px-2 fs-4">${qty}</span>
-                        <button class="btn btn-sm btn-outline-primary btn-qty-increase" data-id="${product.id}">+</button>
-                    </div>
-                </td>
-                <td>
-                    <button class="btn btn-sm bg-danger-subtle text-danger btn-delete" data-id="${product.id}">✕</button>
-                </td>`;
-                        tableBody.appendChild(row);
-                    });
-
-                    updateCartCount(cart.length);
-
-                } catch (err) {
-                    console.error('Error fetching cart data:', err);
-                    tableBody.innerHTML =
-                        `<tr><td colspan="5" class="text-center text-danger py-4">Failed to load cart </td></tr>`;
-                }
-            }
-
-
-            function changeQuantity(productId, delta) {
-                let cart = getCart();
-                const product = cart.find(p => p.id == productId);
-                if (!product) return;
-
-                product.qty = Math.max(1, (product.qty || 1) + delta);
-                saveCart(cart);
-                renderCart();
-            }
-
-            function deleteProduct(productId) {
-                let cart = getCart().filter(item => item.id != productId);
-                saveCart(cart);
-                renderCart();
-                if (typeof toastr !== 'undefined') toastr.success("Product removed from cart", "Removed");
-            }
-
-            tableBody.addEventListener('click', function(e) {
-                const btn = e.target.closest('button');
-                if (!btn) return;
-                const id = btn.dataset.id;
-                if (btn.classList.contains('btn-qty-increase')) changeQuantity(id, 1);
-                else if (btn.classList.contains('btn-qty-decrease')) changeQuantity(id, -1);
-                else if (btn.classList.contains('btn-delete')) deleteProduct(id);
-            });
-
-            renderCart();
-
-            $('#generatePdf').on('click', async function() {
-                const customerId = $('#customer').val();
-                const cart = JSON.parse(localStorage.getItem('cart')) || [];
-
-                if (!customerId) {
-                    toastr.error("Please select a customer", "Missing Data");
-                    return;
-                }
-                if (cart.length === 0) {
-                    toastr.error("Your cart is empty", "Missing Items");
-                    return;
-                }
-
-                // Prepare items data
-                // Prepare items data
-                const items = cart.map(item => {
-                    // Convert descriptions array → { key: value }
-                    const description = {};
-                    if (Array.isArray(item.descriptions)) {
-                        item.descriptions.forEach(desc => {
-                            description[desc.key] = desc.value;
-                        });
-                    }
-
-                    return {
-                        product_id: item.id,
-                        product_name: item.name,
-                        size_mm: item.size_mm || '',
-                        r_units: item.r_units || '',
-                        description: description, // proper JSON object now
-                        quantity: item.qty || 1,
-                        unit_price: parseFloat(item.product_price) || 0,
-                        total: ((item.qty || 1) * parseFloat(item.product_price || 0))
-                    };
-                });
-
-
-                try {
-                    const response = await fetch("{{ route('quotation.store') }}", {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        },
-                        body: JSON.stringify({
-                            customer_id: customerId,
-                            items: items
-                        })
-                    });
-
-                    const data = await response.json();
-
-                    if (data.success) {
-                        // localStorage.removeItem('cart'); // clear cart
-                        console.log(data);
-                        window.location.href = data.redirect; // redirect to preview
-                    } else {
-                        toastr.error(data.message || "Something went wrong", "Error");
-                    }
-                } catch (err) {
-                    console.error(err);
-                    toastr.error("Failed to generate quotation", "Error");
-                }
-            });
-
-
-        });
-    </script> --}}
 @endsection

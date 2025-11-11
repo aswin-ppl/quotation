@@ -20,6 +20,6 @@ class Customer extends Model
 
     public function defaultAddress()
     {
-        return $this->hasOne(CustomerAddress::class)->where('is_default', true);
+        return $this->hasOne(related: CustomerAddress::class)->where('is_default', true);
     }
 }

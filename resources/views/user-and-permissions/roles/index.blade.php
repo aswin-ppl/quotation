@@ -27,7 +27,7 @@
             <div class="d-flex flex-row-reverse my-3">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     @can('create-roles-&-permission')
-                        <a href="{{ route('roles.create') }}" class="btn btn-sm btn-primary">Create New Role</a>
+                        <a href="{{ route('roles.create') }}" class="btn btn-primary">Create New Role</a>
                     @endcan
                 </div>
             </div>
