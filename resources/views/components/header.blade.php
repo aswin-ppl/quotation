@@ -97,7 +97,7 @@
             </ul>
 
             <div class="d-block d-lg-none py-9 py-xl-0">
-                <img src="{{ asset('images/logos/logo.svg') }}" alt="matdash-img" />
+                <img src="{{ asset('images/logos/sherbrooke.png') }}" width="50" alt="sherbrooke-img" />
             </div>
             <a class="navbar-toggler p-0 border-0 nav-icon-hover-bg rounded-circle" href="javascript:void(0)"
                 data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav"
@@ -107,14 +107,6 @@
             <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
                 <div class="d-flex align-items-center justify-content-between">
                     <ul class="navbar-nav flex-row mx-auto ms-lg-auto align-items-center justify-content-center">
-                        <li class="nav-item dropdown">
-                            <a href="javascript:void(0)"
-                                class="nav-link nav-icon-hover-bg rounded-circle d-flex d-lg-none align-items-center justify-content-center"
-                                type="button" data-bs-toggle="offcanvas" data-bs-target="#mobilenavbar"
-                                aria-controls="offcanvasWithBothOptions">
-                                <iconify-icon icon="solar:sort-line-duotone" class="fs-6"></iconify-icon>
-                            </a>
-                        </li>
                         <li class="nav-item">
                             <a class="nav-link moon dark-layout nav-icon-hover-bg rounded-circle"
                                 href="javascript:void(0)">
@@ -152,8 +144,9 @@
                                 </div>
                                 <div id="cartDropdown" class="message-body" data-simplebar>
                                 </div>
-                                <div class="py-6 px-7 mb-1">
-                                    <a href="{{ route('quotation.index') }}" class="btn btn-primary w-100">Convert to Quotation</a>
+                                <div class="d-flex py-6 px-7 mb-1">
+                                    <a href="{{ route('quotation.index') }}" class="btn btn-sm btn-primary w-100 m-2">Convert to Quotation</a>
+                                    <a id="empty-cart-items" class="btn btn-sm btn-danger w-100 m-2 d-flex align-items-center justify-content-center">Empty cart</a>
                                 </div>
 
                             </div>
@@ -169,7 +162,7 @@
                             <a class="nav-link" href="javascript:void(0)" id="drop1" aria-expanded="false">
                                 <div class="d-flex align-items-center gap-2 lh-base">
                                     <img src="{{ asset('images/profile/user-1.jpg') }}" class="rounded-circle"
-                                        width="35" height="35" alt="matdash-img" />
+                                        width="35" height="35" alt="sherbrooke-img" />
                                     <iconify-icon icon="solar:alt-arrow-down-bold" class="fs-2"></iconify-icon>
                                 </div>
                             </a>
@@ -178,7 +171,7 @@
                                 <div class="position-relative px-4 pt-3 pb-2">
                                     <div class="d-flex align-items-center mb-3 pb-3 border-bottom gap-6">
                                         <img src="{{ asset('images/profile/user-1.jpg') }}" class="rounded-circle"
-                                            width="56" height="56" alt="matdash-img" />
+                                            width="56" height="56" alt="sherbrooke-img" />
                                         <div>
                                             <h5 class="mb-0 fs-12">{{ Auth::check() ? Auth::user()->name : 'Guest' }}
                                             </h5>
@@ -190,19 +183,6 @@
                                         </div>
                                     </div>
                                     <div class="message-body">
-                                        <a href="page-user-profile.html" class="p-2 dropdown-item h6 rounded-1">
-                                            My Profile
-                                        </a>
-                                        <a href="page-pricing.html" class="p-2 dropdown-item h6 rounded-1">
-                                            My Subscription
-                                        </a>
-                                        <a href="app-invoice.html" class="p-2 dropdown-item h6 rounded-1">
-                                            My Invoice <span
-                                                class="badge bg-danger-subtle text-danger rounded ms-8">4</span>
-                                        </a>
-                                        <a href="page-account-settings.html" class="p-2 dropdown-item h6 rounded-1">
-                                            Account Settings
-                                        </a>
                                         <form method="POST" action="{{ route('logout') }}">
                                             @csrf
                                             <button type="submit"
@@ -377,7 +357,7 @@
                 </li>
                 <li class="nav-item d-none d-xl-flex align-items-center">
                     <a href="index.html" class="text-nowrap nav-link">
-                        <img src="{{ asset('images/logos/logo.svg') }}" alt="matdash-img" />
+                        <img src="{{ asset('images/logos/sherbrooke.png') }}" width="50" alt="sherbrooke-img" />
                     </a>
                 </li>
                 <li class="nav-item d-none d-lg-flex align-items-center dropdown nav-icon-hover-bg rounded-circle">
@@ -523,7 +503,7 @@
             </ul>
             <div class="d-block d-xl-none">
                 <a href="index.html" class="text-nowrap nav-link">
-                    <img src="{{ asset('images/logos/logo.svg') }}" alt="matdash-img" />
+                    <img src="{{ asset('images/logos/sherbrooke.png') }}" width="50" alt="sherbrooke-img" />
                 </a>
             </div>
             <a class="navbar-toggler nav-icon-hover p-0 border-0 nav-icon-hover-bg rounded-circle"
@@ -536,14 +516,14 @@
             <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
                 <div class="d-flex align-items-center justify-content-between px-0 px-xl-8">
                     <ul class="navbar-nav flex-row mx-auto ms-lg-auto align-items-center justify-content-center">
-                        <li class="nav-item dropdown">
+                        {{-- <li class="nav-item dropdown">
                             <a href="javascript:void(0)"
                                 class="nav-link nav-icon-hover-bg rounded-circle d-flex d-lg-none align-items-center justify-content-center"
                                 type="button" data-bs-toggle="offcanvas" data-bs-target="#mobilenavbar"
                                 aria-controls="offcanvasWithBothOptions">
                                 <iconify-icon icon="solar:sort-line-duotone" class="fs-6"></iconify-icon>
                             </a>
-                        </li>
+                        </li> --}}
                         <li class="nav-item">
                             <a class="nav-link nav-icon-hover-bg rounded-circle moon dark-layout"
                                 href="javascript:void(0)">
@@ -690,7 +670,7 @@
                             <a class="nav-link" href="javascript:void(0)" id="drop1" aria-expanded="false">
                                 <div class="d-flex align-items-center gap-2 lh-base">
                                     <img src="{{ asset('images/profile/user-1.jpg') }}" class="rounded-circle"
-                                        width="35" height="35" alt="matdash-img" />
+                                        width="35" height="35" alt="sherbrooke-img" />
                                     <iconify-icon icon="solar:alt-arrow-down-bold" class="fs-2"></iconify-icon>
                                 </div>
                             </a>
@@ -699,7 +679,7 @@
                                 <div class="position-relative px-4 pt-3 pb-2">
                                     <div class="d-flex align-items-center mb-3 pb-3 border-bottom gap-6">
                                         <img src="{{ asset('images/profile/user-1.jpg') }}" class="rounded-circle"
-                                            width="56" height="56" alt="matdash-img" />
+                                            width="56" height="56" alt="sherbrooke-img" />
                                         <div>
                                             <h5 class="mb-0 fs-12">David McMichael <span
                                                     class="text-success fs-11">Pro</span>

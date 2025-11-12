@@ -41,15 +41,24 @@ class SettingController extends Controller
     public function update(UpdateSettingsRequest $request)
     {
         $data = $request->only([
-            'company_name', 
-            'company_mobile', 
-            'company_email', 
-            'company_pincode', 
-            'company_city', 
-            'company_district', 
-            'company_state', 
+            'company_name',
+            'company_mobile',
+            'company_email',
+            'company_pincode',
+            'company_city',
+            'company_district',
+            'company_state',
             'company_address'
         ]);
+
+        if ($request->hasFile('company_logo')) {
+            $file = $request->file('company_logo');
+            $filename = 'company_logo_' . time() . '.' . $file->getClientOriginalExtension();
+            $path = $file->storeAs('uploads/settings', $filename, 'public');
+
+            // Save logo path in settings
+            Setting::set('company_logo', $path);
+        }
 
         foreach ($data as $key => $value) {
             Setting::set($key, $value);

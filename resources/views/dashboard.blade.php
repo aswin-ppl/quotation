@@ -27,14 +27,11 @@
         }
 
         .search-wrapper input.form-control {
-            border: 2px solid #e0e0e0;
             transition: all 0.3s ease;
-            background-color: #f8f9fa;
         }
 
         .search-wrapper input.form-control:focus {
             border-color: #0d6efd;
-            background-color: #ffffff;
             box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
             outline: none;
         }
@@ -433,6 +430,33 @@
                     }
                 });
             }
+
+            //empty cart items
+            if (e.target.closest('#empty-cart-items')) {
+                localStorage.removeItem('cart');
+                updateCartCount();
+                updateCartDropdown();
+
+                // Reset product buttons to default "Add to Cart" state
+                // Find each product card and re-render its UI based on the now-empty cart
+                document.querySelectorAll('.product-card').forEach(card => {
+                    const productEl = card.querySelector('[data-product]');
+                    if (!productEl) return;
+
+                    // Prefer the closest container that wraps the add-to-cart button; fallback to parentElement
+                    const container = productEl.closest('.d-flex.justify-content-center.align-items-center') || productEl.parentElement;
+                    if (!container) return;
+
+                    try {
+                        const prod = JSON.parse(productEl.getAttribute('data-product'));
+                        if (prod && prod.id) {
+                            updateProductUI(prod.id, container);
+                        }
+                    } catch (err) {
+                        // ignore parse errors
+                    }
+                });
+            };
         });
 
         // Initialize on page load
@@ -467,9 +491,10 @@
                 }
             }
 
-            function fetchProducts(q) {
+            function fetchProducts(q, page = 1, pushHistory = true) {
                 const url = new URL("{{ route('dashboard.products') }}", window.location.origin);
                 if (q) url.searchParams.set('q', q);
+                if (page) url.searchParams.set('page', page);
 
                 fetch(url.toString(), {
                         headers: {
@@ -480,10 +505,13 @@
                     .then(json => {
                         if (json && json.html !== undefined) {
                             container.innerHTML = json.html;
-                            // re-run initialization for add-to-cart buttons
-                            document.querySelectorAll('.add-to-cart').forEach(btn => {
-                                // no-op here: existing delegated event listeners handle clicks
-                            });
+                            // re-run initialization for add-to-cart buttons (delegated handlers remain)
+                            if (pushHistory) {
+                                const stateUrl = new URL(window.location.href);
+                                if (q) stateUrl.searchParams.set('q', q); else stateUrl.searchParams.delete('q');
+                                if (page && page > 1) stateUrl.searchParams.set('page', page); else stateUrl.searchParams.delete('page');
+                                history.pushState(null, '', stateUrl.toString());
+                            }
                         }
                     }).catch(err => {
                         console.error('Failed to fetch products partial', err);
@@ -494,18 +522,36 @@
                 setClearVisibility();
                 const q = e.target.value;
                 if (timeout) clearTimeout(timeout);
-                timeout = setTimeout(() => fetchProducts(q), 300);
+                timeout = setTimeout(() => fetchProducts(q, 1), 300);
             });
 
             clearBtn.addEventListener('click', function() {
                 input.value = '';
                 setClearVisibility();
-                fetchProducts('');
+                fetchProducts('', 1);
                 history.replaceState(null, '', '{{ route('dashboard') }}');
             });
 
             // initial visibility
             setClearVisibility();
+
+            // AJAX pagination: intercept clicks on pagination links inside products container
+            container.addEventListener('click', function(ev) {
+                const a = ev.target.closest('a');
+                if (!a) return;
+                const wrapper = a.closest('.pagination-wrapper');
+                if (!wrapper) return;
+                ev.preventDefault();
+                try {
+                    const linkUrl = new URL(a.href);
+                    const page = linkUrl.searchParams.get('page') || 1;
+                    const qParam = linkUrl.searchParams.get('q') || input.value || '';
+                    fetchProducts(qParam, page);
+                } catch (e) {
+                    // fallback: follow link
+                    window.location.href = a.href;
+                }
+            });
         })();
     </script>
 @endsection

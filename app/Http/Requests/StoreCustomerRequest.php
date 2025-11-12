@@ -28,13 +28,30 @@ class StoreCustomerRequest extends FormRequest
             'mobile' => 'required|string|unique:customers,mobile',
             'status' => 'required|in:active,inactive',
 
-            // Address fields
-            'address_line_1' => 'required|string|max:255',
-            'address_line_2' => 'nullable|string|max:255',
-            'city_id' => 'required|exists:cities,id',
-            'district_id' => 'required|exists:districts,id',
-            'state_id' => 'required|exists:states,id',
-            'pincode_id' => 'required|exists:pincodes,id',
+            // Addresses array validation
+            'addresses' => 'required|array|min:1',
+            'addresses.*.address_line_1' => 'required|string|max:500',
+            'addresses.*.state_id' => 'required|exists:states,id',
+            'addresses.*.district_id' => 'required|exists:districts,id',
+            'addresses.*.city_id' => 'required|exists:cities,id',
+            'addresses.*.pincode_id' => 'required|exists:pincodes,id',
+            'addresses.*.type' => 'required|in:home,work,billing,shipping',
+
+            // Default address index
+            'default_address' => 'required|integer|min:0'
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'addresses.required' => 'At least one address is required.',
+            'addresses.min' => 'At least one address is required.',
+            'addresses.*.address_line_1.required' => 'Address line is required for all addresses.',
+            'addresses.*.city_id.required' => 'City is required for all addresses.',
+            'addresses.*.district_id.required' => 'District is required for all addresses.',
+            'addresses.*.state_id.required' => 'State is required for all addresses.',
+            'addresses.*.pincode_id.required' => 'Pincode is required for all addresses.',
         ];
     }
 }

@@ -37,8 +37,11 @@
 
     {{-- pagination links --}}
     <div class="w-100 mt-4">
-        <div class="d-flex justify-content-center">
-            {{ $products->links() }}
+        <div class="d-flex justify-content-end">
+            {{-- Use Bootstrap pagination view to avoid Tailwind defaults interfering with layout --}}
+            <nav class="pagination-wrapper" aria-label="Products pagination">
+                {{ $products->links('pagination::bootstrap-5') }}
+            </nav>
         </div>
     </div>
 @endif

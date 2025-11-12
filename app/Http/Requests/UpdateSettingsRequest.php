@@ -30,6 +30,7 @@ class UpdateSettingsRequest extends FormRequest
             'company_district' => 'nullable|string|max:255',
             'company_state' => 'nullable|string|max:255',
             'company_address' => 'nullable|string|max:500',
+            'company_logo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ];
     }
 }

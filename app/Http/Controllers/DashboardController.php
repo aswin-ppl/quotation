@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DownloadedQuotation;
 use Illuminate\Http\Request;
 use App\Models\Master\Product;
 use App\Models\Quotation;
@@ -14,7 +15,7 @@ class DashboardController extends Controller
     public function index()
     {
         // Products: allow search by name and paginate 9 per page
-        $productsQuery = Product::withTrashed()->with('descriptions');
+        $productsQuery = Product::with('descriptions');
         $search = request()->query('q');
         if ($search) {
             $productsQuery->where('name', 'like', '%' . $search . '%');
@@ -22,10 +23,18 @@ class DashboardController extends Controller
         $products = $productsQuery->orderBy('created_at', 'desc')->paginate(9)->withQueryString();
 
         // Quotations summary
-        $total = Quotation::count();
-        $today = Quotation::whereDate('created_at', Carbon::today())->count();
-        $week = Quotation::whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->count();
-        $month = Quotation::whereYear('created_at', Carbon::now()->year)->whereMonth('created_at', Carbon::now()->month)->count();
+        $total = DownloadedQuotation::sum('download_count');
+        $today = DownloadedQuotation::whereDate('created_at', Carbon::today())
+            ->sum('download_count');
+
+        $week = DownloadedQuotation::whereBetween('created_at', [
+            Carbon::now()->startOfWeek(),
+            Carbon::now()->endOfWeek()
+        ])->sum('download_count');
+
+        $month = DownloadedQuotation::whereYear('created_at', Carbon::now()->year)
+            ->whereMonth('created_at', Carbon::now()->month)
+            ->sum('download_count');
 
         $quotationCounts = [
             'total' => $total,
@@ -43,7 +52,7 @@ class DashboardController extends Controller
     public function productsPartial(Request $request)
     {
         try {
-            $productsQuery = Product::withTrashed()->with('descriptions');
+            $productsQuery = Product::with('descriptions');
             $search = $request->query('q');
             if ($search) {
                 $productsQuery->where('name', 'like', '%' . $search . '%');

@@ -31372,7 +31372,7 @@ pre.code-view code.hljs {
     color: var(--bs-primary);
 }
 .message-body {
-    max-height: 360px;
+    /* max-height: 360px; */
 }
 .dropdown-menu-nav {
     min-width: 860px !important;

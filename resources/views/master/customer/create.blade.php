@@ -5,12 +5,28 @@
         .select2-selection__arrow {
             display: none !important;
         }
-
-        #status {
-            height: 58px;
+        .address-item {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .address-text {
+            flex: 1;
+            font-size: 14px;
+            color: #333;
+        }
+        .address-item .btn-danger {
+            padding: 4px 10px;
+            font-size: 12px;
         }
     </style>
 @endsection
+
 @section('content')
     @php
         $parent_title = 'Master';
@@ -18,22 +34,16 @@
     @endphp
     <div class="body-wrapper">
         <div class="container-fluid">
-
             <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: '&gt;'" class="mb-3">
                 <ol class="breadcrumb bg-primary-subtle px-3 py-2 rounded">
                     <li class="breadcrumb-item">
-                        <a href="javascript:void(0)" class="text-primary d-flex align-items-center"><i
-                                class="ti ti-home fs-4 mt-1"></i></a>
+                        <a href="javascript:void(0)" class="text-primary d-flex align-items-center">
+                            <i class="ti ti-home fs-4 mt-1"></i>
+                        </a>
                     </li>
-                    <li class="breadcrumb-item">
-                        <a href="javascript:void(0)" class="text-primary">{{ $parent_title }}</a>
-                    </li>
-                    <li class="breadcrumb-item active text-primary " aria-current="page">
-                        <a href="{{ route('customers.index') }}" class="text-primary">{{ $page_title }}</a>
-                    </li>
-                    <li class="breadcrumb-item active text-primary " aria-current="page">
-                        Create
-                    </li>
+                    <li class="breadcrumb-item"><a href="javascript:void(0)" class="text-primary">{{ $parent_title }}</a></li>
+                    <li class="breadcrumb-item"><a href="{{ route('customers.index') }}" class="text-primary">{{ $page_title }}</a></li>
+                    <li class="breadcrumb-item active text-primary" aria-current="page">Create</li>
                 </ol>
             </nav>
 
@@ -50,9 +60,7 @@
                                         id="name" name="name" value="{{ old('name') }}" required>
                                     <label for="name">Name <span class="text-danger">*</span></label>
                                     @error('name')
-                                        <div class="invalid-feedback d-block">
-                                            {{ $message }}
-                                        </div>
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
                                     @enderror
                                 </div>
                             </div>
@@ -64,9 +72,7 @@
                                         id="email" name="email" value="{{ old('email') }}" required>
                                     <label for="email">Email <span class="text-danger">*</span></label>
                                     @error('email')
-                                        <div class="invalid-feedback d-block">
-                                            {{ $message }}
-                                        </div>
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
                                     @enderror
                                 </div>
                             </div>
@@ -78,112 +84,102 @@
                                         id="mobile" name="mobile" value="{{ old('mobile') }}" required>
                                     <label for="mobile">Mobile <span class="text-danger">*</span></label>
                                     @error('mobile')
-                                        <div class="invalid-feedback d-block">
-                                            {{ $message }}
-                                        </div>
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
                                     @enderror
                                 </div>
                             </div>
 
                             {{-- Status --}}
-                            <div class="col-md-6 mb-4">
-                                <select class="form-select @error('status') is-invalid @enderror" id="status"
-                                    name="status" required>
-                                    <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>Active
-                                    </option>
-                                    <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>Inactive
-                                    </option>
-                                </select>
-                                @error('status')
-                                    <div class="invalid-feedback d-block">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-                            </div>
-
-                            {{-- State --}}
-                            <div class="col-md-6 mb-4">
-                                <label for="state">State <span class="text-danger">*</span></label>
-                                <select id="state" name="state_id"
-                                    class="form-select @error('state_id') is-invalid @enderror" required>
-                                    <option value="">Select State</option>
-                                </select>
-                                @error('state_id')
-                                    <div class="invalid-feedback d-block">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-                            </div>
-
-                            {{-- District --}}
-                            <div class="col-md-6 mb-4">
-                                <label for="district">District <span class="text-danger">*</span></label>
-                                <select id="district" name="district_id"
-                                    class="form-select @error('district_id') is-invalid @enderror" required>
-                                    <option value="">Select District</option>
-                                </select>
-                                @error('district_id')
-                                    <div class="invalid-feedback d-block">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-                            </div>
-
-                            {{-- City --}}
-                            <div class="col-md-6 mb-4">
-                                <label for="city">City <span class="text-danger">*</span></label>
-                                <select id="city" name="city_id"
-                                    class="form-selec @error('city_id') is-invalid @enderror" required>
-                                    <option value="">Select City</option>
-                                </select>
-                                @error('city_id')
-                                    <div class="invalid-feedback d-block">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-                            </div>
-
-                            {{-- Pincode --}}
-                            <div class="col-md-6 mb-4">
-                                <label for="pincode">Pincode <span class="text-danger">*</span></label>
-                                <select id="pincode" name="pincode_id"
-                                    class="form-select @error('pincode_id') is-invalid @enderror" required>
-                                    <option value="">Select Pincode</option>
-                                </select>
-                                @error('pincode_id')
-                                    <div class="invalid-feedback d-block">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-                            </div>
-
-                            {{-- Address 1 --}}
                             <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="address_line_1">Address Line 1 <span class="text-danger">*</span></label>
-                                    <textarea class="form-control @error('address_line_1') is-invalid @enderror" rows="3" name="address_line_1"
-                                        required>{{ old('address_line_1') }}</textarea>
-                                    @error('address_line_1')
-                                        <div class="invalid-feedback d-block">
-                                            {{ $message }}
-                                        </div>
+                                <div class="form-floating mb-3">
+                                    <select class="form-select @error('status') is-invalid @enderror" id="status"
+                                        name="status" required>
+                                        <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>Active</option>
+                                        <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                                    </select>
+                                    <label for="status">Status <span class="text-danger">*</span></label>
+                                    @error('status')
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
                                     @enderror
                                 </div>
                             </div>
+                        </div>
 
-                            {{-- Address 2 --}}
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="address_line_2">Address Line 2</label>
-                                    <textarea class="form-control" rows="3" name="address_line_2">{{ old('address_line_2') }}</textarea>
-                                </div>
+                        <hr class="my-4">
+                        <h5 class="mb-3">Add Address</h5>
+
+                        {{-- Address Input Section --}}
+                        <div class="row">
+                            {{-- Address Line --}}
+                            <div class="col-md-12 mb-3">
+                                <label for="address_line">Address Line <span class="text-danger">*</span></label>
+                                <textarea id="address_line" class="form-control" rows="2" 
+                                          placeholder="Street, Building, Apartment"></textarea>
                             </div>
 
-                            <div class="col-12 mt-5">
-                                <div class="d-md-flex justify-content-between align-items-center">
-                                    <a href="{{ route('customers.index') }}" class="btn btn-dark hstack gap-6">Back</a>
-                                    <button type="submit" class="btn btn-primary hstack gap-6">Create</button>
-                                </div>
+                            {{-- State --}}
+                            <div class="col-md-6 mb-3">
+                                <label for="state">State <span class="text-danger">*</span></label>
+                                <select id="state" class="form-select">
+                                    <option value="">Select State</option>
+                                </select>
+                            </div>
+
+                            {{-- District --}}
+                            <div class="col-md-6 mb-3">
+                                <label for="district">District <span class="text-danger">*</span></label>
+                                <select id="district" class="form-select">
+                                    <option value="">Select District</option>
+                                </select>
+                            </div>
+
+                            {{-- City --}}
+                            <div class="col-md-6 mb-3">
+                                <label for="city">City <span class="text-danger">*</span></label>
+                                <select id="city" class="form-select">
+                                    <option value="">Select City</option>
+                                </select>
+                            </div>
+
+                            {{-- Pincode --}}
+                            <div class="col-md-6 mb-3">
+                                <label for="pincode">Pincode <span class="text-danger">*</span></label>
+                                <select id="pincode" class="form-select">
+                                    <option value="">Select Pincode</option>
+                                </select>
+                            </div>
+
+                            {{-- Address Type --}}
+                            <div class="col-md-6 mb-3">
+                                <label for="address_type">Address Type <span class="text-danger">*</span></label>
+                                <select id="address_type" class="form-select">
+                                    <option value="home">Home</option>
+                                    <option value="work">Work</option>
+                                    <option value="billing">Billing</option>
+                                    <option value="shipping">Shipping</option>
+                                </select>
+                            </div>
+
+                            <div class="col-12 mb-4">
+                                <button type="button" id="add-address-btn" class="btn btn-success">
+                                    <i class="ti ti-plus"></i> Add Address
+                                </button>
+                            </div>
+                        </div>
+
+                        {{-- Added Addresses Display --}}
+                        <div id="added-addresses-container" style="display: none;">
+                            <hr class="my-4">
+                            <h5 class="mb-3">Added Addresses</h5>
+                            <div id="address-list">
+                                <!-- Addresses will be appended here -->
+                            </div>
+                        </div>
+
+                        <div class="col-12 mt-5">
+                            <div class="d-md-flex justify-content-between align-items-center">
+                                <a href="{{ route('customers.index') }}" class="btn btn-dark hstack gap-6">Back</a>
+                                <button type="submit" class="btn btn-primary hstack gap-6">Create Customer</button>
                             </div>
                         </div>
                     </form>
@@ -198,152 +194,229 @@
 
     <script>
         $(document).ready(function() {
-            $(document).ready(function() {
+            let addressIndex = 0;
+            let addresses = []; // Store address objects
 
-                // --- Initialize all Select2s ---
-                $('#state, #district, #city, #pincode').select2({
-                    width: '100%',
-                    placeholder: 'Select an option',
-                    allowClear: true
-                });
+            // Initialize Select2
+            $('#state, #district, #city, #pincode').select2({
+                width: '100%',
+                placeholder: 'Select an option',
+                allowClear: true
+            });
 
-                // --- Load States ---
-                $.get('/states', function(states) {
-                    $('#state').empty().append('<option></option>');
-                    states.forEach(s => $('#state').append(new Option(s.name, s.id)));
-                });
+            // Load States
+            $.get('/states', function(states) {
+                $('#state').empty().append('<option></option>');
+                states.forEach(s => $('#state').append(new Option(s.name, s.id)));
+            });
 
-                // --- State -> District ---
-                $('#state').on('change', function() {
-                    const id = $(this).val();
-                    resetBelow('#state');
-                    if (!id) return;
-
+            // State -> District
+            $('#state').on('change', function() {
+                const id = $(this).val();
+                $('#district, #city, #pincode').empty().append('<option></option>').val(null).trigger('change.select2');
+                if (id) {
                     $.get(`/districts/${id}`, function(districts) {
                         fillSelect('#district', districts);
                     });
-                });
-
-                // --- District -> City ---
-                $('#district').on('change', function() {
-                    const id = $(this).val();
-                    resetBelow('#district');
-                    if (!id) return;
-
-                    $.get(`/cities/${id}`, function(cities) {
-                        fillSelect('#city', cities);
-                    });
-                });
-
-                // --- City -> Pincode (and auto-select first) ---
-                $('#city').on('change', function() {
-                    const id = $(this).val();
-                    resetBelow('#city');
-                    if (!id) return;
-
-                    $.get(`/pincodes/${id}`, function(pincodes) {
-                        fillSelect('#pincode', pincodes, 'code');
-
-                        // auto-select first pincode if available
-                        if (pincodes.length > 0) {
-                            const firstPin = pincodes[0];
-                            $('#pincode').val(firstPin.id).trigger('change.select2');
-                        }
-                    });
-                });
-
-                // --- Pincode async search (bottom-up entry) ---
-                $('#pincode').select2({
-                    width: '100%',
-                    placeholder: 'Type or select a pincode',
-                    allowClear: true,
-                    ajax: {
-                        url: '/pincode/search',
-                        dataType: 'json',
-                        delay: 300,
-                        data: params => ({
-                            q: params.term
-                        }),
-                        processResults: data => ({
-                            results: data.map(item => ({
-                                id: item.id,
-                                text: item.code
-                            }))
-                        })
-                    }
-                });
-
-                // --- When pincode selected manually ---
-                $('#pincode').on('select2:select', function(e) {
-                    const pincodeId = e.params.data.id;
-
-                    $.get(`/pincode/${pincodeId}`, function(response) {
-                        const cities = response.cities || [];
-
-                        // Update District + State immediately
-                        if (response.state && response.district) {
-                            $('#state')
-                                .empty()
-                                .append(new Option(response.state, response.state_id, true,
-                                    true))
-                                .trigger('change.select2');
-
-                            $('#district')
-                                .empty()
-                                .append(new Option(response.district, response.district_id,
-                                    true, true))
-                                .trigger('change.select2');
-                        }
-
-                        // Update city dropdown
-                        fillSelect('#city', cities);
-
-                        if (cities.length === 1) {
-                            const c = cities[0];
-                            $('#city')
-                                .val(c.id)
-                                .trigger('change.select2');
-                        } else if (cities.length > 1) {
-                            // Let user pick city if multiple
-                            $('#city').off('change.auto').on('change.auto', function() {
-                                const city = cities.find(x => x.id == $(this)
-                                    .val());
-                                if (city) selectChain(city);
-                            });
-                        }
-                    });
-                });
-
-                // --- Helper: fill Select2 dropdown ---
-                function fillSelect(selector, data, textKey = 'name') {
-                    const $el = $(selector);
-                    $el.empty().append('<option></option>');
-                    data.forEach(d => $el.append(new Option(d[textKey] || d.name, d.id)));
-                    $el.trigger('change.select2');
-                }
-
-                // --- Helper: reset all fields below a certain select ---
-                function resetBelow(selector) {
-                    const order = ['#state', '#district', '#city', '#pincode'];
-                    const idx = order.indexOf(selector);
-                    order.slice(idx + 1).forEach(sel => {
-                        $(sel).empty().append('<option></option>').val(null).trigger(
-                            'change.select2');
-                    });
-                }
-
-                // --- Helper: select chain (state, district, city) ---
-                function selectChain(city) {
-                    $('#state').empty().append(new Option(city.state, city.state_id, true, true)).trigger(
-                        'change.select2');
-                    $('#district').empty().append(new Option(city.district, city.district_id, true, true))
-                        .trigger('change.select2');
-                    $('#city').empty().append(new Option(city.name, city.id, true, true)).trigger(
-                        'change.select2');
                 }
             });
 
-            // toaster
+            // District -> City
+            $('#district').on('change', function() {
+                const id = $(this).val();
+                $('#city, #pincode').empty().append('<option></option>').val(null).trigger('change.select2');
+                if (id) {
+                    $.get(`/cities/${id}`, function(cities) {
+                        fillSelect('#city', cities);
+                    });
+                }
+            });
+
+            // City -> Pincode
+            $('#city').on('change', function() {
+                const id = $(this).val();
+                $('#pincode').empty().append('<option></option>').val(null).trigger('change.select2');
+                if (id) {
+                    $.get(`/pincodes/${id}`, function(pincodes) {
+                        fillSelect('#pincode', pincodes, 'code');
+                        if (pincodes.length > 0) {
+                            $('#pincode').val(pincodes[0].id).trigger('change.select2');
+                        }
+                    });
+                }
+            });
+
+            // Pincode async search
+            $('#pincode').select2({
+                width: '100%',
+                placeholder: 'Type or select a pincode',
+                allowClear: true,
+                ajax: {
+                    url: '/pincode/search',
+                    dataType: 'json',
+                    delay: 300,
+                    data: params => ({ q: params.term }),
+                    processResults: data => ({
+                        results: data.map(item => ({ id: item.id, text: item.code }))
+                    })
+                }
+            });
+
+            // Pincode reverse lookup
+            $('#pincode').on('select2:select', function(e) {
+                const pincodeId = e.params.data.id;
+                $.get(`/pincode/${pincodeId}`, function(response) {
+                    if (response.state && response.district) {
+                        $('#state').empty().append(new Option(response.state, response.state_id, true, true)).trigger('change.select2');
+                        $('#district').empty().append(new Option(response.district, response.district_id, true, true)).trigger('change.select2');
+                    }
+                    const cities = response.cities || [];
+                    fillSelect('#city', cities);
+                    if (cities.length === 1) {
+                        $('#city').val(cities[0].id).trigger('change.select2');
+                    }
+                });
+            });
+
+            // Add Address Button Click
+            $('#add-address-btn').on('click', function() {
+                const addressLine = $('#address_line').val().trim();
+                const stateId = $('#state').val();
+                const stateName = $('#state option:selected').text();
+                const districtId = $('#district').val();
+                const districtName = $('#district option:selected').text();
+                const cityId = $('#city').val();
+                const cityName = $('#city option:selected').text();
+                const pincodeId = $('#pincode').val();
+                const pincodeCode = $('#pincode option:selected').text();
+                const addressType = $('#address_type').val();
+
+                // Validation
+                if (!addressLine) {
+                    toastr.error('Please enter address line', 'Error');
+                    $('#address_line').focus();
+                    return;
+                }
+                if (!stateId || !districtId || !cityId || !pincodeId) {
+                    toastr.error('Please select State, District, City, and Pincode', 'Error');
+                    return;
+                }
+
+                // Create address object
+                const address = {
+                    index: addressIndex,
+                    address_line: addressLine,
+                    state_id: stateId,
+                    state_name: stateName,
+                    district_id: districtId,
+                    district_name: districtName,
+                    city_id: cityId,
+                    city_name: cityName,
+                    pincode_id: pincodeId,
+                    pincode_code: pincodeCode,
+                    type: addressType
+                };
+
+                // Store address
+                addresses.push(address);
+
+                // Display formatted address
+                renderAddresses();
+
+                // Clear form
+                clearAddressForm();
+
+                // Show addresses container
+                $('#added-addresses-container').show();
+
+                addressIndex++;
+            });
+
+            // Render all addresses
+            function renderAddresses() {
+                $('#address-list').empty();
+
+                addresses.forEach((addr, idx) => {
+                    const isDefault = idx === 0;
+                    const formattedAddress = `${addr.address_line}, ${addr.city_name}, ${addr.district_name}, ${addr.state_name} - ${addr.pincode_code}`;
+
+                    const addressHtml = `
+                        <div class="address-item" data-index="${addr.index}">
+                            <input type="radio" name="default_address" value="${addr.index}" 
+                                   ${isDefault ? 'checked' : ''} class="form-check-input">
+                            
+                            <span class="address-text">${formattedAddress}</span>
+                            
+                            <button type="button" class="btn btn-danger btn-sm remove-address" 
+                                    data-index="${addr.index}">
+                                <i class="ti ti-trash"></i> Delete
+                            </button>
+
+                            <!-- Hidden inputs for form submission -->
+                            <input type="hidden" name="addresses[${addr.index}][address_line_1]" value="${addr.address_line}">
+                            <input type="hidden" name="addresses[${addr.index}][state_id]" value="${addr.state_id}">
+                            <input type="hidden" name="addresses[${addr.index}][district_id]" value="${addr.district_id}">
+                            <input type="hidden" name="addresses[${addr.index}][city_id]" value="${addr.city_id}">
+                            <input type="hidden" name="addresses[${addr.index}][pincode_id]" value="${addr.pincode_id}">
+                            <input type="hidden" name="addresses[${addr.index}][type]" value="${addr.type}">
+                        </div>
+                    `;
+
+                    $('#address-list').append(addressHtml);
+                });
+            }
+
+            // Remove address
+            $(document).on('click', '.remove-address', function() {
+                const indexToRemove = $(this).data('index');
+                
+                if (addresses.length === 1) {
+                    toastr.error('At least one address is required', 'Error');
+                    return;
+                }
+
+                // Remove from array
+                addresses = addresses.filter(addr => addr.index !== indexToRemove);
+
+                // Re-render
+                renderAddresses();
+
+                // Hide container if no addresses
+                if (addresses.length === 0) {
+                    $('#added-addresses-container').hide();
+                }
+
+                toastr.success('Address removed', 'Success');
+            });
+
+            // Clear address form
+            function clearAddressForm() {
+                $('#address_line').val('');
+                $('#state').val(null).trigger('change.select2');
+                $('#district').empty().append('<option></option>').val(null).trigger('change.select2');
+                $('#city').empty().append('<option></option>').val(null).trigger('change.select2');
+                $('#pincode').empty().append('<option></option>').val(null).trigger('change.select2');
+                $('#address_type').val('home');
+            }
+
+            // Form submission validation
+            $('#customerForm').on('submit', function(e) {
+                if (addresses.length === 0) {
+                    e.preventDefault();
+                    toastr.error('Please add at least one address', 'Error');
+                    return false;
+                }
+            });
+
+            // Helper function
+            function fillSelect(selector, data, textKey = 'name') {
+                const $el = $(selector);
+                $el.empty().append('<option></option>');
+                data.forEach(d => $el.append(new Option(d[textKey] || d.name, d.id)));
+                $el.trigger('change.select2');
+            }
+
+            // Toastr config
             toastr.options = {
                 "closeButton": true,
                 "progressBar": true,

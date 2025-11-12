@@ -132,7 +132,8 @@
                 {{-- <div id="quotation-preview-container"></div>    --}}
                 <div class="row align-items-center mt-3 justify-content-center">
                     <div class="col-md-6 text-center">
-                        <button id="downloadPdf" data-id="" data-address="" class="btn btn-primary">Download PDF</button>
+                        <button id="downloadPdf" data-id="" data-address="" class="btn btn-primary">Download
+                            PDF</button>
                     </div>
                 </div>
             </div>
@@ -436,6 +437,21 @@
 
             renderCart();
 
+            document.addEventListener('click', e => {
+                // check if the preview container is visible
+                const previewContainer = document.querySelector('.preview-container');
+
+                // only trigger if visible (no 'd-none')
+                if (
+                    previewContainer &&
+                    !previewContainer.classList.contains('d-none') &&
+                    e.target.closest('.btn-qty-increase, .btn-qty-decrease, .btn-delete')
+                ) {
+                    $('#generatePreview').click();
+                }
+            });
+
+
             $('#generatePreview').on('click', async function() {
                 const customerId = $('#customer').val();
                 const cart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -516,9 +532,7 @@
             $('#downloadPdf').on('click', async function() {
                 let quotationId = this.getAttribute('data-id');
                 let defaultAddress = this.getAttribute('data-address');
-
                 window.location.href = `/quotation/${quotationId}/${defaultAddress}/download`;
-                localStorage.removeItem('cart');
             });
 
         });

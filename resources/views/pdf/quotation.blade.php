@@ -26,7 +26,7 @@
 
         /* Main Container with Border */
         .page-container {
-            /* border: 2px solid #1e40af; */
+            /* border: 2px solid #044b26; */
             border: 2px solid transparent;
             padding: 20px;
             margin: 0 auto;
@@ -34,7 +34,7 @@
 
         /* Professional Header with Brand Identity */
         .header-wrapper {
-            border-bottom: 3px solid #1e40af;
+            border-bottom: 3px solid #044b26;
             padding-bottom: 20px;
             margin-bottom: 25px;
         }
@@ -53,7 +53,7 @@
 
         .company-info h1 {
             font-size: 32px;
-            color: #1e40af;
+            color: #044b26;
             font-weight: bold;
             margin-bottom: 5px;
             letter-spacing: -0.5px;
@@ -75,7 +75,7 @@
 
         .quotation-badge {
             display: inline-block;
-            background: #1e40af;
+            background: #044b26;
             color: #ffffff;
             padding: 8px 20px;
             font-size: 20px;
@@ -87,7 +87,7 @@
         .quotation-meta {
             background: #f1f5f9;
             padding: 10px 15px;
-            border-left: 4px solid #1e40af;
+            border-left: 4px solid #044b26;
             text-align: left;
             display: inline-block;
             width: 100%;
@@ -100,7 +100,7 @@
         }
 
         .quotation-meta strong {
-            color: #1e40af;
+            color: #044b26;
             font-weight: bold;
             display: inline-block;
             width: 80px;
@@ -133,14 +133,14 @@
             letter-spacing: 1px;
             margin-bottom: 10px;
             font-weight: bold;
-            border-bottom: 2px solid #1e40af;
+            border-bottom: 2px solid #044b26;
             padding-bottom: 5px;
             display: inline-block;
         }
 
         .address-box .company-name {
             font-size: 14px;
-            color: #1e40af;
+            color: #044b26;
             font-weight: bold;
             margin-bottom: 8px;
             display: block;
@@ -164,8 +164,8 @@
         }
 
         .product-table thead {
-            background: linear-gradient(to bottom, #1e40af 0%, #1e3a8a 100%);
-            background: #1e40af;
+            background: linear-gradient(to bottom, #044b26 0%, #008842 100%);
+            background: #044b26;
         }
 
         .product-table th {
@@ -176,7 +176,7 @@
             font-size: 9px;
             letter-spacing: 0.8px;
             color: #ffffff;
-            border-right: 1px solid #3b82f6;
+            border-right: 1px solid #008842;
         }
 
         .product-table th:last-child {
@@ -222,7 +222,7 @@
 
         .product-name {
             font-weight: bold;
-            color: #1e40af;
+            color: #044b26;
             font-size: 11px;
         }
 
@@ -290,13 +290,13 @@
         .notes-box {
             background: #f8fafc;
             border: 1px solid #e2e8f0;
-            border-left: 4px solid #1e40af;
+            border-left: 4px solid #044b26;
             padding: 15px;
         }
 
         .notes-box h4 {
             font-size: 11px;
-            color: #1e40af;
+            color: #044b26;
             margin-bottom: 8px;
             font-weight: bold;
         }
@@ -322,7 +322,7 @@
         }
 
         .totals-table tr.grand-total {
-            background: #1e40af;
+            background: #044b26;
             border: none;
         }
 
@@ -348,7 +348,7 @@
 
         .totals-table td:last-child {
             text-align: right;
-            color: #1e40af;
+            color: #044b26;
             font-weight: bold;
             font-size: 11px;
         }
@@ -385,7 +385,7 @@
 
         .footer h4 {
             font-size: 10px;
-            color: #1e40af;
+            color: #044b26;
             margin-bottom: 5px;
             font-weight: bold;
         }
@@ -398,7 +398,7 @@
 
         .signature-line {
             margin-top: 40px;
-            border-top: 2px solid #1e40af;
+            border-top: 2px solid #044b26;
             width: 200px;
             padding-top: 5px;
             text-align: center;
@@ -417,7 +417,7 @@
 
         /* Page Break Container for Multi-page */
         .page-break-container {
-            border: 2px solid #1e40af;
+            border: 2px solid #044b26;
             padding: 20px;
             margin: 0 auto;
             margin-top: 10mm;
@@ -452,6 +452,7 @@
         <div class="header-wrapper">
             <div class="header-top">
                 <div class="company-info">
+                    <img src="{{ $settings['company_logo']  ? public_path('storage/' . $settings['company_logo']) : public_path('images/no-image.png') }}" alt="company-logo" width="150">
                     <h1>{{ $settings['company_name'] ?? '' }}</h1>
                     <p class="company-tagline">Your Trusted Business Partner</p>
                 </div>
@@ -552,8 +553,8 @@
                                 @endif
                             </td>
                             <td><strong>{{ $item->quantity }}</strong></td>
-                            <td>₹{{ number_format($item->unit_price, 2) }}</td>
-                            <td><strong style="color: #1e40af;">₹{{ number_format($item->total, 2) }}</strong></td>
+                            <td style="text-align: end;">₹{{ number_format($item->unit_price, 2) }}</td>
+                            <td style="text-align: end;"><strong style="color: #044b26;">₹{{ number_format($item->total, 2) }}</strong></td>
                         </tr>
 
                         @if (($i + 1) % 10 == 0 && $i + 1 < count($quotation->items))

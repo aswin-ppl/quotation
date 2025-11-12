@@ -33,12 +33,30 @@
             <div class="card">
                 <div class="card-body">
                     <h4 class="card-title mb-3">Create Settings</h4>
-                    <form action="{{ route('settings.update') }}" method="POST">
+                    <form action="{{ route('settings.update') }}" method="POST" enctype="multipart/form-data">
                         @csrf
 
                         <div class="row">
 
-                            <div class="mb-3">
+                            <div class="col-md-6 mb-3">
+                                <label for="company_logo" class="form-label">Company Logo</label>
+                                <input type="file" name="company_logo" id="company_logo"
+                                    class="form-control @error('company_logo') is-invalid @enderror">
+                                @error('company_logo')
+                                    <div class="invalid-feedback d-block">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+
+                                @if (!empty($settings['company_logo']))
+                                    <div class="mt-3">
+                                        <img src="{{ asset('storage/' . $settings['company_logo']) }}" alt="Company Logo"
+                                            class="img-thumbnail" width="150">
+                                    </div>
+                                @endif
+                            </div>
+
+                            <div class="col-md-6 mb-3">
                                 <label for="company_name" class="form-label">Company Name</label>
                                 <input type="text" name="company_name" id="company_name"
                                     class="form-control @error('company_name') is-invalid @enderror"
@@ -175,6 +193,8 @@
 @endsection
 @section('scripts')
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="{{ asset('js/plugins/toastr-init.js') }}"></script>
+
     <script>
         $(document).ready(function() {
 
@@ -364,6 +384,22 @@
                 $('#city').empty().append(new Option(city.name, city.id, true, true)).trigger(
                     'change.select2');
             }
+
+            // toaster
+            toastr.options = {
+                "closeButton": true,
+                "progressBar": true,
+                "positionClass": "toast-top-right",
+                "timeOut": "3000"
+            };
+
+            @if (session('success'))
+                toastr.success("{{ session('success') }}", "Success");
+            @endif
+
+            @if (session('error'))
+                toastr.error("{{ session('error') }}", "Error");
+            @endif
         });
     </script>
 @endsection

@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Quotation;
 use App\Models\Setting;
+use App\Models\Quotation;
 use Illuminate\Http\Request;
 use App\Models\Master\Customer;
-use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\DB;
+use App\Models\DownloadedQuotation;
 use Illuminate\Support\Facades\Log;
 
 class QuotationController extends Controller
@@ -36,8 +37,29 @@ class QuotationController extends Controller
         try {
             $quotation = Quotation::with(['items.product', 'customer.addresses'])
                 ->findOrFail($id);
+
             $settings = Setting::getCompanyDetails();
             $pdf = Pdf::loadView('pdf.quotation', compact('quotation', 'settings', 'defaultAddress'));
+
+            // Record download details
+            $download = DownloadedQuotation::firstOrNew([
+                'quotation_id' => $quotation->id,
+                'downloaded_by' => auth()->id(),
+            ]);
+
+            // If the record is new, start count at 1
+            if (!$download->exists) {
+                $download->download_count = 1;
+            } else {
+                $download->download_count += 1;
+            }
+
+            $download->download_ip = request()->ip();
+            $download->downloaded_at = now();
+            $download->file_format = 'pdf';
+            $download->save();
+
+
 
             return $pdf->download('Quotation_' . $quotation->id . '.pdf');
 
@@ -46,6 +68,7 @@ class QuotationController extends Controller
             return back()->with('error', 'Failed to generate PDF.');
         }
     }
+
 
     public function preview($id, $defaultAddress)
     {
@@ -81,7 +104,7 @@ class QuotationController extends Controller
 
             $quotation = Quotation::create([
                 'date' => now(),
-                'expiry' => now()->addDays(7),
+                'expiry' => now()->addDays(30),
                 'customer_id' => $validated['customer_id'],
                 'sub_total' => $subTotal,
                 'discount' => $discount,

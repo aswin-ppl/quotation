@@ -6,9 +6,27 @@
         .select2-selection__arrow {
             display: none !important;
         }
-
         #status {
             height: 58px;
+        }
+        .address-item {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .address-text {
+            flex: 1;
+            font-size: 14px;
+            color: #333;
+        }
+        .address-item .btn-danger {
+            padding: 4px 10px;
+            font-size: 12px;
         }
     </style>
 @endsection
@@ -28,14 +46,23 @@
                             <i class="ti ti-home fs-4 mt-1"></i>
                         </a>
                     </li>
-                    <li class="breadcrumb-item"><a href="javascript:void(0)" class="text-primary">{{ $parent_title }}</a>
-                    </li>
-                    <li class="breadcrumb-item active text-primary" aria-current="page">
-                        <a href="{{ route('customers.index') }}" class="text-primary">{{ $page_title }}</a>
-                    </li>
+                    <li class="breadcrumb-item"><a href="javascript:void(0)" class="text-primary">{{ $parent_title }}</a></li>
+                    <li class="breadcrumb-item"><a href="{{ route('customers.index') }}" class="text-primary">{{ $page_title }}</a></li>
                     <li class="breadcrumb-item active text-primary" aria-current="page">Edit</li>
                 </ol>
             </nav>
+
+            @if ($errors->any())
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <h5 class="alert-heading"><i class="ti ti-alert-circle"></i> Validation Errors</h5>
+                    <ul class="mb-0">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            @endif
 
             <div class="card">
                 <div class="card-body">
@@ -50,13 +77,10 @@
                             <div class="col-md-6">
                                 <div class="form-floating mb-3">
                                     <input type="text" class="form-control @error('name') is-invalid @enderror"
-                                        id="name" name="name" value="{{ old('name', $customer->name) }}"
-                                        placeholder="Customer Name" required>
+                                        id="name" name="name" value="{{ old('name', $customer->name) }}" required>
                                     <label for="name">Name <span class="text-danger">*</span></label>
                                     @error('name')
-                                        <div class="invalid-feedback d-block">
-                                            {{ $message }}
-                                        </div>
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
                                     @enderror
                                 </div>
                             </div>
@@ -65,13 +89,10 @@
                             <div class="col-md-6">
                                 <div class="form-floating mb-3">
                                     <input type="email" class="form-control @error('email') is-invalid @enderror"
-                                        id="email" name="email" value="{{ old('email', $customer->email) }}"
-                                        placeholder="example@gmail.com" required>
-                                    <label for="email">Email <span class="text-danger">*</span></label>
+                                        id="email" name="email" value="{{ old('email', $customer->email) }}">
+                                    <label for="email">Email</label>
                                     @error('email')
-                                        <div class="invalid-feedback d-block">
-                                            {{ $message }}
-                                        </div>
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
                                     @enderror
                                 </div>
                             </div>
@@ -80,144 +101,127 @@
                             <div class="col-md-6">
                                 <div class="form-floating mb-3">
                                     <input type="text" class="form-control @error('mobile') is-invalid @enderror"
-                                        id="mobile" name="mobile" value="{{ old('mobile', $customer->mobile) }}"
-                                        placeholder="Mobile Number" required>
+                                        id="mobile" name="mobile" value="{{ old('mobile', $customer->mobile) }}" required>
                                     <label for="mobile">Mobile <span class="text-danger">*</span></label>
                                     @error('mobile')
-                                        <div class="invalid-feedback d-block">
-                                            {{ $message }}
-                                        </div>
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
                                     @enderror
                                 </div>
                             </div>
 
                             {{-- Status --}}
-                            <div class="col-md-6 mb-4">
-                                <select class="form-select @error('status') is-invalid @enderror" id="status"
-                                    name="status">
-                                    <option value="active"
-                                        {{ old('status', $customer->status) == 'active' ? 'selected' : '' }}>Active
-                                    </option>
-                                    <option value="inactive"
-                                        {{ old('status', $customer->status) == 'inactive' ? 'selected' : '' }}>Inactive
-                                    </option>
-                                </select>
-                                @error('status')
-                                    <div class="invalid-feedback d-block">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <select class="form-select @error('status') is-invalid @enderror" id="status" name="status" required>
+                                        <option value="active" {{ old('status', $customer->status) == 'active' ? 'selected' : '' }}>Active</option>
+                                        <option value="inactive" {{ old('status', $customer->status) == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                                    </select>
+                                    <label for="status">Status <span class="text-danger">*</span></label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+                        <h5 class="mb-3">Add New Address</h5>
+
+                        {{-- Address Input Section --}}
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="address_line">Address Line <span class="text-danger">*</span></label>
+                                <textarea id="address_line" class="form-control" rows="2"></textarea>
                             </div>
 
-                            {{-- State --}}
-                            <div class="col-md-6 mb-4">
+                            <div class="col-md-6 mb-3">
                                 <label for="state">State <span class="text-danger">*</span></label>
-                                <select id="state" name="state_id"
-                                    class="form-select @error('state_id') is-invalid @enderror">
-                                    @if ($state)
-                                        <option value="{{ $state->id }}" selected>{{ $state->name }}</option>
-                                    @else
-                                        <option value="" selected>Select State</option>
-                                    @endif
+                                <select id="state" class="form-select">
+                                    <option value="">Select State</option>
                                 </select>
-                                @error('state_id')
-                                    <div class="invalid-feedback d-block">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
                             </div>
 
-                            {{-- District --}}
-                            <div class="col-md-6 mb-4">
+                            <div class="col-md-6 mb-3">
                                 <label for="district">District <span class="text-danger">*</span></label>
-                                <select id="district" name="district_id"
-                                    class="form-select @error('district_id') is-invalid @enderror">
-                                    @if ($district)
-                                        <option value="{{ $district->id }}" selected>{{ $district->name }}</option>
-                                    @else
-                                        <option value="" selected>Select District</option>
-                                    @endif
+                                <select id="district" class="form-select">
+                                    <option value="">Select District</option>
                                 </select>
-                                @error('district_id')
-                                    <div class="invalid-feedback d-block">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
                             </div>
 
-                            {{-- City --}}
-                            <div class="col-md-6 mb-4">
+                            <div class="col-md-6 mb-3">
                                 <label for="city">City <span class="text-danger">*</span></label>
-                                <select id="city" name="city_id"
-                                    class="form-select @error('city_id') is-invalid @enderror">
-                                    @if ($city)
-                                        <option value="{{ $city->id }}" selected>{{ $city->name }}</option>
-                                    @else
-                                        <option value="" selected>Select City</option>
-                                    @endif
+                                <select id="city" class="form-select">
+                                    <option value="">Select City</option>
                                 </select>
-                                @error('city_id')
-                                    <div class="invalid-feedback d-block">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
                             </div>
 
-                            {{-- Pincode --}}
-                            <div class="col-md-6 mb-4">
+                            <div class="col-md-6 mb-3">
                                 <label for="pincode">Pincode <span class="text-danger">*</span></label>
-                                <select id="pincode" name="pincode_id"
-                                    class="form-select @error('pincode_id') is-invalid @enderror">
-                                    @if ($pincode)
-                                        <option value="{{ $pincode->id }}" selected>{{ $pincode->code }}</option>
-                                    @else
-                                        <option value="" selected>Select Pincode</option>
-                                    @endif
+                                <select id="pincode" class="form-select">
+                                    <option value="">Select Pincode</option>
                                 </select>
-                                @error('pincode_id')
-                                    <div class="invalid-feedback d-block">
-                                        {{ $message }}
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="address_type">Address Type <span class="text-danger">*</span></label>
+                                <select id="address_type" class="form-select">
+                                    <option value="home">Home</option>
+                                    <option value="work">Work</option>
+                                    <option value="billing">Billing</option>
+                                    <option value="shipping">Shipping</option>
+                                </select>
+                            </div>
+
+                            <div class="col-12 mb-4">
+                                <button type="button" id="add-address-btn" class="btn btn-success">
+                                    <i class="ti ti-plus"></i> Add Address
+                                </button>
+                            </div>
+                        </div>
+
+                        {{-- Existing Addresses Display --}}
+                        <div id="existing-addresses-container">
+                            <hr class="my-4">
+                            <h5 class="mb-3">Addresses</h5>
+                            <div id="address-list">
+                                @foreach($customer->addresses as $index => $addr)
+                                    <div class="address-item" data-id="{{ $addr->id }}">
+                                        <input type="radio" name="default_address" value="{{ $addr->id }}" 
+                                               {{ $addr->is_default ? 'checked' : '' }} class="form-check-input">
+                                        
+                                        <span class="address-text">
+                                            {{ $addr->address_line_1 }}, 
+                                            {{ $addr->city->name }}, 
+                                            {{ $addr->district->name }}, 
+                                            {{ $addr->state->name }} - 
+                                            {{ $addr->pincode->code }}
+                                            <small class="text-muted">({{ ucfirst($addr->type) }})</small>
+                                        </span>
+                                        
+                                        <button type="button" class="btn btn-danger btn-sm remove-existing-address" 
+                                                data-id="{{ $addr->id }}">
+                                            <i class="ti ti-trash"></i> Delete
+                                        </button>
+
+                                        <input type="hidden" name="existing_addresses[{{ $addr->id }}][id]" value="{{ $addr->id }}">
+                                        <input type="hidden" name="existing_addresses[{{ $addr->id }}][keep]" value="1" class="keep-address">
                                     </div>
-                                @enderror
+                                @endforeach
                             </div>
+                        </div>
 
-                            {{-- Address 1 --}}
-                            <div class="col-md-6 mb-3">
-                                <div class="form-group">
-                                    <label for="address_line_1">Address Line 1 <span class="text-danger">*</span></label>
-                                    <textarea class="form-control @error('address_line_1') is-invalid @enderror" rows="3" name="address_line_1"
-                                        placeholder="Address 1..">{{ old('address_line_1', $address->address_line_1 ?? '') }}</textarea>
-                                    @error('address_line_1')
-                                        <div class="invalid-feedback d-block">
-                                            {{ $message }}
-                                        </div>
-                                    @enderror
-                                </div>
-                            </div>
+                        {{-- New Addresses Container --}}
+                        <div id="new-addresses-container" style="display: none;">
+                            <h6 class="mt-3 mb-2">New Addresses to Add</h6>
+                            <div id="new-address-list"></div>
+                        </div>
 
-                            {{-- Address 2 --}}
-                            <div class="col-md-6 mb-3">
-                                <div class="form-group">
-                                    <label for="address_line_2">Address Line 2</label>
-                                    <textarea class="form-control" rows="3" name="address_line_2" placeholder="Address 2..">{{ old('address_line_2', $address->address_line_2 ?? '') }}</textarea>
-                                </div>
+                        <div class="col-12 mt-5">
+                            <div class="d-md-flex justify-content-between align-items-center">
+                                <a href="{{ route('customers.index') }}" class="btn btn-dark hstack gap-6">Back</a>
+                                <button type="submit" class="btn btn-primary hstack gap-6">Update Customer</button>
                             </div>
-
-                            <div class="col-12 mt-4">
-                                <div class="d-md-flex justify-content-between align-items-center">
-                                    <a href="{{ route('customers.index') }}" class="btn btn-dark hstack gap-6">
-                                        Back
-                                    </a>
-                                    <button type="submit" class="btn btn-primary hstack gap-6">
-                                        Update
-                                    </button>
-                                </div>
-                            </div>
-                        </div> {{-- row end --}}
+                        </div>
                     </form>
                 </div>
             </div>
-
         </div>
     </div>
 @endsection
@@ -226,165 +230,188 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
         $(document).ready(function() {
-            // --- Base Select2 setup ---
+            let newAddressIndex = 0;
+            let newAddresses = [];
+
+            // Initialize Select2
             $('#state, #district, #city, #pincode').select2({
                 width: '100%',
                 placeholder: 'Select an option',
-                allowClear: true,
-                minimumInputLength: 1
+                allowClear: true
             });
 
-            // --- STATE: search all states ---
-            $('#state').select2({
-                width: '100%',
-                placeholder: 'Search state',
-                allowClear: true,
-                minimumInputLength: 1,
-                ajax: {
-                    url: '/states/search',
-                    dataType: 'json',
-                    delay: 300,
-                    data: params => ({
-                        q: params.term
-                    }),
-                    processResults: data => ({
-                        results: data.map(item => ({
-                            id: item.id,
-                            text: item.name
-                        }))
-                    })
+            // Load States
+            $.get('/states', function(states) {
+                $('#state').empty().append('<option></option>');
+                states.forEach(s => $('#state').append(new Option(s.name, s.id)));
+            });
+
+            // State -> District
+            $('#state').on('change', function() {
+                const id = $(this).val();
+                $('#district, #city, #pincode').empty().append('<option></option>').val(null).trigger('change.select2');
+                if (id) {
+                    $.get(`/districts/${id}`, function(districts) {
+                        fillSelect('#district', districts);
+                    });
                 }
             });
 
-            // --- DISTRICT: depends on state ---
-            $('#district').select2({
-                width: '100%',
-                placeholder: 'Search district',
-                allowClear: true,
-                minimumInputLength: 1,
-                ajax: {
-                    url: '/districts/search',
-                    dataType: 'json',
-                    delay: 300,
-                    data: params => {
-                        const stateId = $('#state').val();
-                        if (!stateId) return {}; // don't fetch without state
-                        return {
-                            q: params.term,
-                            state_id: stateId
-                        };
-                    },
-                    processResults: data => ({
-                        results: data.map(item => ({
-                            id: item.id,
-                            text: item.name
-                        }))
-                    })
+            // District -> City
+            $('#district').on('change', function() {
+                const id = $(this).val();
+                $('#city, #pincode').empty().append('<option></option>').val(null).trigger('change.select2');
+                if (id) {
+                    $.get(`/cities/${id}`, function(cities) {
+                        fillSelect('#city', cities);
+                    });
                 }
             });
 
-            // --- CITY: depends on district ---
-            $('#city').select2({
-                width: '100%',
-                placeholder: 'Search city',
-                allowClear: true,
-                minimumInputLength: 1,
-                ajax: {
-                    url: '/cities/search',
-                    dataType: 'json',
-                    delay: 300,
-                    data: params => {
-                        const districtId = $('#district').val();
-                        if (!districtId) return {};
-                        return {
-                            q: params.term,
-                            district_id: districtId
-                        };
-                    },
-                    processResults: data => ({
-                        results: data.map(item => ({
-                            id: item.id,
-                            text: item.name
-                        }))
-                    })
+            // City -> Pincode
+            $('#city').on('change', function() {
+                const id = $(this).val();
+                $('#pincode').empty().append('<option></option>').val(null).trigger('change.select2');
+                if (id) {
+                    $.get(`/pincodes/${id}`, function(pincodes) {
+                        fillSelect('#pincode', pincodes, 'code');
+                        if (pincodes.length > 0) {
+                            $('#pincode').val(pincodes[0].id).trigger('change.select2');
+                        }
+                    });
                 }
             });
 
-            // --- PINCODE: depends on district ---
+            // Pincode async search
             $('#pincode').select2({
                 width: '100%',
-                placeholder: 'Search pincode',
+                placeholder: 'Type or select a pincode',
                 allowClear: true,
-                minimumInputLength: 1,
                 ajax: {
-                    url: '/pincodes/search',
+                    url: '/pincode/search',
                     dataType: 'json',
                     delay: 300,
-                    data: params => {
-                        const districtId = $('#district').val();
-                        if (!districtId) return {};
-                        return {
-                            q: params.term,
-                            district_id: districtId
-                        };
-                    },
+                    data: params => ({ q: params.term }),
                     processResults: data => ({
-                        results: data.map(item => ({
-                            id: item.id,
-                            text: item.code
-                        }))
+                        results: data.map(item => ({ id: item.id, text: item.code }))
                     })
                 }
             });
 
-            // --- Reset dependent dropdowns when parent changes ---
-            $('#state').on('change', function() {
-                resetBelow('#state');
-            });
-
-            $('#district').on('change', function() {
-                resetBelow('#district');
-            });
-
-            $('#city').on('change', function() {
-                resetBelow('#city');
-            });
-
-            // --- Handle manual pincode selection ---
+            // Pincode reverse lookup
             $('#pincode').on('select2:select', function(e) {
                 const pincodeId = e.params.data.id;
-
                 $.get(`/pincode/${pincodeId}`, function(response) {
-                    if (!response) return;
-
-                    // Update state + district
                     if (response.state && response.district) {
-                        const s = new Option(response.state, response.state_id, true, true);
-                        const d = new Option(response.district, response.district_id, true, true);
-                        $('#state').append(s).trigger('change');
-                        $('#district').append(d).trigger('change');
+                        $('#state').empty().append(new Option(response.state, response.state_id, true, true)).trigger('change.select2');
+                        $('#district').empty().append(new Option(response.district, response.district_id, true, true)).trigger('change.select2');
                     }
-
-                    // Update city
-                    if (response.city) {
-                        const c = new Option(response.city, response.city_id, true, true);
-                        $('#city').append(c).trigger('change');
-                    }
-
-                    // If response includes multiple cities, just clear and let user search
-                    if (response.cities && response.cities.length > 1) {
-                        $('#city').val(null).trigger('change');
+                    const cities = response.cities || [];
+                    fillSelect('#city', cities);
+                    if (cities.length === 1) {
+                        $('#city').val(cities[0].id).trigger('change.select2');
                     }
                 });
             });
 
-            // --- Utility to reset lower selects ---
-            function resetBelow(selector) {
-                const order = ['#state', '#district', '#city', '#pincode'];
-                const idx = order.indexOf(selector);
-                order.slice(idx + 1).forEach(sel => {
-                    $(sel).empty().val(null).trigger('change');
+            // Add New Address
+            $('#add-address-btn').on('click', function() {
+                const addressLine = $('#address_line').val().trim();
+                const stateId = $('#state').val();
+                const stateName = $('#state option:selected').text();
+                const districtId = $('#district').val();
+                const districtName = $('#district option:selected').text();
+                const cityId = $('#city').val();
+                const cityName = $('#city option:selected').text();
+                const pincodeId = $('#pincode').val();
+                const pincodeCode = $('#pincode option:selected').text();
+                const addressType = $('#address_type').val();
+
+                if (!addressLine || !stateId || !districtId || !cityId || !pincodeId) {
+                    alert('Please fill all address fields');
+                    return;
+                }
+
+                const address = {
+                    index: newAddressIndex,
+                    address_line: addressLine,
+                    state_id: stateId,
+                    state_name: stateName,
+                    district_id: districtId,
+                    district_name: districtName,
+                    city_id: cityId,
+                    city_name: cityName,
+                    pincode_id: pincodeId,
+                    pincode_code: pincodeCode,
+                    type: addressType
+                };
+
+                newAddresses.push(address);
+                renderNewAddresses();
+                clearAddressForm();
+                $('#new-addresses-container').show();
+                newAddressIndex++;
+            });
+
+            // Render new addresses
+            function renderNewAddresses() {
+                $('#new-address-list').empty();
+
+                newAddresses.forEach((addr) => {
+                    const formattedAddress = `${addr.address_line}, ${addr.city_name}, ${addr.district_name}, ${addr.state_name} - ${addr.pincode_code} <small class="text-muted">(${addr.type})</small>`;
+
+                    const addressHtml = `
+                        <div class="address-item" data-new-index="${addr.index}">
+                            <span class="address-text">${formattedAddress}</span>
+                            
+                            <button type="button" class="btn btn-danger btn-sm remove-new-address" data-index="${addr.index}">
+                                <i class="ti ti-trash"></i> Delete
+                            </button>
+
+                            <input type="hidden" name="new_addresses[${addr.index}][address_line_1]" value="${addr.address_line}">
+                            <input type="hidden" name="new_addresses[${addr.index}][state_id]" value="${addr.state_id}">
+                            <input type="hidden" name="new_addresses[${addr.index}][district_id]" value="${addr.district_id}">
+                            <input type="hidden" name="new_addresses[${addr.index}][city_id]" value="${addr.city_id}">
+                            <input type="hidden" name="new_addresses[${addr.index}][pincode_id]" value="${addr.pincode_id}">
+                            <input type="hidden" name="new_addresses[${addr.index}][type]" value="${addr.type}">
+                        </div>
+                    `;
+
+                    $('#new-address-list').append(addressHtml);
                 });
+            }
+
+            // Remove existing address
+            $(document).on('click', '.remove-existing-address', function() {
+                const $item = $(this).closest('.address-item');
+                $item.find('.keep-address').val('0');
+                $item.hide();
+            });
+
+            // Remove new address
+            $(document).on('click', '.remove-new-address', function() {
+                const indexToRemove = $(this).data('index');
+                newAddresses = newAddresses.filter(addr => addr.index !== indexToRemove);
+                renderNewAddresses();
+                if (newAddresses.length === 0) {
+                    $('#new-addresses-container').hide();
+                }
+            });
+
+            function clearAddressForm() {
+                $('#address_line').val('');
+                $('#state').val(null).trigger('change.select2');
+                $('#district').empty().append('<option></option>').val(null).trigger('change.select2');
+                $('#city').empty().append('<option></option>').val(null).trigger('change.select2');
+                $('#pincode').empty().append('<option></option>').val(null).trigger('change.select2');
+                $('#address_type').val('home');
+            }
+
+            function fillSelect(selector, data, textKey = 'name') {
+                const $el = $(selector);
+                $el.empty().append('<option></option>');
+                data.forEach(d => $el.append(new Option(d[textKey] || d.name, d.id)));
+                $el.trigger('change.select2');
             }
         });
     </script>

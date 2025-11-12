@@ -10,6 +10,7 @@ use App\Models\Master\Customer;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use App\Models\Master\CustomerAddress;
 use App\Http\Requests\StoreCustomerRequest;
 use App\Http\Requests\UpdateCustomerRequest;
 
@@ -28,7 +29,6 @@ class CustomerController extends Controller
 
     public function store(StoreCustomerRequest $request)
     {
-
         $validated = $request->validated();
 
         DB::beginTransaction();
@@ -42,56 +42,76 @@ class CustomerController extends Controller
                 'status' => $validated['status'],
             ]);
 
-            $customer->addresses()->create([
-                'address_line_1' => $validated['address_line_1'],
-                'address_line_2' => $validated['address_line_2'] ?? null,
-                'city_id' => $validated['city_id'],
-                'district_id' => $validated['district_id'],
-                'state_id' => $validated['state_id'],
-                'pincode_id' => $validated['pincode_id'],
-                'country' => 'India',
-                'type' => 'home',
-                'is_default' => true,
-            ]);
+            // Loop through addresses array and create each one
+            foreach ($validated['addresses'] as $index => $addressData) {
+                Log::info("Creating address #{$index}:", $addressData);
+
+                $customer->addresses()->create([
+                    'address_line_1' => $addressData['address_line_1'],
+                    'address_line_2' => $addressData['address_line_2'] ?? null,
+                    'city_id' => $addressData['city_id'],
+                    'district_id' => $addressData['district_id'],
+                    'state_id' => $addressData['state_id'],
+                    'pincode_id' => $addressData['pincode_id'],
+                    'country' => 'India',
+                    'type' => $addressData['type'],
+                    'is_default' => ($index == $validated['default_address']),
+                ]);
+            }
 
             DB::commit();
 
-            return redirect()->route('customers.create')
-                ->with('success', 'Customer created successfully!');
+            return redirect()->route('customers.index')
+                ->with('success', 'Customer created successfully with ' . count($validated['addresses']) . ' address(es)!');
 
         } catch (\Exception $e) {
             DB::rollBack();
-            logger('Customer store failed:', ['message' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
-            throw $e;
+
+            Log::error('Customer store failed:', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return back()->withInput()
+                ->with('error', 'Failed to create customer: ' . $e->getMessage());
         }
     }
 
+
     public function edit(Customer $customer)
     {
-        $address = $customer->addresses()->where('is_default', true)->first();
+        // Load customer with ALL addresses and their relationships
+        $customer->load([
+            'addresses.city',
+            'addresses.district',
+            'addresses.state',
+            'addresses.pincode'
+        ]);
 
-        $state = null;
-        $district = null;
-        $city = null;
-        $pincode = null;
+        Log::info('=== CUSTOMER EDIT START ===');
+        Log::info('Customer ID:', ['id' => $customer->id]);
+        Log::info('Total Addresses:', ['count' => $customer->addresses->count()]);
 
-        if ($address) {
-            $state = State::find($address->state_id);
-            $district = District::find($address->district_id);
-            $city = City::find($address->city_id);
-            $pincode = Pincode::find($address->pincode_id);
+        // Check if customer has at least one address
+        if ($customer->addresses->isEmpty()) {
+            Log::warning('⚠️ Customer has no addresses');
         }
 
-        return view('master.customer.edit', compact('customer', 'address', 'state', 'district', 'city', 'pincode'));
+        return view('master.customer.edit', compact('customer'));
     }
 
     public function update(UpdateCustomerRequest $request, Customer $customer)
     {
+        Log::info('=== CUSTOMER UPDATE START ===');
+        Log::info('Customer ID:', ['id' => $customer->id]);
+        Log::info('Request Data:', $request->all());
+
         $validated = $request->validated();
 
         DB::beginTransaction();
 
         try {
+            // Update customer
             $customer->update([
                 'name' => $validated['name'],
                 'email' => $validated['email'] ?? null,
@@ -99,32 +119,73 @@ class CustomerController extends Controller
                 'status' => $validated['status'],
             ]);
 
-            $address = $customer->defaultAddress()->firstOrCreate(['is_default' => true]);
+            Log::info('✅ Customer updated');
 
-            $address->update([
-                'address_line_1' => $validated['address_line_1'],
-                'address_line_2' => $validated['address_line_2'] ?? null,
-                'city_id' => $validated['city_id'],
-                'district_id' => $validated['district_id'],
-                'state_id' => $validated['state_id'],
-                'pincode_id' => $validated['pincode_id'],
-                'country' => $validated['country'] ?? 'Unknown',
-            ]);
+            // Handle existing addresses
+            if (isset($validated['existing_addresses'])) {
+                foreach ($validated['existing_addresses'] as $addrId => $addrData) {
+                    if ($addrData['keep'] == '0') {
+                        // Delete address
+                        CustomerAddress::where('id', $addrId)
+                            ->where('customer_id', $customer->id)
+                            ->delete();
+                        Log::info("🗑️ Deleted address ID: {$addrId}");
+                    }
+                }
+            }
 
-            return redirect()
-                ->route('customers.index')
+            // Add new addresses
+            if (isset($validated['new_addresses'])) {
+                foreach ($validated['new_addresses'] as $index => $addressData) {
+                    Log::info("Creating new address #{$index}:", $addressData);
+
+                    $customer->addresses()->create([
+                        'address_line_1' => $addressData['address_line_1'],
+                        'address_line_2' => null,
+                        'city_id' => $addressData['city_id'],
+                        'district_id' => $addressData['district_id'],
+                        'state_id' => $addressData['state_id'],
+                        'pincode_id' => $addressData['pincode_id'],
+                        'type' => $addressData['type'],
+                        'country' => 'India',
+                        'is_default' => false
+                    ]);
+
+                    Log::info("✅ New address #{$index} created");
+                }
+            }
+
+            // Update default address
+            if (isset($validated['default_address'])) {
+                CustomerAddress::where('customer_id', $customer->id)->update(['is_default' => false]);
+                CustomerAddress::where('id', $validated['default_address'])
+                    ->where('customer_id', $customer->id)
+                    ->update(['is_default' => true]);
+                Log::info("✅ Default address set to ID: {$validated['default_address']}");
+            }
+
+            DB::commit();
+            Log::info('✅ Transaction committed');
+            Log::info('=== CUSTOMER UPDATE SUCCESS ===');
+
+            return redirect()->route('customers.index')
                 ->with('success', 'Customer updated successfully!');
-        } catch (\Throwable $e) {
+
+        } catch (\Exception $e) {
             DB::rollBack();
 
-            logger('Customer update failed:', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
+            Log::error('❌ Customer update failed:', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
             ]);
 
-            return back()->withErrors(['error' => 'Update failed: ' . $e->getMessage()]);
+            Log::info('=== CUSTOMER UPDATE FAILED ===');
+
+            return back()->withInput()
+                ->with('error', 'Failed to update customer: ' . $e->getMessage());
         }
     }
+
 
     public function destroy(Customer $customer)
     {
