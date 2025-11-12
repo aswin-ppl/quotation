@@ -37,11 +37,11 @@
                         <div class="row">
                             {{-- Name --}}
                             <div class="col-md-6">
-                                <div class="form-floating mb-3">
+                                <div class="mb-3">
+                                    <label for="name">Name <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control  @error('name') is-invalid @enderror"
                                         id="name" name="name" value="{{ old('name', $product->name) }}"
                                         placeholder="e.g. Aluminium Doors" required>
-                                    <label for="name">Name <span class="text-danger">*</span></label>
                                     @error('name')
                                         <div class="invalid-feedback d-block">
                                             {{ $message }}
@@ -52,11 +52,11 @@
 
                             {{-- Size --}}
                             <div class="col-md-6">
-                                <div class="form-floating mb-3">
+                                <div class="mb-3">
+                                    <label for="size_mm">Size (mm) <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control @error('size_mm') is-invalid @enderror"
                                         id="size_mm" name="size_mm" value="{{ old('size_mm', $product->size_mm) }}"
                                         placeholder="e.g. 250x300" required>
-                                    <label for="size_mm">Size (mm) <span class="text-danger">*</span></label>
                                     @error('size_mm')
                                         <div class="invalid-feedback d-block">
                                             {{ $message }}
@@ -67,11 +67,11 @@
 
                             {{-- R/Units --}}
                             <div class="col-md-6">
-                                <div class="form-floating mb-3">
+                                <div class="mb-3">
+                                    <label for="r_units">R/Units <span class="text-danger">*</span></label>
                                     <input type="number" class="form-control @error('r_units') is-invalid @enderror"
                                         id="r_units" name="r_units" value="{{ old('r_units', $product->r_units) }}"
                                         min="0" required>
-                                    <label for="r_units">R/Units <span class="text-danger">*</span></label>
                                     @error('r_units')
                                         <div class="invalid-feedback d-block">
                                             {{ $message }}
@@ -82,13 +82,13 @@
 
                             {{-- Product Price --}}
                             <div class="col-md-6">
-                                <div class="form-floating mb-3">
+                                <div class="mb-3">
+                                    <label for="product_price">Product Price <span class="text-danger">*</span></label>
                                     <input type="number"
                                         class="form-control @error('product_price') is-invalid @enderror"
                                         id="product_price" name="product_price"
                                         value="{{ old('product_price', $product->product_price) }}" step="0.01"
                                         min="0" required>
-                                    <label for="product_price">Product Price <span class="text-danger">*</span></label>
                                     @error('product_price')
                                         <div class="invalid-feedback d-block">
                                             {{ $message }}

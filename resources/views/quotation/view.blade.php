@@ -74,7 +74,6 @@
                                     <label for="to-address">Enter To Address</label>
                                     {{-- optional address dropdown (shown only if >1 address) --}}
                                     <div id="address-select-wrapper" class="mb-3 d-none">
-                                        <label for="addressSelect" class="form-label">Select Address</label>
                                         <select id="addressSelect" class="form-select"></select>
                                     </div>
 
@@ -228,17 +227,25 @@
                         // Multiple address records - let user choose which record first
                         $wrapper.removeClass('d-none');
                         $addressSelect.append('<option value="">Select an address</option>');
+
                         addresses.forEach((a, index) => {
                             const text =
                                 `${a.address_line_1 || a.address_line_2}, ${a.city}`;
-                            $addressSelect.append(new Option(text, index));
+
+                            // Create option element with selected attribute if is_default
+                            const option = new Option(text, index, a.is_default == 1, a
+                                .is_default == 1);
+
+                            $addressSelect.append(option);
                         });
+
                         $addressSelect.data('addresses', addresses);
-                        return;
+                        $addressSelect.trigger('change');
                     }
 
                     // Show address line chooser if needed
                     if (needsAddressLineChoice) {
+
                         $wrapper.removeClass('d-none');
                         $addressSelect.append('<option value="">Select address line</option>');
                         $addressSelect.append(new Option(`Line 1: ${addressData.address_line_1}`,

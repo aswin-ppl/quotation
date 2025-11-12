@@ -31,12 +31,12 @@ class UpdateCustomerRequest extends FormRequest
             'mobile' => 'required|string|max:15|unique:customers,mobile,' . $customerId,
             'status' => 'required|in:active,inactive',
 
-            // Existing addresses (optional updates/deletes)
+            // Existing addresses
             'existing_addresses' => 'nullable|array',
             'existing_addresses.*.id' => 'required|exists:customer_addresses,id',
             'existing_addresses.*.keep' => 'required|in:0,1',
 
-            // New addresses to add
+            // New addresses
             'new_addresses' => 'nullable|array',
             'new_addresses.*.address_line_1' => 'required|string|max:500',
             'new_addresses.*.state_id' => 'required|exists:states,id',
@@ -44,9 +44,10 @@ class UpdateCustomerRequest extends FormRequest
             'new_addresses.*.city_id' => 'required|exists:cities,id',
             'new_addresses.*.pincode_id' => 'required|exists:pincodes,id',
             'new_addresses.*.type' => 'required|in:home,work,billing,shipping',
+            'new_addresses.*.is_new_default' => 'nullable|in:0,1',
 
-            // Default address
-            'default_address' => 'nullable|exists:customer_addresses,id'
+            // Default address (can be existing ID or "new_X" for new addresses)
+            'default_address' => 'required|string'
         ];
     }
 }

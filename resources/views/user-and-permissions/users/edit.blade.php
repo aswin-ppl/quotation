@@ -35,11 +35,11 @@
 
                             {{-- Name --}}
                             <div class="col-md-6">
-                                <div class="form-floating mb-3">
+                                <div class="mb-3">
+                                    <label for="name">Name <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control @error('name') is-invalid @enderror"
                                         id="name" name="name" value="{{ old('name', $user->name) }}" required
                                         autocomplete="name" autofocus>
-                                    <label for="name">Name <span class="text-danger">*</span></label>
                                     @error('name')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
@@ -50,10 +50,10 @@
 
                             {{-- Email --}}
                             <div class="col-md-6">
-                                <div class="form-floating mb-3">
+                                <div class="mb-3">
+                                    <label for="email">Email <span class="text-danger">*</span></label>
                                     <input type="email" class="form-control @error('email') is-invalid @enderror"
                                         id="email" name="email" value="{{ old('email', $user->email) }}" autocomplete="email" required>
-                                    <label for="email">Email <span class="text-danger">*</span></label>
                                     @error('email')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
@@ -64,10 +64,10 @@
 
                             {{-- Password --}}
                             <div class="col-md-6">
-                                <div class="form-floating mb-3">
+                                <div class="mb-3">
+                                    <label for="password">Password <span class="text-danger">*</span></label>
                                     <input type="password" class="form-control @error('password') is-invalid @enderror"
                                         id="password" name="password" autocomplete="new-password">
-                                    <label for="password">Password <span class="text-danger">*</span></label>
                                     <small class="form-text text-muted">Leave blank to keep current password</small>
                                     @error('password')
                                         <span class="invalid-feedback" role="alert">
@@ -79,10 +79,10 @@
 
                             {{-- Confirm Password --}}
                             <div class="col-md-6">
-                                <div class="form-floating mb-3">
+                                <div class="mb-3">
+                                    <label for="password-confirm">Confirm Password <span class="text-danger">*</span></label>
                                     <input type="password" class="form-control" id="password-confirm"
                                         name="password_confirmation" autocomplete="new-password">
-                                    <label for="password-confirm">Confirm Password <span class="text-danger">*</span></label>
                                 </div>
                             </div>
 

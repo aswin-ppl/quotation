@@ -134,12 +134,15 @@ class CustomerController extends Controller
                 }
             }
 
+            // Track newly created address IDs for default selection
+            $newAddressIds = [];
+
             // Add new addresses
             if (isset($validated['new_addresses'])) {
                 foreach ($validated['new_addresses'] as $index => $addressData) {
                     Log::info("Creating new address #{$index}:", $addressData);
 
-                    $customer->addresses()->create([
+                    $newAddress = $customer->addresses()->create([
                         'address_line_1' => $addressData['address_line_1'],
                         'address_line_2' => null,
                         'city_id' => $addressData['city_id'],
@@ -151,17 +154,35 @@ class CustomerController extends Controller
                         'is_default' => false
                     ]);
 
-                    Log::info("✅ New address #{$index} created");
+                    $newAddressIds[$index] = $newAddress->id;
+
+                    Log::info("✅ New address #{$index} created with ID: {$newAddress->id}");
                 }
             }
 
             // Update default address
             if (isset($validated['default_address'])) {
+                $defaultValue = $validated['default_address'];
+
+                // Reset all to non-default first
                 CustomerAddress::where('customer_id', $customer->id)->update(['is_default' => false]);
-                CustomerAddress::where('id', $validated['default_address'])
-                    ->where('customer_id', $customer->id)
-                    ->update(['is_default' => true]);
-                Log::info("✅ Default address set to ID: {$validated['default_address']}");
+
+                // Check if it's a new address (starts with 'new_')
+                if (strpos($defaultValue, 'new_') === 0) {
+                    $newIndex = str_replace('new_', '', $defaultValue);
+
+                    if (isset($newAddressIds[$newIndex])) {
+                        CustomerAddress::where('id', $newAddressIds[$newIndex])
+                            ->update(['is_default' => true]);
+                        Log::info("✅ New address set as default: ID {$newAddressIds[$newIndex]}");
+                    }
+                } else {
+                    // It's an existing address ID
+                    CustomerAddress::where('id', $defaultValue)
+                        ->where('customer_id', $customer->id)
+                        ->update(['is_default' => true]);
+                    Log::info("✅ Existing address set as default: ID {$defaultValue}");
+                }
             }
 
             DB::commit();
@@ -185,6 +206,7 @@ class CustomerController extends Controller
                 ->with('error', 'Failed to update customer: ' . $e->getMessage());
         }
     }
+
 
 
     public function destroy(Customer $customer)
@@ -222,6 +244,7 @@ class CustomerController extends Controller
                 'state' => $address->state->name ?? null,
                 'pincode' => $address->pincode->code,
                 'country' => $address->country,
+                'is_default' => $address->is_default,
             ];
         });
 

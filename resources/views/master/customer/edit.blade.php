@@ -6,9 +6,7 @@
         .select2-selection__arrow {
             display: none !important;
         }
-        #status {
-            height: 58px;
-        }
+
         .address-item {
             background: #f8f9fa;
             border: 1px solid #dee2e6;
@@ -75,10 +73,10 @@
                         <div class="row">
                             {{-- Name --}}
                             <div class="col-md-6">
-                                <div class="form-floating mb-3">
+                                <div class=" mb-3">
+                                    <label for="name">Name <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control @error('name') is-invalid @enderror"
                                         id="name" name="name" value="{{ old('name', $customer->name) }}" required>
-                                    <label for="name">Name <span class="text-danger">*</span></label>
                                     @error('name')
                                         <div class="invalid-feedback d-block">{{ $message }}</div>
                                     @enderror
@@ -87,10 +85,10 @@
 
                             {{-- Email --}}
                             <div class="col-md-6">
-                                <div class="form-floating mb-3">
+                                <div class="mb-3">
+                                    <label for="email">Email</label>
                                     <input type="email" class="form-control @error('email') is-invalid @enderror"
                                         id="email" name="email" value="{{ old('email', $customer->email) }}">
-                                    <label for="email">Email</label>
                                     @error('email')
                                         <div class="invalid-feedback d-block">{{ $message }}</div>
                                     @enderror
@@ -99,10 +97,10 @@
 
                             {{-- Mobile --}}
                             <div class="col-md-6">
-                                <div class="form-floating mb-3">
+                                <div class="mb-3">
+                                    <label for="mobile">Mobile <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control @error('mobile') is-invalid @enderror"
                                         id="mobile" name="mobile" value="{{ old('mobile', $customer->mobile) }}" required>
-                                    <label for="mobile">Mobile <span class="text-danger">*</span></label>
                                     @error('mobile')
                                         <div class="invalid-feedback d-block">{{ $message }}</div>
                                     @enderror
@@ -111,18 +109,15 @@
 
                             {{-- Status --}}
                             <div class="col-md-6">
-                                <div class="form-floating mb-3">
+                                <div class="mb-3">
+                                    <label for="status">Status <span class="text-danger">*</span></label>
                                     <select class="form-select @error('status') is-invalid @enderror" id="status" name="status" required>
                                         <option value="active" {{ old('status', $customer->status) == 'active' ? 'selected' : '' }}>Active</option>
                                         <option value="inactive" {{ old('status', $customer->status) == 'inactive' ? 'selected' : '' }}>Inactive</option>
                                     </select>
-                                    <label for="status">Status <span class="text-danger">*</span></label>
                                 </div>
                             </div>
                         </div>
-
-                        <hr class="my-4">
-                        <h5 class="mb-3">Add New Address</h5>
 
                         {{-- Address Input Section --}}
                         <div class="row">
@@ -228,6 +223,8 @@
 
 @section('scripts')
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="{{ asset('js/plugins/toastr-init.js') }}"></script>
+
     <script>
         $(document).ready(function() {
             let newAddressIndex = 0;
@@ -328,7 +325,258 @@
                 const addressType = $('#address_type').val();
 
                 if (!addressLine || !stateId || !districtId || !cityId || !pincodeId) {
-                    alert('Please fill all address fields');
+                    toastr.error('Please fill all address fields');
+                    return;
+                }
+
+                const address = {
+                    index: newAddressIndex,
+                    address_line: addressLine,
+                    state_id: stateId,
+                    state_name: stateName,
+                    district_id: districtId,
+                    district_name: districtName,
+                    city_id: cityId,
+                    city_name: cityName,
+                    pincode_id: pincodeId,
+                    pincode_code: pincodeCode,
+                    type: addressType
+                };
+
+                newAddresses.push(address);
+                renderNewAddresses();
+                clearAddressForm();
+                $('#new-addresses-container').show();
+                newAddressIndex++;
+            });
+
+            // Render new addresses
+            function renderNewAddresses() {
+                $('#new-address-list').empty();
+
+                newAddresses.forEach((addr) => {
+                    const formattedAddress = `${addr.address_line}, ${addr.city_name}, ${addr.district_name}, ${addr.state_name} - ${addr.pincode_code} <small class="text-muted">(${addr.type})</small>`;
+
+                    // Use a unique radio value for new addresses (prefix with 'new_')
+                    const addressHtml = `
+                        <div class="address-item" data-new-index="${addr.index}">
+                            <input type="radio" name="default_address" value="new_${addr.index}" 
+                                   class="form-check-input default-radio-new">
+                            
+                            <span class="address-text">${formattedAddress}</span>
+                            
+                            <button type="button" class="btn btn-danger btn-sm remove-new-address" data-index="${addr.index}">
+                                <i class="ti ti-trash"></i> Delete
+                            </button>
+
+                            <input type="hidden" name="new_addresses[${addr.index}][address_line_1]" value="${addr.address_line}">
+                            <input type="hidden" name="new_addresses[${addr.index}][state_id]" value="${addr.state_id}">
+                            <input type="hidden" name="new_addresses[${addr.index}][district_id]" value="${addr.district_id}">
+                            <input type="hidden" name="new_addresses[${addr.index}][city_id]" value="${addr.city_id}">
+                            <input type="hidden" name="new_addresses[${addr.index}][pincode_id]" value="${addr.pincode_id}">
+                            <input type="hidden" name="new_addresses[${addr.index}][type]" value="${addr.type}">
+                            <input type="hidden" name="new_addresses[${addr.index}][is_new_default]" value="0" class="new-default-flag">
+                        </div>
+                    `;
+
+                    $('#new-address-list').append(addressHtml);
+                });
+            }
+
+            // Handle default radio change for new addresses
+            $(document).on('change', 'input[name="default_address"]', function() {
+                const selectedValue = $(this).val();
+                
+                // Reset all new address default flags
+                $('.new-default-flag').val('0');
+                
+                // If a new address is selected as default, mark it
+                if (selectedValue.startsWith('new_')) {
+                    const newIndex = selectedValue.replace('new_', '');
+                    $(`.address-item[data-new-index="${newIndex}"] .new-default-flag`).val('1');
+                }
+            });
+
+            // Remove existing address
+            $(document).on('click', '.remove-existing-address', function() {
+                const $item = $(this).closest('.address-item');
+                const wasDefault = $item.find('input[name="default_address"]').is(':checked');
+                
+                $item.find('.keep-address').val('0');
+                $item.hide();
+
+                // If removed address was default, select first visible address
+                if (wasDefault) {
+                    const $firstVisible = $('.address-item:visible input[name="default_address"]').first();
+                    if ($firstVisible.length) {
+                        $firstVisible.prop('checked', true).trigger('change');
+                    }
+                }
+            });
+
+            // Remove new address
+            $(document).on('click', '.remove-new-address', function() {
+                const indexToRemove = $(this).data('index');
+                const wasDefault = $(`input[name="default_address"][value="new_${indexToRemove}"]`).is(':checked');
+                
+                newAddresses = newAddresses.filter(addr => addr.index !== indexToRemove);
+                renderNewAddresses();
+                
+                if (newAddresses.length === 0) {
+                    $('#new-addresses-container').hide();
+                }
+
+                // If removed address was default, select first available address
+                if (wasDefault) {
+                    const $firstAvailable = $('input[name="default_address"]:visible').first();
+                    if ($firstAvailable.length) {
+                        $firstAvailable.prop('checked', true).trigger('change');
+                    }
+                }
+            });
+
+            // Form validation before submit
+            $('#customerForm').on('submit', function(e) {
+                const visibleAddresses = $('.address-item:visible').length;
+                
+                if (visibleAddresses === 0) {
+                    e.preventDefault();
+                    toastr.error('At least one address is required');
+                    return false;
+                }
+
+                // Check if a default is selected
+                const hasDefaultSelected = $('input[name="default_address"]:checked').length > 0;
+                if (!hasDefaultSelected) {
+                    e.preventDefault();
+                    toastr.error('Please select a default address');
+                    return false;
+                }
+            });
+
+            function clearAddressForm() {
+                $('#address_line').val('');
+                $('#state').val(null).trigger('change.select2');
+                $('#district').empty().append('<option></option>').val(null).trigger('change.select2');
+                $('#city').empty().append('<option></option>').val(null).trigger('change.select2');
+                $('#pincode').empty().append('<option></option>').val(null).trigger('change.select2');
+                $('#address_type').val('home');
+            }
+
+            function fillSelect(selector, data, textKey = 'name') {
+                const $el = $(selector);
+                $el.empty().append('<option></option>');
+                data.forEach(d => $el.append(new Option(d[textKey] || d.name, d.id)));
+                $el.trigger('change.select2');
+            }
+        });
+    </script>
+@endsection
+
+
+{{-- @section('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            let newAddressIndex = 0;
+            let newAddresses = [];
+
+            // Initialize Select2
+            $('#state, #district, #city, #pincode').select2({
+                width: '100%',
+                placeholder: 'Select an option',
+                allowClear: true
+            });
+
+            // Load States
+            $.get('/states', function(states) {
+                $('#state').empty().append('<option></option>');
+                states.forEach(s => $('#state').append(new Option(s.name, s.id)));
+            });
+
+            // State -> District
+            $('#state').on('change', function() {
+                const id = $(this).val();
+                $('#district, #city, #pincode').empty().append('<option></option>').val(null).trigger('change.select2');
+                if (id) {
+                    $.get(`/districts/${id}`, function(districts) {
+                        fillSelect('#district', districts);
+                    });
+                }
+            });
+
+            // District -> City
+            $('#district').on('change', function() {
+                const id = $(this).val();
+                $('#city, #pincode').empty().append('<option></option>').val(null).trigger('change.select2');
+                if (id) {
+                    $.get(`/cities/${id}`, function(cities) {
+                        fillSelect('#city', cities);
+                    });
+                }
+            });
+
+            // City -> Pincode
+            $('#city').on('change', function() {
+                const id = $(this).val();
+                $('#pincode').empty().append('<option></option>').val(null).trigger('change.select2');
+                if (id) {
+                    $.get(`/pincodes/${id}`, function(pincodes) {
+                        fillSelect('#pincode', pincodes, 'code');
+                        if (pincodes.length > 0) {
+                            $('#pincode').val(pincodes[0].id).trigger('change.select2');
+                        }
+                    });
+                }
+            });
+
+            // Pincode async search
+            $('#pincode').select2({
+                width: '100%',
+                placeholder: 'Type or select a pincode',
+                allowClear: true,
+                ajax: {
+                    url: '/pincode/search',
+                    dataType: 'json',
+                    delay: 300,
+                    data: params => ({ q: params.term }),
+                    processResults: data => ({
+                        results: data.map(item => ({ id: item.id, text: item.code }))
+                    })
+                }
+            });
+
+            // Pincode reverse lookup
+            $('#pincode').on('select2:select', function(e) {
+                const pincodeId = e.params.data.id;
+                $.get(`/pincode/${pincodeId}`, function(response) {
+                    if (response.state && response.district) {
+                        $('#state').empty().append(new Option(response.state, response.state_id, true, true)).trigger('change.select2');
+                        $('#district').empty().append(new Option(response.district, response.district_id, true, true)).trigger('change.select2');
+                    }
+                    const cities = response.cities || [];
+                    fillSelect('#city', cities);
+                    if (cities.length === 1) {
+                        $('#city').val(cities[0].id).trigger('change.select2');
+                    }
+                });
+            });
+
+            // Add New Address
+            $('#add-address-btn').on('click', function() {
+                const addressLine = $('#address_line').val().trim();
+                const stateId = $('#state').val();
+                const stateName = $('#state option:selected').text();
+                const districtId = $('#district').val();
+                const districtName = $('#district option:selected').text();
+                const cityId = $('#city').val();
+                const cityName = $('#city option:selected').text();
+                const pincodeId = $('#pincode').val();
+                const pincodeCode = $('#pincode option:selected').text();
+                const addressType = $('#address_type').val();
+
+                if (!addressLine || !stateId || !districtId || !cityId || !pincodeId) {
+                    toastr.error('Please fill all address fields');
                     return;
                 }
 
@@ -415,4 +663,4 @@
             }
         });
     </script>
-@endsection
+@endsection --}}

@@ -15,19 +15,10 @@ class CustomerAddressController extends Controller
 
     public function store(Request $request)
     {
-        // Log 1: Raw request data
-        Log::info('=== CUSTOMER STORE START ===');
-        Log::info('Raw Request Data:', $request->all());
-        Log::info('Request Method: ' . $request->method());
-        Log::info('Content Type: ' . $request->header('Content-Type'));
-
-        // Log 2: Check if addresses exist
         if (!$request->has('addresses')) {
             Log::error('❌ No addresses array in request');
             return back()->withInput()->with('error', 'No addresses provided');
         }
-
-        Log::info('✅ Addresses found in request:', $request->input('addresses'));
 
         // Validation with logging
         try {
@@ -46,21 +37,16 @@ class CustomerAddressController extends Controller
                 'default_address' => 'required|integer'
             ]);
 
-            Log::info('✅ Validation passed');
-            Log::info('Validated Data:', $validated);
-
         } catch (\Illuminate\Validation\ValidationException $e) {
-            Log::error('❌ Validation failed:', [
+            Log::error('Validation failed:', [
                 'errors' => $e->errors(),
                 'message' => $e->getMessage()
             ]);
-            throw $e; // Re-throw to show validation errors
+            throw $e;
         }
 
         try {
             DB::beginTransaction();
-            Log::info('🔄 Transaction started');
-
             // Create customer
             $customerData = [
                 'name' => $validated['name'],
@@ -69,16 +55,13 @@ class CustomerAddressController extends Controller
                 'status' => $validated['status']
             ];
 
-            Log::info('Creating customer with data:', $customerData);
-
             $customer = Customer::create($customerData);
 
             if (!$customer) {
-                Log::error('❌ Customer creation returned null/false');
                 throw new \Exception('Failed to create customer');
             }
 
-            Log::info('✅ Customer created successfully:', [
+            Log::info('Customer created successfully:', [
                 'id' => $customer->id,
                 'name' => $customer->name
             ]);
@@ -105,32 +88,25 @@ class CustomerAddressController extends Controller
                 $address = $customer->addresses()->create($addressToCreate);
 
                 if (!$address) {
-                    Log::error("❌ Address creation failed for index {$index}");
                     throw new \Exception("Failed to create address at index {$index}");
                 }
 
-                Log::info("✅ Address #{$index} created with ID: " . $address->id);
                 $addressCount++;
             }
 
             DB::commit();
-            Log::info('✅ Transaction committed successfully');
-            Log::info("Total addresses created: {$addressCount}");
-            Log::info('=== CUSTOMER STORE SUCCESS ===');
 
             return redirect()->route('customers.index')
                 ->with('success', "Customer created with {$addressCount} address(es)!");
 
         } catch (\Exception $e) {
             DB::rollback();
-            Log::error('❌ Exception caught during customer creation:', [
+            Log::error('Exception caught during customer creation:', [
                 'message' => $e->getMessage(),
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
                 'trace' => $e->getTraceAsString()
             ]);
-            Log::info('=== CUSTOMER STORE FAILED ===');
-
             return back()->withInput()
                 ->with('error', 'Failed to create customer: ' . $e->getMessage());
         }

@@ -55,10 +55,10 @@
                         <div class="row">
                             {{-- Name --}}
                             <div class="col-md-6">
-                                <div class="form-floating mb-3">
+                                <div class="mb-3">
+                                    <label for="name">Name <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control @error('name') is-invalid @enderror"
                                         id="name" name="name" value="{{ old('name') }}" required>
-                                    <label for="name">Name <span class="text-danger">*</span></label>
                                     @error('name')
                                         <div class="invalid-feedback d-block">{{ $message }}</div>
                                     @enderror
@@ -67,10 +67,10 @@
 
                             {{-- Email --}}
                             <div class="col-md-6">
-                                <div class="form-floating mb-3">
+                                <div class="mb-3">
+                                    <label for="email">Email <span class="text-danger">*</span></label>
                                     <input type="email" class="form-control @error('email') is-invalid @enderror"
                                         id="email" name="email" value="{{ old('email') }}" required>
-                                    <label for="email">Email <span class="text-danger">*</span></label>
                                     @error('email')
                                         <div class="invalid-feedback d-block">{{ $message }}</div>
                                     @enderror
@@ -79,10 +79,10 @@
 
                             {{-- Mobile --}}
                             <div class="col-md-6">
-                                <div class="form-floating mb-3">
+                                <div class="mb-3">
+                                    <label for="mobile">Mobile <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control @error('mobile') is-invalid @enderror"
                                         id="mobile" name="mobile" value="{{ old('mobile') }}" required>
-                                    <label for="mobile">Mobile <span class="text-danger">*</span></label>
                                     @error('mobile')
                                         <div class="invalid-feedback d-block">{{ $message }}</div>
                                     @enderror
@@ -91,22 +91,19 @@
 
                             {{-- Status --}}
                             <div class="col-md-6">
-                                <div class="form-floating mb-3">
+                                <div class="mb-3">
+                                    <label for="status">Status <span class="text-danger">*</span></label>
                                     <select class="form-select @error('status') is-invalid @enderror" id="status"
                                         name="status" required>
                                         <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>Active</option>
                                         <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
                                     </select>
-                                    <label for="status">Status <span class="text-danger">*</span></label>
                                     @error('status')
                                         <div class="invalid-feedback d-block">{{ $message }}</div>
                                     @enderror
                                 </div>
                             </div>
                         </div>
-
-                        <hr class="my-4">
-                        <h5 class="mb-3">Add Address</h5>
 
                         {{-- Address Input Section --}}
                         <div class="row">
