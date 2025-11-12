@@ -59,7 +59,7 @@
                 <div class="sidebarmenu">
                     <div class="brand-logo d-flex align-items-center nav-logo">
                         <a href="/" class="text-nowrap logo-img">
-                            <img src="{{ asset('images/logos/sherbrooke.png') }}" width="50" alt="Logo" />
+                            <img src="{{ asset('images/logos/sherbrooke.png') }}" width="200" alt="Logo" />
                         </a>
 
                     </div>

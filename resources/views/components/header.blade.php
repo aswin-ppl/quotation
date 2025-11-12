@@ -97,7 +97,7 @@
             </ul>
 
             <div class="d-block d-lg-none py-9 py-xl-0">
-                <img src="{{ asset('images/logos/sherbrooke.png') }}" width="50" alt="sherbrooke-img" />
+                <img src="{{ asset('images/logos/sherbrooke.png') }}" width="160" alt="sherbrooke-img" />
             </div>
             <a class="navbar-toggler p-0 border-0 nav-icon-hover-bg rounded-circle" href="javascript:void(0)"
                 data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav"
