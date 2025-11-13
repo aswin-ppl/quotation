@@ -244,12 +244,6 @@
                     $.get(`/cities/${id}`, function(cities) {
                         fillSelect('#city', cities);
                     });
-                    $.get(`/pincodes/district/${id}`, function(pincodes) {
-                        fillSelect('#pincode', pincodes, 'code');
-                        if (pincodes.length > 0) {
-                            $('#pincode').val(pincodes[0].id);
-                        }
-                    });
                 }
             });
 
