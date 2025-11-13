@@ -5,6 +5,7 @@
         .select2-selection__arrow {
             display: none !important;
         }
+
         .address-item {
             background: #f8f9fa;
             border: 1px solid #dee2e6;
@@ -15,11 +16,13 @@
             align-items: center;
             gap: 15px;
         }
+
         .address-text {
             flex: 1;
             font-size: 14px;
             color: #333;
         }
+
         .address-item .btn-danger {
             padding: 4px 10px;
             font-size: 12px;
@@ -41,8 +44,10 @@
                             <i class="ti ti-home fs-4 mt-1"></i>
                         </a>
                     </li>
-                    <li class="breadcrumb-item"><a href="javascript:void(0)" class="text-primary">{{ $parent_title }}</a></li>
-                    <li class="breadcrumb-item"><a href="{{ route('customers.index') }}" class="text-primary">{{ $page_title }}</a></li>
+                    <li class="breadcrumb-item"><a href="javascript:void(0)" class="text-primary">{{ $parent_title }}</a>
+                    </li>
+                    <li class="breadcrumb-item"><a href="{{ route('customers.index') }}"
+                            class="text-primary">{{ $page_title }}</a></li>
                     <li class="breadcrumb-item active text-primary" aria-current="page">Create</li>
                 </ol>
             </nav>
@@ -95,8 +100,10 @@
                                     <label for="status">Status <span class="text-danger">*</span></label>
                                     <select class="form-select @error('status') is-invalid @enderror" id="status"
                                         name="status" required>
-                                        <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>Active</option>
-                                        <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                                        <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>Active
+                                        </option>
+                                        <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>
+                                            Inactive</option>
                                     </select>
                                     @error('status')
                                         <div class="invalid-feedback d-block">{{ $message }}</div>
@@ -110,23 +117,14 @@
                             {{-- Address Line --}}
                             <div class="col-md-12 mb-3">
                                 <label for="address_line">Address Line <span class="text-danger">*</span></label>
-                                <textarea id="address_line" class="form-control" rows="2" 
-                                          placeholder="Street, Building, Apartment"></textarea>
+                                <textarea id="address_line" class="form-control" rows="2" placeholder="Street, Building, Apartment"></textarea>
                             </div>
 
-                            {{-- State --}}
+                            {{-- Pincode --}}
                             <div class="col-md-6 mb-3">
-                                <label for="state">State <span class="text-danger">*</span></label>
-                                <select id="state" class="form-select">
-                                    <option value="">Select State</option>
-                                </select>
-                            </div>
-
-                            {{-- District --}}
-                            <div class="col-md-6 mb-3">
-                                <label for="district">District <span class="text-danger">*</span></label>
-                                <select id="district" class="form-select">
-                                    <option value="">Select District</option>
+                                <label for="pincode">Pincode <span class="text-danger">*</span></label>
+                                <select id="pincode" class="form-select">
+                                    <option value="">Select Pincode</option>
                                 </select>
                             </div>
 
@@ -138,11 +136,19 @@
                                 </select>
                             </div>
 
-                            {{-- Pincode --}}
+                            {{-- District --}}
                             <div class="col-md-6 mb-3">
-                                <label for="pincode">Pincode <span class="text-danger">*</span></label>
-                                <select id="pincode" class="form-select">
-                                    <option value="">Select Pincode</option>
+                                <label for="district">District <span class="text-danger">*</span></label>
+                                <select id="district" class="form-select">
+                                    <option value="">Select District</option>
+                                </select>
+                            </div>
+
+                            {{-- State --}}
+                            <div class="col-md-6 mb-3">
+                                <label for="state">State <span class="text-danger">*</span></label>
+                                <select id="state" class="form-select">
+                                    <option value="">Select State</option>
                                 </select>
                             </div>
 
@@ -204,13 +210,24 @@
             // Load States
             $.get('/states', function(states) {
                 $('#state').empty().append('<option></option>');
-                states.forEach(s => $('#state').append(new Option(s.name, s.id)));
+
+                states.forEach(s => {
+                    $('#state').append(new Option(s.name, s.id));
+                });
+
+                // now set default
+                const tamilNadu = states.find(s => s.name === 'Tamil Nadu');
+                if (tamilNadu) {
+                    $('#state').val(tamilNadu.id).trigger('change');
+                }
             });
+
 
             // State -> District
             $('#state').on('change', function() {
                 const id = $(this).val();
-                $('#district, #city, #pincode').empty().append('<option></option>').val(null).trigger('change.select2');
+                $('#district, #city, #pincode').empty().append('<option></option>').val(null).trigger(
+                    'change.select2');
                 if (id) {
                     $.get(`/districts/${id}`, function(districts) {
                         fillSelect('#district', districts);
@@ -221,10 +238,17 @@
             // District -> City
             $('#district').on('change', function() {
                 const id = $(this).val();
-                $('#city, #pincode').empty().append('<option></option>').val(null).trigger('change.select2');
+                $('#city, #pincode').empty().append('<option></option>').val(null).trigger(
+                    'change.select2');
                 if (id) {
                     $.get(`/cities/${id}`, function(cities) {
                         fillSelect('#city', cities);
+                    });
+                    $.get(`/pincodes/district/${id}`, function(pincodes) {
+                        fillSelect('#pincode', pincodes, 'code');
+                        if (pincodes.length > 0) {
+                            $('#pincode').val(pincodes[0].id);
+                        }
                     });
                 }
             });
@@ -252,11 +276,26 @@
                     url: '/pincode/search',
                     dataType: 'json',
                     delay: 300,
-                    data: params => ({ q: params.term }),
+                    data: params => ({
+                        q: params.term,
+                        district_id: $('#district').val() // <-- give the backend some brains
+                    }),
                     processResults: data => ({
-                        results: data.map(item => ({ id: item.id, text: item.code }))
+                        results: data.map(item => ({
+                            id: item.id,
+                            text: item.code
+                        }))
                     })
                 }
+            });
+
+            $('#district').on('select2:clear', function(e) {
+                const stateId = $('#state').val();
+                if (!stateId) return;
+
+                $.get(`/districts/${stateId}`, function(districts) {
+                    fillSelect('#district', districts);
+                });
             });
 
             // Pincode reverse lookup
@@ -264,8 +303,10 @@
                 const pincodeId = e.params.data.id;
                 $.get(`/pincode/${pincodeId}`, function(response) {
                     if (response.state && response.district) {
-                        $('#state').empty().append(new Option(response.state, response.state_id, true, true)).trigger('change.select2');
-                        $('#district').empty().append(new Option(response.district, response.district_id, true, true)).trigger('change.select2');
+                        $('#state').empty().append(new Option(response.state, response.state_id,
+                            true, true)).trigger('change.select2');
+                        $('#district').empty().append(new Option(response.district, response
+                            .district_id, true, true)).trigger('change.select2');
                     }
                     const cities = response.cities || [];
                     fillSelect('#city', cities);
@@ -335,7 +376,8 @@
 
                 addresses.forEach((addr, idx) => {
                     const isDefault = idx === 0;
-                    const formattedAddress = `${addr.address_line}, ${addr.city_name}, ${addr.district_name}, ${addr.state_name} - ${addr.pincode_code}`;
+                    const formattedAddress =
+                        `${addr.address_line}, ${addr.city_name}, ${addr.district_name}, ${addr.state_name} - ${addr.pincode_code}`;
 
                     const addressHtml = `
                         <div class="address-item" data-index="${addr.index}">
@@ -366,7 +408,7 @@
             // Remove address
             $(document).on('click', '.remove-address', function() {
                 const indexToRemove = $(this).data('index');
-                
+
                 if (addresses.length === 1) {
                     toastr.error('At least one address is required', 'Error');
                     return;

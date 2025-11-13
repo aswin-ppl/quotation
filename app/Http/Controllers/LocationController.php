@@ -30,14 +30,31 @@ class LocationController extends Controller
             ->select('id', 'code')->orderBy('code')->get();
     }
 
+    public function getPincodesByDitrict($districtId)
+    {
+        return Pincode::where('district_id', $districtId)->select('id', 'code')->orderBy('code')->get();
+    }
+
     public function searchPincode(Request $request)
     {
         $query = $request->get('q', '');
-        return Pincode::where('code', 'LIKE', "%{$query}%")
-            ->select('id', 'code')
-            ->take(10)
-            ->get();
+        $districtId = $request->get('district_id', null);
+
+        $pincodeQuery = Pincode::select('id', 'code');
+
+        // If district is selected, filter by it
+        if (!empty($districtId)) {
+            $pincodeQuery->where('district_id', $districtId);
+        }
+
+        // If user typed something, apply LIKE filter too
+        if (!empty($query)) {
+            $pincodeQuery->where('code', 'LIKE', "%{$query}%");
+        }
+
+        return $pincodeQuery->take(10)->get();
     }
+
 
     public function getPincodeDetails($pincodeId)
     {
@@ -71,7 +88,7 @@ class LocationController extends Controller
             ->where('name', 'LIKE', "%$query%")
             ->limit(20)
             ->get(['id', 'name']);
-            
+
         logger($districts);
         return response()->json($districts);
     }

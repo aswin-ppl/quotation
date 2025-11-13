@@ -17,11 +17,13 @@
             align-items: center;
             gap: 15px;
         }
+
         .address-text {
             flex: 1;
             font-size: 14px;
             color: #333;
         }
+
         .address-item .btn-danger {
             padding: 4px 10px;
             font-size: 12px;
@@ -44,8 +46,10 @@
                             <i class="ti ti-home fs-4 mt-1"></i>
                         </a>
                     </li>
-                    <li class="breadcrumb-item"><a href="javascript:void(0)" class="text-primary">{{ $parent_title }}</a></li>
-                    <li class="breadcrumb-item"><a href="{{ route('customers.index') }}" class="text-primary">{{ $page_title }}</a></li>
+                    <li class="breadcrumb-item"><a href="javascript:void(0)" class="text-primary">{{ $parent_title }}</a>
+                    </li>
+                    <li class="breadcrumb-item"><a href="{{ route('customers.index') }}"
+                            class="text-primary">{{ $page_title }}</a></li>
                     <li class="breadcrumb-item active text-primary" aria-current="page">Edit</li>
                 </ol>
             </nav>
@@ -100,7 +104,8 @@
                                 <div class="mb-3">
                                     <label for="mobile">Mobile <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control @error('mobile') is-invalid @enderror"
-                                        id="mobile" name="mobile" value="{{ old('mobile', $customer->mobile) }}" required>
+                                        id="mobile" name="mobile" value="{{ old('mobile', $customer->mobile) }}"
+                                        required>
                                     @error('mobile')
                                         <div class="invalid-feedback d-block">{{ $message }}</div>
                                     @enderror
@@ -111,9 +116,14 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="status">Status <span class="text-danger">*</span></label>
-                                    <select class="form-select @error('status') is-invalid @enderror" id="status" name="status" required>
-                                        <option value="active" {{ old('status', $customer->status) == 'active' ? 'selected' : '' }}>Active</option>
-                                        <option value="inactive" {{ old('status', $customer->status) == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                                    <select class="form-select @error('status') is-invalid @enderror" id="status"
+                                        name="status" required>
+                                        <option value="active"
+                                            {{ old('status', $customer->status) == 'active' ? 'selected' : '' }}>Active
+                                        </option>
+                                        <option value="inactive"
+                                            {{ old('status', $customer->status) == 'inactive' ? 'selected' : '' }}>Inactive
+                                        </option>
                                     </select>
                                 </div>
                             </div>
@@ -127,16 +137,9 @@
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label for="state">State <span class="text-danger">*</span></label>
-                                <select id="state" class="form-select">
-                                    <option value="">Select State</option>
-                                </select>
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <label for="district">District <span class="text-danger">*</span></label>
-                                <select id="district" class="form-select">
-                                    <option value="">Select District</option>
+                                <label for="pincode">Pincode <span class="text-danger">*</span></label>
+                                <select id="pincode" class="form-select">
+                                    <option value="">Select Pincode</option>
                                 </select>
                             </div>
 
@@ -148,9 +151,16 @@
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label for="pincode">Pincode <span class="text-danger">*</span></label>
-                                <select id="pincode" class="form-select">
-                                    <option value="">Select Pincode</option>
+                                <label for="district">District <span class="text-danger">*</span></label>
+                                <select id="district" class="form-select">
+                                    <option value="">Select District</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="state">State <span class="text-danger">*</span></label>
+                                <select id="state" class="form-select">
+                                    <option value="">Select State</option>
                                 </select>
                             </div>
 
@@ -176,27 +186,29 @@
                             <hr class="my-4">
                             <h5 class="mb-3">Addresses</h5>
                             <div id="address-list">
-                                @foreach($customer->addresses as $index => $addr)
+                                @foreach ($customer->addresses as $index => $addr)
                                     <div class="address-item" data-id="{{ $addr->id }}">
-                                        <input type="radio" name="default_address" value="{{ $addr->id }}" 
-                                               {{ $addr->is_default ? 'checked' : '' }} class="form-check-input">
-                                        
+                                        <input type="radio" name="default_address" value="{{ $addr->id }}"
+                                            {{ $addr->is_default ? 'checked' : '' }} class="form-check-input">
+
                                         <span class="address-text">
-                                            {{ $addr->address_line_1 }}, 
-                                            {{ $addr->city->name }}, 
-                                            {{ $addr->district->name }}, 
-                                            {{ $addr->state->name }} - 
+                                            {{ $addr->address_line_1 }},
+                                            {{ $addr->city->name }},
+                                            {{ $addr->district->name }},
+                                            {{ $addr->state->name }} -
                                             {{ $addr->pincode->code }}
                                             <small class="text-muted">({{ ucfirst($addr->type) }})</small>
                                         </span>
-                                        
-                                        <button type="button" class="btn btn-danger btn-sm remove-existing-address" 
-                                                data-id="{{ $addr->id }}">
+
+                                        <button type="button" class="btn btn-danger btn-sm remove-existing-address"
+                                            data-id="{{ $addr->id }}">
                                             <i class="ti ti-trash"></i> Delete
                                         </button>
 
-                                        <input type="hidden" name="existing_addresses[{{ $addr->id }}][id]" value="{{ $addr->id }}">
-                                        <input type="hidden" name="existing_addresses[{{ $addr->id }}][keep]" value="1" class="keep-address">
+                                        <input type="hidden" name="existing_addresses[{{ $addr->id }}][id]"
+                                            value="{{ $addr->id }}">
+                                        <input type="hidden" name="existing_addresses[{{ $addr->id }}][keep]"
+                                            value="1" class="keep-address">
                                     </div>
                                 @endforeach
                             </div>
@@ -240,13 +252,23 @@
             // Load States
             $.get('/states', function(states) {
                 $('#state').empty().append('<option></option>');
-                states.forEach(s => $('#state').append(new Option(s.name, s.id)));
+
+                states.forEach(s => {
+                    $('#state').append(new Option(s.name, s.id));
+                });
+
+                // now set default
+                const tamilNadu = states.find(s => s.name === 'Tamil Nadu');
+                if (tamilNadu) {
+                    $('#state').val(tamilNadu.id).trigger('change');
+                }
             });
 
             // State -> District
             $('#state').on('change', function() {
                 const id = $(this).val();
-                $('#district, #city, #pincode').empty().append('<option></option>').val(null).trigger('change.select2');
+                $('#district, #city, #pincode').empty().append('<option></option>').val(null).trigger(
+                    'change.select2');
                 if (id) {
                     $.get(`/districts/${id}`, function(districts) {
                         fillSelect('#district', districts);
@@ -257,7 +279,8 @@
             // District -> City
             $('#district').on('change', function() {
                 const id = $(this).val();
-                $('#city, #pincode').empty().append('<option></option>').val(null).trigger('change.select2');
+                $('#city, #pincode').empty().append('<option></option>').val(null).trigger(
+                    'change.select2');
                 if (id) {
                     $.get(`/cities/${id}`, function(cities) {
                         fillSelect('#city', cities);
@@ -288,9 +311,15 @@
                     url: '/pincode/search',
                     dataType: 'json',
                     delay: 300,
-                    data: params => ({ q: params.term }),
+                    data: params => ({
+                        q: params.term,
+                        district_id: $('#district').val() // <-- give the backend some brains
+                    }),
                     processResults: data => ({
-                        results: data.map(item => ({ id: item.id, text: item.code }))
+                        results: data.map(item => ({
+                            id: item.id,
+                            text: item.code
+                        }))
                     })
                 }
             });
@@ -300,8 +329,10 @@
                 const pincodeId = e.params.data.id;
                 $.get(`/pincode/${pincodeId}`, function(response) {
                     if (response.state && response.district) {
-                        $('#state').empty().append(new Option(response.state, response.state_id, true, true)).trigger('change.select2');
-                        $('#district').empty().append(new Option(response.district, response.district_id, true, true)).trigger('change.select2');
+                        $('#state').empty().append(new Option(response.state, response.state_id,
+                            true, true)).trigger('change.select2');
+                        $('#district').empty().append(new Option(response.district, response
+                            .district_id, true, true)).trigger('change.select2');
                     }
                     const cities = response.cities || [];
                     fillSelect('#city', cities);
@@ -310,6 +341,16 @@
                     }
                 });
             });
+
+            $('#district').on('select2:clear', function(e) {
+                const stateId = $('#state').val();
+                if (!stateId) return;
+
+                $.get(`/districts/${stateId}`, function(districts) {
+                    fillSelect('#district', districts);
+                });
+            });
+
 
             // Add New Address
             $('#add-address-btn').on('click', function() {
@@ -355,7 +396,8 @@
                 $('#new-address-list').empty();
 
                 newAddresses.forEach((addr) => {
-                    const formattedAddress = `${addr.address_line}, ${addr.city_name}, ${addr.district_name}, ${addr.state_name} - ${addr.pincode_code} <small class="text-muted">(${addr.type})</small>`;
+                    const formattedAddress =
+                        `${addr.address_line}, ${addr.city_name}, ${addr.district_name}, ${addr.state_name} - ${addr.pincode_code} <small class="text-muted">(${addr.type})</small>`;
 
                     // Use a unique radio value for new addresses (prefix with 'new_')
                     const addressHtml = `
@@ -386,10 +428,10 @@
             // Handle default radio change for new addresses
             $(document).on('change', 'input[name="default_address"]', function() {
                 const selectedValue = $(this).val();
-                
+
                 // Reset all new address default flags
                 $('.new-default-flag').val('0');
-                
+
                 // If a new address is selected as default, mark it
                 if (selectedValue.startsWith('new_')) {
                     const newIndex = selectedValue.replace('new_', '');
@@ -401,7 +443,7 @@
             $(document).on('click', '.remove-existing-address', function() {
                 const $item = $(this).closest('.address-item');
                 const wasDefault = $item.find('input[name="default_address"]').is(':checked');
-                
+
                 $item.find('.keep-address').val('0');
                 $item.hide();
 
@@ -417,11 +459,12 @@
             // Remove new address
             $(document).on('click', '.remove-new-address', function() {
                 const indexToRemove = $(this).data('index');
-                const wasDefault = $(`input[name="default_address"][value="new_${indexToRemove}"]`).is(':checked');
-                
+                const wasDefault = $(`input[name="default_address"][value="new_${indexToRemove}"]`).is(
+                    ':checked');
+
                 newAddresses = newAddresses.filter(addr => addr.index !== indexToRemove);
                 renderNewAddresses();
-                
+
                 if (newAddresses.length === 0) {
                     $('#new-addresses-container').hide();
                 }
@@ -438,7 +481,7 @@
             // Form validation before submit
             $('#customerForm').on('submit', function(e) {
                 const visibleAddresses = $('.address-item:visible').length;
-                
+
                 if (visibleAddresses === 0) {
                     e.preventDefault();
                     toastr.error('At least one address is required');

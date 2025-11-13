@@ -55,6 +55,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/states', [LocationController::class, 'getStates']);
     Route::get('/districts/{state}', [LocationController::class, 'getDistricts']);
     Route::get('/cities/{district}', [LocationController::class, 'getCities']);
+    Route::get('/pincodes/district/{district}', [LocationController::class, 'getPincodesByDitrict']);
     Route::get('/pincodes/{city}', [LocationController::class, 'getPincodes']);
     Route::get('/pincode/search', [LocationController::class, 'searchPincode']);
     Route::get('/pincode/{pincode}', [LocationController::class, 'getPincodeDetails']);

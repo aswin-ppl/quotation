@@ -271,46 +271,54 @@
                     dataType: 'json',
                     delay: 300,
                     data: params => ({
-                        q: params.term
+                        q: params.term,
+                        district_id: $('#district').val()
                     }),
-                    processResults: data => {
-                        console.log(data);
-                        return {
-                            results: data.map(item => ({
-                                id: item.id,
-                                text: item.code
-                            }))
-                        };
-                    }
-                }
-            });
-
-            // --- District async search ---
-            $('#district').select2({
-                width: '100%',
-                placeholder: 'Search district',
-                allowClear: true,
-                minimumInputLength: 1,
-                ajax: {
-                    url: '/districts/search',
-                    dataType: 'json',
-                    delay: 300,
-                    data: params => {
-                        const stateId = $('#state').val();
-                        if (!stateId) return {}; // don't fetch without state
-                        return {
-                            q: params.term,
-                            state_id: stateId
-                        };
-                    },
                     processResults: data => ({
                         results: data.map(item => ({
                             id: item.id,
-                            text: item.name
+                            text: item.code
                         }))
                     })
                 }
             });
+
+            // --- District async search ---
+            // $('#district').select2({
+            //     width: '100%',
+            //     placeholder: 'Search district',
+            //     allowClear: true,
+            //     minimumInputLength: 1,
+            //     ajax: {
+            //         url: '/districts/search',
+            //         dataType: 'json',
+            //         delay: 300,
+            //         data: params => {
+            //             const stateId = $('#state').val();
+            //             if (!stateId) return {};
+            //             return {
+            //                 q: params.term,
+            //                 state_id: stateId
+            //             };
+            //         },
+            //         processResults: data => ({
+            //             results: data.map(item => ({
+            //                 id: item.id,
+            //                 text: item.name
+            //             }))
+            //         })
+            //     }
+            // });
+
+            $('#district').on('select2:clear', function(e) {
+                const stateId = $('#state').val();
+                if (!stateId) return;
+
+                $.get(`/districts/${stateId}`, function(districts) {
+                    fillSelect('#district', districts);
+                });
+            });
+
 
             // pincode onchange
             $('#pincode').on('select2:select', function(e) {

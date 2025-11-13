@@ -13,7 +13,7 @@
     <!-- Core Css -->
     <link rel="stylesheet" href="{{ asset('css/styles.css') }}" />
 
-    <title>Admin</title>
+    <title>Sherbrooke</title>
 
     @yield('styles')
 </head>
