@@ -214,7 +214,7 @@
             "closeButton": true,
             "progressBar": true,
             "positionClass": "toast-bottom-right",
-            "timeOut": "3000"
+            "timeOut": "2000"
         };
 
         function getCart() {

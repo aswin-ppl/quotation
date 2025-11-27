@@ -5,10 +5,11 @@ namespace App\Http\Controllers\Master;
 use DB;
 use Illuminate\Http\Request;
 use App\Models\Master\Product;
-use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Storage;
+use App\Models\Master\Customer;
 use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductRequest;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -23,7 +24,8 @@ class ProductController extends Controller
     public function create()
     {
         $this->authorize('create-products');
-        return view('master.products.create');
+        $customers = Customer::with('addresses')->latest()->get();
+        return view('master.products.create', compact('customers'));
     }
 
     public function store(ProductRequest $request)

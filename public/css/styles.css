@@ -19511,7 +19511,8 @@ fieldset:disabled .btn {
     pointer-events: none;
 }
 .toast-container > :not(:last-child) {
-    margin-bottom: var(--bs-toast-spacing);
+    /* updated */
+    /* margin-bottom: var(--bs-toast-spacing); */
 }
 .toast-header {
     display: flex;
