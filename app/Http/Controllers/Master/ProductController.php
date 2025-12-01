@@ -5,10 +5,11 @@ namespace App\Http\Controllers\Master;
 use DB;
 use Illuminate\Http\Request;
 use App\Models\Master\Product;
+use App\Models\Master\ProductImage;
 use App\Models\Master\Customer;
+use App\Models\Quotation;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\ProductRequest;
 use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
@@ -28,39 +29,109 @@ class ProductController extends Controller
         return view('master.products.create', compact('customers'));
     }
 
-    public function store(ProductRequest $request)
+    public function store(Request $request)
     {
-        DB::transaction(function () use ($request) {
-            $imagePath = null;
-            if ($request->hasFile('image')) {
-                $image = $request->file('image');
-                $imageName = time() . '.' . $image->getClientOriginalExtension();
+        $this->authorize('create-products');
 
-                // Store in storage
-                $path = $image->storeAs('images/product', $imageName, 'public');
+        // Log incoming data for debugging
+        Log::info('Product store request received', [
+            'customer' => $request->input('customer'),
+            'addressSelect' => $request->input('addressSelect'),
+            'products_count' => count($request->input('products', [])),
+        ]);
 
-                // Save just the path
-                $imagePath = $path;
-            }
+        // Get customer and address from the form (common for all products)
+        $customerId = $request->input('customer');
+        $addressId = $request->input('addressSelect');
+        
+        $quotationId = null;
 
-            $product = Product::create([
-                'name' => $request->name,
-                'image' => $imagePath,
-                'size_mm' => $request->size_mm,
-                'r_units' => $request->r_units,
-                'product_price' => $request->product_price,
+        DB::transaction(function () use ($request, $customerId, $addressId, &$quotationId) {
+            // 1. Create ONE quotation for this entire submission
+            $quotation = Quotation::create([
+                // quotation_number is auto-generated in the boot method
             ]);
+            $quotationId = $quotation->id;
 
-            foreach ($request->descriptions as $desc) {
-                $product->descriptions()->create([
-                    'key' => $desc['key'],
-                    'value' => $desc['value'],
+            Log::info('Quotation created', ['id' => $quotation->id, 'number' => $quotation->quotation_number]);
+
+            // Get the products array from the form
+            $productsData = $request->input('products', []);
+
+            foreach ($productsData as $productId => $productData) {
+                // 2. Create each product and link it to the quotation
+                $product = Product::create([
+                    'size_mm' => $productData['size_mm'] ?? null,
+                    'cost_per_units' => $productData['cost_per_units'] ?? 0,
+                    'quantity' => $productData['quantity'] ?? 0,
+                    'product_price' => $productData['product_price'] ?? 0,
+                    'customer_id' => $customerId,
+                    'address_id' => $addressId,
+                    'quotation_id' => $quotation->id,
                 ]);
+
+                Log::info('Product created', ['id' => $product->id, 'quotation_id' => $quotation->id]);
+
+                // 3. Create descriptions for this product
+                if (isset($productData['descriptions']) && is_array($productData['descriptions'])) {
+                    foreach ($productData['descriptions'] as $desc) {
+                        $product->descriptions()->create([
+                            'key' => $desc['key'] ?? '',
+                            'value' => $desc['value'] ?? '',
+                        ]);
+                    }
+                }
+
+                // 4. Handle AutoCAD image (single file)
+                if (isset($productData['autocad_uploaded_name'])) {
+                    $storedName = $productData['autocad_uploaded_name'];
+                    $originalName = $productData['autocad_original_name'] ?? $storedName;
+                    
+                    // Move from temp to permanent storage
+                    $tempPath = 'temp/' . $storedName;
+                    $permPath = 'products/' . $product->id . '/cad/' . $storedName;
+
+                    if (Storage::exists($tempPath)) {
+                        Storage::move($tempPath, $permPath);
+                    }
+
+                    // Save image record to DB
+                    $product->images()->create([
+                        'type' => 'cad',
+                        'original_name' => $originalName,
+                        'path' => $permPath,
+                    ]);
+                }
+
+                // 5. Handle extra images (multiple files)
+                if (isset($productData['extra_uploaded_names']) && is_array($productData['extra_uploaded_names'])) {
+                    $extraNames = $productData['extra_uploaded_names'];
+                    $extraOriginalNames = $productData['extra_original_names'] ?? [];
+
+                    foreach ($extraNames as $idx => $storedName) {
+                        $originalName = $extraOriginalNames[$idx] ?? $storedName;
+                        
+                        // Move from temp to permanent storage
+                        $tempPath = 'temp/' . $storedName;
+                        $permPath = 'products/' . $product->id . '/extras/' . $storedName;
+
+                        if (Storage::exists($tempPath)) {
+                            Storage::move($tempPath, $permPath);
+                        }
+
+                        // Save image record to DB
+                        $product->images()->create([
+                            'type' => 'extras',
+                            'original_name' => $originalName,
+                            'path' => $permPath,
+                        ]);
+                    }
+                }
             }
         });
 
-        return redirect()->route('products.create')
-            ->with('success', 'Product created successfully');
+        return redirect()->route('quotations.show', $quotationId)
+            ->with('success', 'Quotation created successfully with all products!');
     }
 
     public function show(Product $product)
@@ -77,7 +148,7 @@ class ProductController extends Controller
         return view('master.products.edit', compact('product'));
     }
 
-    public function update(ProductRequest $request, Product $product)
+    public function update(Request $request, Product $product)
     {
         DB::transaction(function () use ($request, $product) {
 

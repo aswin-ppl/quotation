@@ -11,6 +11,7 @@ use App\Http\Controllers\LocationController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Master\ProductController;
 use App\Http\Controllers\Master\CustomerController;
+use App\Http\Controllers\TempUploadController;
 
 Route::middleware('auth')->group(function () {
 
@@ -24,12 +25,11 @@ Route::middleware('auth')->group(function () {
     Route::get('users/data', [UserController::class, 'data'])->name('users.data');
     Route::resource('users', UserController::class);
     Route::resource('roles', RoleController::class)->middleware('auth');
-    
-    Route::get('/quotation/{id}/{address}/pdf', [QuotationController::class, 'generatePdf'])->name('quotation.pdf');
-    Route::get('/quotation/{id}/{address}/preview', [QuotationController::class, 'preview'])->name('quotation.preview');
-    // Route::get('/quotation/{id}/download', [QuotationController::class, 'download'])->name('quotation.download');
-    Route::get('/quotation/{id}/{address}/download', [QuotationController::class, 'download'])->name('quotation.download');
-    Route::resource('quotation', QuotationController::class);
+
+    Route::get('/quotations/{id}/preview/{address?}', [QuotationController::class, 'preview'])->name('quotation.preview');
+    Route::get('/quotations/{id}/pdf/{address?}', [QuotationController::class, 'generatePdf'])->name('quotation.pdf');
+    Route::get('/quotations/{id}/download/{address?}', [QuotationController::class, 'download'])->name('quotation.download');
+    Route::resource('quotations', QuotationController::class);
 
     // Products
     // Special routes that must come before the resource to avoid being captured by products/{product}
@@ -71,6 +71,23 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Temporary upload endpoints for wizard (AJAX)
+    Route::post('/uploads/temp-image', [TempUploadController::class, 'upload'])->name('temp.upload');
+    Route::delete('/uploads/temp-image', [TempUploadController::class, 'delete'])->name('temp.delete');
+
+    Route::get('/private-image/{path}', function ($path) {
+        $fullPath = storage_path('app/private/' . $path);
+
+        if (!file_exists($fullPath)) {
+            abort(404, 'Image not found: ' . $fullPath);
+        }
+
+        return response()->file($fullPath);
+    })
+        ->where('path', '.*');
+
+
 });
 
 require __DIR__ . '/auth.php';

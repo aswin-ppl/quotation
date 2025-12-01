@@ -145,7 +145,7 @@
                                 <div id="cartDropdown" class="message-body" data-simplebar>
                                 </div>
                                 <div class="d-flex py-6 px-7 mb-1">
-                                    <a href="{{ route('quotation.index') }}" class="btn btn-sm btn-primary w-100 m-2">Convert to Quotation</a>
+                                    <a href="{{ route('quotations.index') }}" class="btn btn-sm btn-primary w-100 m-2">Convert to Quotation</a>
                                     <a id="empty-cart-items" class="btn btn-sm btn-danger w-100 m-2 d-flex align-items-center justify-content-center">Empty cart</a>
                                 </div>
 

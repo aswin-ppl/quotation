@@ -1,5 +1,7 @@
 <?php
 
+use Intervention\Image\Facades\Image;
+
 return [
 
     /*
@@ -14,6 +16,7 @@ return [
     */
 
     'name' => env('APP_NAME', 'Laravel'),
+    'Image' => Image::class,
 
     /*
     |--------------------------------------------------------------------------
