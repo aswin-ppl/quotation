@@ -10,6 +10,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
 use App\Models\DownloadedQuotation;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class QuotationController extends Controller
 {
@@ -33,6 +34,12 @@ class QuotationController extends Controller
         }
     }
 
+    public function create()
+    {
+        $this->authorize('create-products');
+        $customers = Customer::with('addresses')->latest()->get();
+        return view('quotation.create', compact('customers'));
+    }
 
     public function generatePdf($id, $defaultAddress = 1)
     {
@@ -69,14 +76,68 @@ class QuotationController extends Controller
         }
     }
 
+    // public function download($id, $defaultAddress = 1)
+    // {
+    //     // Increase PHP limits
+    //     set_time_limit(300); // 5 minutes
+    //     ini_set('memory_limit', '512M');
+
+    //     Log::info("PDF download started for quotation: $id");
+
+    //     try {
+    //         $quotation = Quotation::with([
+    //             'products.customer',
+    //             'products.address.city',
+    //             'products.address.district',
+    //             'products.address.state',
+    //             'products.address.pincode',
+    //             'products.descriptions',
+    //             'products.images'
+    //         ])->findOrFail($id);
+
+    //         $settings = Setting::getCompanyDetails();
+
+    //         // Pre-process images before rendering
+    //         $this->prepareImagesForPdf($quotation);
+
+    //         Log::info('Rendering view for PDF...');
+    //         $html = view('quotation.preview', [
+    //             'quotation' => $quotation,
+    //             'settings' => $settings,
+    //             'defaultAddress' => $defaultAddress,
+    //             'pdfMode' => true
+    //         ])->render();
+
+    //         Log::info('View rendered, HTML length: ' . strlen($html));
+
+    //         $pdf = Pdf::loadHTML($html)
+    //             ->setPaper('a4')
+    //             ->setOption('enable-local-file-access', true)
+    //             ->setOption('isHtml5ParserEnabled', true)
+    //             ->setOption('isPhpEnabled', false) // Security + performance
+    //             ->setOption('isRemoteEnabled', false)
+    //             ->setOption('chroot', [storage_path('app')])
+    //             ->setOption('margin-top', 10)
+    //             ->setOption('margin-right', 15)
+    //             ->setOption('margin-bottom', 10)
+    //             ->setOption('margin-left', 15);
+
+    //         // Record download
+    //         $this->recordDownload($quotation->id);
+
+    //         Log::info('Streaming PDF...');
+    //         return $pdf->stream('Quotation_' . $quotation->quotation_number . '.pdf');
+
+    //     } catch (\Exception $e) {
+    //         Log::error('PDF generation failed: ' . $e->getMessage());
+    //         Log::error('Stack trace: ' . $e->getTraceAsString());
+
+    //         return back()->with('error', 'PDF generation failed. Please try again or contact support.');
+    //     }
+    // }
+
     public function download($id, $defaultAddress = 1)
     {
-        // Increase PHP limits
-        set_time_limit(300); // 5 minutes
-        ini_set('memory_limit', '512M');
-
-        Log::info("PDF download started for quotation: $id");
-
         try {
             $quotation = Quotation::with([
                 'products.customer',
@@ -89,11 +150,9 @@ class QuotationController extends Controller
             ])->findOrFail($id);
 
             $settings = Setting::getCompanyDetails();
-
-            // Pre-process images before rendering
             $this->prepareImagesForPdf($quotation);
 
-            Log::info('Rendering view for PDF...');
+            // Render view to HTML
             $html = view('quotation.preview', [
                 'quotation' => $quotation,
                 'settings' => $settings,
@@ -101,33 +160,45 @@ class QuotationController extends Controller
                 'pdfMode' => true
             ])->render();
 
-            Log::info('View rendered, HTML length: ' . strlen($html));
-
             $pdf = Pdf::loadHTML($html)
                 ->setPaper('a4')
-                ->setOption('enable-local-file-access', true)
-                ->setOption('isHtml5ParserEnabled', true)
-                ->setOption('isPhpEnabled', false) // Security + performance
-                ->setOption('isRemoteEnabled', false)
-                ->setOption('chroot', [storage_path('app')])
-                ->setOption('margin-top', 10)
-                ->setOption('margin-right', 15)
-                ->setOption('margin-bottom', 10)
-                ->setOption('margin-left', 15);
+                ->setOption('isRemoteEnabled', true)
+                ->setOption('defaultFont', 'DejaVu Sans');
 
-            // Record download
-            $this->recordDownload($quotation->id);
+            // Generate file name + path
+            $fileName = 'Quotation_' . $quotation->quotation_number . '_' . time() . '.pdf';
+            $filePath = 'quotations/' . $fileName;
 
-            Log::info('Streaming PDF...');
-            return $pdf->stream('Quotation_' . $quotation->quotation_number . '.pdf');
+            // Save PDF to storage
+            Storage::put($filePath, $pdf->output());
+
+            // Log download
+            DownloadedQuotation::create([
+                'quotation_id' => $quotation->id,
+                'downloaded_by' => auth()->id(),
+                'download_count' => 1,
+                'download_ip' => request()->ip(),
+                'downloaded_at' => now(),
+                'file_path' => $filePath,
+                'file_format' => 'pdf',
+                'remarks' => 'Quotation downloaded'
+            ]);
+
+            // Display PDF normally (no scrambled text)
+            return response()->download(
+                storage_path('app/private/quotations/' . $fileName),
+                $fileName,
+                ['Content-Type' => 'application/pdf']
+            );
 
         } catch (\Exception $e) {
             Log::error('PDF generation failed: ' . $e->getMessage());
-            Log::error('Stack trace: ' . $e->getTraceAsString());
-
-            return back()->with('error', 'PDF generation failed. Please try again or contact support.');
+            return back()->with('error', 'PDF generation failed. Try again later.');
         }
     }
+
+
+
     public function preview($id, $defaultAddress = 1)
     {
         $quotation = Quotation::with([

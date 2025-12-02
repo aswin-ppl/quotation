@@ -20,7 +20,9 @@ class DownloadedQuotation extends Model
         'remarks',
     ];
 
-    protected $dates = ['downloaded_at'];
+    protected $casts = [
+        'downloaded_at' => 'datetime',
+    ];
 
     // Relationships
     public function quotation()

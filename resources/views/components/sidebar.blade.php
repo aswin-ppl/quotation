@@ -104,13 +104,13 @@
                             <!-- Side bar -->
                             <!-- ---------------------------------- -->
 
-                            <li class="sidebar-item">
+                            {{-- <li class="sidebar-item">
                                 <a href="/products"
                                     class="sidebar-link {{ ($page_title ?? 'Dashboard') === 'Product' ? 'active' : '' }}">
                                     <iconify-icon icon="solar:waterdrops-line-duotone"></iconify-icon>
                                     <span class="hide-menu">Products</span>
                                 </a>
-                            </li>
+                            </li> --}}
                             <li class="sidebar-item">
                                 <a href="/customers"
                                     class="sidebar-link {{ ($page_title ?? 'Dashboard') === 'Customers' ? 'active' : '' }}">

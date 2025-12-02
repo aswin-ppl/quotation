@@ -69,18 +69,11 @@
                 <div class="row align-items-center">
                     <div class="col-12">
                         <div class="d-sm-flex align-items-center justify-space-between">
-                            <h4 class="mb-4 mb-sm-0 card-title">Products</h4>
+                            <h4 class="mb-4 mb-sm-0 card-title">Quotation</h4>
                             <nav aria-label="breadcrumb" class="ms-auto">
                                 <ol class="breadcrumb">
-                                    <li class="breadcrumb-item d-flex align-items-center">
-                                        <a class="text-muted text-decoration-none d-flex" href="/">
-                                            <iconify-icon icon="solar:home-2-line-duotone" class="fs-6"></iconify-icon>
-                                        </a>
-                                    </li>
                                     <li class="breadcrumb-item" aria-current="page">
-                                        <span class="badge fw-medium fs-2 bg-primary-subtle text-primary">
-                                            View
-                                        </span>
+                                        <a href="{{ route('quotations.create') }}" class="btn btn-primary">Create Quotation</a>
                                     </li>
                                 </ol>
                             </nav>
@@ -91,12 +84,30 @@
 
             {{-- Quotations summary cards --}}
             <div class="row my-4 g-3">
-                <div class="col-12 col-sm-6 col-md-3">
+                <div class="col-12 col-sm-6 col-md-6">
                     <div class="card shadow-sm">
                         <div class="card-body">
                             <div class="d-flex align-items-center">
                                 <div class="flex-grow-1">
-                                    <h6 class="mb-1 text-muted">Total Quotations</h6>
+                                    <h6 class="mb-1 text-muted">Overall Quotations</h6>
+                                    <h3 class="mb-0">{{ $quotationCounts['overall'] ?? 0 }}</h3>
+                                </div>
+                                <div class="ms-3">
+                                    <span class="badge bg-danger p-3 rounded-circle">
+                                        <i class="ti ti-file-text fs-5 text-white"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-sm-6 col-md-6">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1 text-muted">Your Total Quotations</h6>
                                     <h3 class="mb-0">{{ $quotationCounts['total'] ?? 0 }}</h3>
                                 </div>
                                 <div class="ms-3">
@@ -108,8 +119,10 @@
                         </div>
                     </div>
                 </div>
-
-                <div class="col-12 col-sm-6 col-md-3">
+                <div class="col-12 col-sm-12 col-md-12 text-center">
+                    <p>Quotation you generated</p>
+                </div>
+                <div class="col-12 col-sm-6 col-md-4">
                     <div class="card shadow-sm">
                         <div class="card-body">
                             <div class="d-flex align-items-center">
@@ -127,7 +140,7 @@
                     </div>
                 </div>
 
-                <div class="col-12 col-sm-6 col-md-3">
+                <div class="col-12 col-sm-6 col-md-4">
                     <div class="card shadow-sm">
                         <div class="card-body">
                             <div class="d-flex align-items-center">
@@ -145,7 +158,7 @@
                     </div>
                 </div>
 
-                <div class="col-12 col-sm-6 col-md-3">
+                <div class="col-12 col-sm-6 col-md-4">
                     <div class="card shadow-sm">
                         <div class="card-body">
                             <div class="d-flex align-items-center">
@@ -165,7 +178,7 @@
             </div>
 
             {{-- Search form for products (live search) --}}
-            <div class="row my-5">
+            <div class="row mt-5">
                 <div class="col-12">
                     <div class="search-wrapper position-relative">
                         <span class="search-icon position-absolute top-50 start-0 translate-middle-y ms-3 text-muted">
@@ -195,11 +208,15 @@
                         </button>
                     </div>
                 </div>
+
+                <div class="col-12 col-sm-12 col-md-12 mt-3 text-center">
+                    <p>Note: Quotation files are automatically removed after 30 days.</p>
+                </div>
             </div>
 
 
             <div id="products-container" class="row">
-                @include('dashboard._products', ['products' => $products])
+                @include('dashboard._quotations', ['quotations' => $quotations])
             </div>
 
             {{-- note: products partial includes its own pagination links --}}

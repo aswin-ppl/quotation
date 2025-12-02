@@ -30,6 +30,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/quotations/{id}/pdf/{address?}', [QuotationController::class, 'generatePdf'])->name('quotation.pdf');
     Route::get('/quotations/{id}/download/{address?}', [QuotationController::class, 'download'])->name('quotation.download');
     Route::resource('quotations', QuotationController::class);
+    Route::get('/view-quotation/{id}', [DashboardController::class, 'viewQuotation'])->name('quotation.view');
 
     // Products
     // Special routes that must come before the resource to avoid being captured by products/{product}

@@ -49,7 +49,7 @@ class ProductController extends Controller
         DB::transaction(function () use ($request, $customerId, $addressId, &$quotationId) {
             // 1. Create ONE quotation for this entire submission
             $quotation = Quotation::create([
-                // quotation_number is auto-generated in the boot method
+                // quotation_number and user_id are auto-generated in the boot method
             ]);
             $quotationId = $quotation->id;
 
