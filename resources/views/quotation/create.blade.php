@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('styles')
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-
+    <link rel="stylesheet" href="{{ asset('libs/sweetalert2/dist/sweetalert2.min.css') }}">
     <style>
         .other-image-preview {
             height: 80px;
@@ -204,7 +204,8 @@
                     </div>
                 </div>
 
-                <form id="wizardForm" action="{{ route('products.store') }}" method="POST" class="validation-wizard wizard-circle">
+                <form id="wizardForm" action="{{ route('products.store') }}" method="POST"
+                    class="validation-wizard wizard-circle">
                     @csrf
                     <input type="hidden" id="hidden_customer" name="customer">
                     <input type="hidden" id="hidden_addressSelect" name="addressSelect">
@@ -250,7 +251,7 @@
 @endsection
 @section('scripts')
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
+    <script src="{{ asset('libs/sweetalert2/dist/sweetalert2.min.js') }}"></script>
     <script src="{{ asset('js/plugins/toastr-init.js') }}"></script>
 
     <script>
@@ -735,7 +736,7 @@
             // Validate address selection
             const addressId = document.getElementById('addressSelect').value;
             const addressWrapper = document.getElementById('address-select-wrapper');
-            
+
             // If address dropdown is visible, ensure an address is selected
             if (!addressWrapper.classList.contains('d-none') && !addressId) {
                 toastr.error('Please select an address before submitting.');
@@ -763,8 +764,26 @@
             document.getElementById('hidden_customer').value = customerId;
             document.getElementById('hidden_addressSelect').value = addressId;
 
-            // Submit the form
-            this.submit();
+            // Show SweetAlert confirmation
+            const form = this;
+            const productCount = steps.length;
+            
+            Swal.fire({
+                title: 'Confirm Submission',
+                html: `You are about to submit <strong>${productCount}</strong> product${productCount > 1 ? 's' : ''} for quotation.<br><br>Do you want to proceed?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, Submit!',
+                cancelButtonText: 'Cancel',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Submit the form
+                    form.submit();
+                }
+            });
         });
 
         // Real-time validation feedback
@@ -798,7 +817,8 @@
             // ========================================
             // AUTOCAD IMAGE PREVIEW
             // ========================================
-            const csrfToken = $('meta[name="csrf-token"]').attr('content') || document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            const csrfToken = $('meta[name="csrf-token"]').attr('content') || document.querySelector(
+                'meta[name="csrf-token"]')?.getAttribute('content');
 
             function uploadTempFile(file, productId, type) {
                 const fd = new FormData();
@@ -833,7 +853,9 @@
                         'X-CSRF-TOKEN': csrfToken,
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ filename })
+                    body: JSON.stringify({
+                        filename
+                    })
                 }).then(async res => {
                     if (!res.ok) {
                         let text = await res.text();
@@ -866,8 +888,12 @@
                         stepEl.find('input[data-field="autocad-stored"]').remove();
                         stepEl.find('input[data-field="autocad-original"]').remove();
 
-                        stepEl.append(`<input type="hidden" name="products[${productId}][autocad_uploaded_name]" data-field="autocad-stored" value="${data.storedName}">`);
-                        stepEl.append(`<input type="hidden" name="products[${productId}][autocad_original_name]" data-field="autocad-original" value="${data.originalName}">`);
+                        stepEl.append(
+                            `<input type="hidden" name="products[${productId}][autocad_uploaded_name]" data-field="autocad-stored" value="${data.storedName}">`
+                            );
+                        stepEl.append(
+                            `<input type="hidden" name="products[${productId}][autocad_original_name]" data-field="autocad-original" value="${data.originalName}">`
+                            );
                     }).catch(() => {
                         toastr.error('Failed to upload AutoCAD image.');
                     });
@@ -928,18 +954,24 @@
                             // upload each file and append hidden inputs on success
                             uploadTempFile(file, productId, 'extra').then(data => {
                                 // set stored name on delete button for this preview
-                                previewContainer.find(`[data-temp-uid="${uid}"] .deleteImage`).attr('data-stored-name', data.storedName);
+                                previewContainer.find(
+                                    `[data-temp-uid="${uid}"] .deleteImage`).attr(
+                                    'data-stored-name', data.storedName);
 
                                 // append hidden inputs for the uploaded file mapping
-                                stepEl.append(`<input type="hidden" name="products[${productId}][extra_uploaded_names][]" value="${data.storedName}" data-field="extra-stored" data-stored-name="${data.storedName}">`);
-                                stepEl.append(`<input type="hidden" name="products[${productId}][extra_original_names][]" value="${data.originalName}" data-field="extra-original" data-stored-name="${data.storedName}">`);
+                                stepEl.append(
+                                    `<input type="hidden" name="products[${productId}][extra_uploaded_names][]" value="${data.storedName}" data-field="extra-stored" data-stored-name="${data.storedName}">`
+                                    );
+                                stepEl.append(
+                                    `<input type="hidden" name="products[${productId}][extra_original_names][]" value="${data.originalName}" data-field="extra-original" data-stored-name="${data.storedName}">`
+                                    );
                             }).catch(() => {
                                 toastr.error('Failed to upload ' + file.name);
                             });
                         };
                         reader.readAsDataURL(file);
                     });
-                    
+
                     // Clear the input value so user can select more files or the same files again
                     e.target.value = '';
                 } else {
@@ -954,15 +986,21 @@
                 const storedName = $btn.attr('data-stored-name');
                 const tempUid = $btn.attr('data-temp-uid');
                 // The structure is: button -> div.card -> div.col-[data-temp-uid]
-                const $colWrapper = $btn.closest('.col-sm-6'); // This is the outer wrapper with data-temp-uid
+                const $colWrapper = $btn.closest(
+                '.col-sm-6'); // This is the outer wrapper with data-temp-uid
                 const $step = $colWrapper.closest('.step');
                 const productId = $step.data('product-id');
 
-                console.log('Delete clicked', { storedName, tempUid, productId, colExists: $colWrapper.length });
+                console.log('Delete clicked', {
+                    storedName,
+                    tempUid,
+                    productId,
+                    colExists: $colWrapper.length
+                });
 
                 // Always remove the card from UI immediately
                 const $container = $(`#extra_images_list_${productId}`);
-                
+
                 if (storedName) {
                     // File was already uploaded, delete from server
                     deleteTempFile(storedName).then(() => {
@@ -1090,7 +1128,7 @@
                             const addr = addresses[0];
                             // Set the single address ID to the hidden input
                             $addressSelect.val(addr.id);
-                            
+
                             if (addr.address_line_1 && addr.address_line_2 && addr.address_line_2
                                 .trim() !== '') {
                                 needsAddressLineChoice = true;

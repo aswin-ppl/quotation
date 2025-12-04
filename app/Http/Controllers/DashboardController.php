@@ -12,46 +12,7 @@ use Illuminate\Support\Facades\Log;
 
 class DashboardController extends Controller
 {
-    // public function index()
-    // {
-    //     // Products: allow search by name and paginate 9 per page
-    //     $productsQuery = Product::with('descriptions');
-    //     $search = request()->query('q');
-    //     if ($search) {
-    //         $productsQuery->where('name', 'like', '%' . $search . '%');
-    //     }
-    //     $products = $productsQuery->orderBy('created_at', 'desc')->paginate(9)->withQueryString();
-
-    //     // Quotations summary
-    //     // $total = DownloadedQuotation::sum('download_count');
-    //     $overallTotal = DownloadedQuotation::sum('download_count');
-
-    //     $total = DownloadedQuotation::where('downloaded_by', auth()->id())
-    //         ->sum('download_count');
-
-    //     $today = DownloadedQuotation::where('downloaded_by', auth()->id())->whereDate('created_at', Carbon::today())
-    //         ->sum('download_count');
-
-    //     $week = DownloadedQuotation::where('downloaded_by', auth()->id())->whereBetween('created_at', [
-    //         Carbon::now()->startOfWeek(),
-    //         Carbon::now()->endOfWeek()
-    //     ])->sum('download_count');
-
-    //     $month = DownloadedQuotation::where('downloaded_by', auth()->id())->whereYear('created_at', Carbon::now()->year)
-    //         ->whereMonth('created_at', Carbon::now()->month)
-    //         ->sum('download_count');
-
-    //     $quotationCounts = [
-    //         'overall' => $overallTotal,
-    //         'total' => $total,
-    //         'today' => $today,
-    //         'week' => $week,
-    //         'month' => $month,
-    //     ];
-
-    //     return view('dashboard', compact('products', 'quotationCounts'));
-    // }
-
+ 
     public function index()
     {
         $search = request()->query('q');
@@ -161,8 +122,6 @@ class DashboardController extends Controller
         if (!file_exists($path)) {
             abort(404, 'PDF not found or expired');
         }
-
         return response()->file($path);
     }
-
 }

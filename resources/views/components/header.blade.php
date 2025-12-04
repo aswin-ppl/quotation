@@ -39,7 +39,7 @@
                                                                 <span class="fs-11 d-block text-body-color">Get all products overview</span>
                                                             </div>
                                                         </a>
-                                                        <a href="{{ route('products.index') }}"
+                                                        <a href="{{ route('customers.index') }}"
                                                             class="d-flex align-items-center pb-9 position-relative">
                                                             <div
                                                                 class="bg-secondary-subtle rounded round-48 me-3 d-flex align-items-center justify-content-center">
@@ -47,8 +47,8 @@
                                                                     class="fs-7 text-secondary"></iconify-icon>
                                                             </div>
                                                             <div>
-                                                                <h6 class="mb-0">Products</h6>
-                                                                <span class="fs-11 d-block text-body-color">Create and manage products</span>
+                                                                <h6 class="mb-0">Customers</h6>
+                                                                <span class="fs-11 d-block text-body-color">Create and manage customers</span>
                                                             </div>
                                                         </a>
                                                     </div>

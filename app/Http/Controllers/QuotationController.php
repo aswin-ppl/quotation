@@ -87,66 +87,6 @@ class QuotationController extends Controller
         }
     }
 
-    // public function download($id, $defaultAddress = 1)
-    // {
-    //     // Increase PHP limits
-    //     set_time_limit(300); // 5 minutes
-    //     ini_set('memory_limit', '512M');
-
-    //     Log::info("PDF download started for quotation: $id");
-
-    //     try {
-    //         $quotation = Quotation::with([
-    //             'products.customer',
-    //             'products.address.city',
-    //             'products.address.district',
-    //             'products.address.state',
-    //             'products.address.pincode',
-    //             'products.descriptions',
-    //             'products.images'
-    //         ])->findOrFail($id);
-
-    //         $settings = Setting::getCompanyDetails();
-
-    //         // Pre-process images before rendering
-    //         $this->prepareImagesForPdf($quotation);
-
-    //         Log::info('Rendering view for PDF...');
-    //         $html = view('quotation.preview', [
-    //             'quotation' => $quotation,
-    //             'settings' => $settings,
-    //             'defaultAddress' => $defaultAddress,
-    //             'pdfMode' => true
-    //         ])->render();
-
-    //         Log::info('View rendered, HTML length: ' . strlen($html));
-
-    //         $pdf = Pdf::loadHTML($html)
-    //             ->setPaper('a4')
-    //             ->setOption('enable-local-file-access', true)
-    //             ->setOption('isHtml5ParserEnabled', true)
-    //             ->setOption('isPhpEnabled', false) // Security + performance
-    //             ->setOption('isRemoteEnabled', false)
-    //             ->setOption('chroot', [storage_path('app')])
-    //             ->setOption('margin-top', 10)
-    //             ->setOption('margin-right', 15)
-    //             ->setOption('margin-bottom', 10)
-    //             ->setOption('margin-left', 15);
-
-    //         // Record download
-    //         $this->recordDownload($quotation->id);
-
-    //         Log::info('Streaming PDF...');
-    //         return $pdf->stream('Quotation_' . $quotation->quotation_number . '.pdf');
-
-    //     } catch (\Exception $e) {
-    //         Log::error('PDF generation failed: ' . $e->getMessage());
-    //         Log::error('Stack trace: ' . $e->getTraceAsString());
-
-    //         return back()->with('error', 'PDF generation failed. Please try again or contact support.');
-    //     }
-    // }
-
     public function download($id, $defaultAddress = 1)
     {
         try {
@@ -207,8 +147,6 @@ class QuotationController extends Controller
             return back()->with('error', 'PDF generation failed. Try again later.');
         }
     }
-
-
 
     public function preview($id, $defaultAddress = 1)
     {
@@ -291,62 +229,6 @@ class QuotationController extends Controller
                     }
                 }
             }
-        }
-    }
-
-    /**
-     * Record download statistics
-     */
-    private function recordDownload($quotationId)
-    {
-        try {
-            $download = DownloadedQuotation::firstOrNew([
-                'quotation_id' => $quotationId,
-                'downloaded_by' => auth()->id(),
-            ]);
-
-            $download->download_count = ($download->download_count ?? 0) + 1;
-            $download->download_ip = request()->ip();
-            $download->downloaded_at = now();
-            $download->file_format = 'pdf';
-            $download->save();
-        } catch (\Exception $e) {
-            Log::error('Failed to record download: ' . $e->getMessage());
-        }
-    }
-
-    public function store(Request $request)
-    {
-        logger($request);
-        $validated = $request->validate([
-            'customer_id' => 'required|exists:customers,id',
-            'items' => 'required|array|min:1',
-            'items.*.product_id' => 'nullable|integer',
-            'items.*.product_name' => 'required|string',
-            'items.*.description' => 'nullable|array',
-            'items.*.quantity' => 'required|integer|min:1',
-            'items.*.unit_price' => 'required|numeric|min:0',
-            'items.*.total' => 'required|numeric|min:0',
-        ]);
-
-        try {
-            DB::beginTransaction();
-
-            // Create a single quotation for all items with auto-generated quotation_number
-            $quotation = Quotation::create([
-                'quotation_number' => Quotation::generateQuotationNumber(),
-            ]);
-
-            DB::commit();
-
-            return response()->json([
-                'success' => true,
-                'id' => $quotation->id,
-                'redirect' => route('quotation.show', $quotation->id),
-            ]);
-        } catch (\Throwable $th) {
-            DB::rollBack();
-            return response()->json(['success' => false, 'message' => $th->getMessage()], 500);
         }
     }
 }
