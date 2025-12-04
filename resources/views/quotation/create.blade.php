@@ -335,9 +335,9 @@
 
                 <div class="col-md-6">
                     <div class="mb-3">
-                        <label for="extra_images_${productId}" class="form-label fw-semibold">Extra Images <span class="text-danger">*</span></label>
+                        <label for="extra_images_${productId}" class="form-label fw-semibold">Extra Images</label>
                         <input type="file" name="products[${productId}][extra_images][]" id="extra_images_${productId}" 
-                               class="form-control extra-images-input" multiple accept="image/*" data-product-id="${productId}" required>
+                               class="form-control extra-images-input" multiple accept="image/*" data-product-id="${productId}">
                         <div id="extra_images_preview_${productId}" class="mt-3" style="display: none;">
                             <div class="row g-2" id="extra_images_list_${productId}"></div>
                         </div>
@@ -349,7 +349,7 @@
                         <label class="form-label fw-semibold">Description <span class="text-danger">*</span></label>
                         <div class="table-responsive border rounded-1 bg-light">
                             <table class="table align-middle" id="descriptionTable_${productId}">
-                                <thead class="table-light">
+                                <thead class="table-primary">
                                     <tr>
                                         <th style="width: 40%">Key</th>
                                         <th style="width: 50%">Value</th>
@@ -887,12 +887,13 @@
                 const productId = $(this).data('product-id');
                 const files = Array.from(e.target.files);
                 const previewContainer = $(`#extra_images_list_${productId}`);
-                previewContainer.empty();
+                // Don't empty the container - append instead
+                // previewContainer.empty();
 
-                // remove any previous hidden inputs for extras
+                // Don't remove previous hidden inputs - keep them to append new ones
                 const stepEl = $(`#stepsContainer .step[data-product-id="${productId}"]`);
-                stepEl.find('input[data-field="extra-stored"]').remove();
-                stepEl.find('input[data-field="extra-original"]').remove();
+                // stepEl.find('input[data-field="extra-stored"]').remove();
+                // stepEl.find('input[data-field="extra-original"]').remove();
 
                 if (files.length > 0) {
                     $(`#extra_images_preview_${productId}`).show();
@@ -905,7 +906,7 @@
                             <div class="col-sm-6 col-md-4 col-lg-3 mb-3" data-temp-uid="${uid}">
                                 <div class="card border-0 shadow-sm h-100 position-relative">
                                     <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-2 deleteImage" 
-                                            style="z-index: 10;" title="Delete image" data-stored-name="" data-temp-uid="${uid}">
+                                            style="z-index: 7;" title="Delete image" data-stored-name="" data-temp-uid="${uid}">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
                                             <path fill="currentColor" d="M2.75 6.167c0-.46.345-.834.771-.834h2.665c.529-.015.996-.378 1.176-.916l.03-.095l.115-.372c.07-.228.131-.427.217-.605c.338-.702.964-1.189 1.687-1.314c.184-.031.377-.031.6-.031h3.478c.223 0 .417 0 .6.031c.723.125 1.35.612 1.687 1.314c.086.178.147.377.217.605l.115.372l.03.095c.18.538.74.902 1.27.916h2.57c.427 0 .772.373.772.834S20.405 7 19.979 7H3.52c-.426 0-.771-.373-.771-.833"/>
                                             <path fill="currentColor" d="M11.607 22h.787c2.707 0 4.06 0 4.941-.863c.88-.864.97-2.28 1.15-5.111l.26-4.081c.098-1.537.147-2.305-.295-2.792s-1.187-.487-2.679-.487H8.23c-1.491 0-2.237 0-2.679.487s-.392 1.255-.295 2.792l.26 4.08c.18 2.833.27 4.248 1.15 5.112S8.9 22 11.607 22" opacity="0.5"/>
@@ -938,6 +939,9 @@
                         };
                         reader.readAsDataURL(file);
                     });
+                    
+                    // Clear the input value so user can select more files or the same files again
+                    e.target.value = '';
                 } else {
                     $(`#extra_images_preview_${productId}`).hide();
                 }

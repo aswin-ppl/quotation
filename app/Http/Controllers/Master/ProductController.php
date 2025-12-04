@@ -140,77 +140,77 @@ class ProductController extends Controller
         return view('master.products.show', compact('product'));
     }
 
-    public function edit(Product $product)
-    {
-        $this->authorize('edit-products');
+    // public function edit(Product $product)
+    // {
+    //     $this->authorize('edit-products');
 
-        $product->load('descriptions');
-        return view('master.products.edit', compact('product'));
-    }
+    //     $product->load('descriptions');
+    //     return view('master.products.edit', compact('product'));
+    // }
 
-    public function update(Request $request, Product $product)
-    {
-        DB::transaction(function () use ($request, $product) {
+    // public function update(Request $request, Product $product)
+    // {
+    //     DB::transaction(function () use ($request, $product) {
 
-            $imagePath = $product->image; // keep the old one by default
+    //         $imagePath = $product->image; // keep the old one by default
 
-            if ($request->hasFile('image')) {
-                // Delete the old image if it exists
-                if ($product->image && Storage::disk('public')->exists($product->image)) {
-                    Storage::disk('public')->delete($product->image);
-                }
+    //         if ($request->hasFile('image')) {
+    //             // Delete the old image if it exists
+    //             if ($product->image && Storage::disk('public')->exists($product->image)) {
+    //                 Storage::disk('public')->delete($product->image);
+    //             }
 
-                // Store the new image
-                $image = $request->file('image');
-                $imageName = time() . '.' . $image->getClientOriginalExtension();
+    //             // Store the new image
+    //             $image = $request->file('image');
+    //             $imageName = time() . '.' . $image->getClientOriginalExtension();
 
-                $imagePath = $image->storeAs('images/product', $imageName, 'public');
-            }
+    //             $imagePath = $image->storeAs('images/product', $imageName, 'public');
+    //         }
 
-            $product->update([
-                'name' => $request->name,
-                'image' => $imagePath,
-                'size_mm' => $request->size_mm,
-                'r_units' => $request->r_units,
-                'product_price' => $request->product_price,
-            ]);
+    //         $product->update([
+    //             'name' => $request->name,
+    //             'image' => $imagePath,
+    //             'size_mm' => $request->size_mm,
+    //             'r_units' => $request->r_units,
+    //             'product_price' => $request->product_price,
+    //         ]);
 
-            $product->descriptions()->delete();
+    //         $product->descriptions()->delete();
 
-            foreach ($request->descriptions as $desc) {
-                $product->descriptions()->create([
-                    'key' => $desc['key'],
-                    'value' => $desc['value'],
-                ]);
-            }
-        });
+    //         foreach ($request->descriptions as $desc) {
+    //             $product->descriptions()->create([
+    //                 'key' => $desc['key'],
+    //                 'value' => $desc['value'],
+    //             ]);
+    //         }
+    //     });
 
-        return redirect()->route('products.index')
-            ->with('success', 'Product updated successfully');
-    }
+    //     return redirect()->route('products.index')
+    //         ->with('success', 'Product updated successfully');
+    // }
 
-    public function destroy(Product $product)
-    {
-        $this->authorize('delete-products');
+    // public function destroy(Product $product)
+    // {
+    //     $this->authorize('delete-products');
 
-        try {
-            $product->delete();
-            return back()->with('success', 'Product deleted successfully.');
-        } catch (\Throwable $e) {
-            \Log::error($e);
-            return back()->with('error', 'Failed to delete product.');
-        }
-    }
+    //     try {
+    //         $product->delete();
+    //         return back()->with('success', 'Product deleted successfully.');
+    //     } catch (\Throwable $e) {
+    //         \Log::error($e);
+    //         return back()->with('error', 'Failed to delete product.');
+    //     }
+    // }
 
-    public function restore($id)
-    {
-        $this->authorize('restore-products');
+    // public function restore($id)
+    // {
+    //     $this->authorize('restore-products');
 
-        $product = Product::onlyTrashed()->findOrFail($id);
-        $product->restore();
+    //     $product = Product::onlyTrashed()->findOrFail($id);
+    //     $product->restore();
 
-        return back()->with('success', 'Product restored successfully.');
-    }
+    //     return back()->with('success', 'Product restored successfully.');
+    // }
 
     public function getCartProducts(Request $request)
     {

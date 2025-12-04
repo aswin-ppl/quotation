@@ -49,13 +49,24 @@ class QuotationController extends Controller
             $quotation = Quotation::with(['products.customer', 'products.address', 'products.descriptions', 'products.images'])
                 ->findOrFail($id);
             Log::info('Quotation loaded');
+            
+            // Debug: Log image counts
+            foreach ($quotation->products as $product) {
+                $extraCount = $product->images->where('type', 'extras')->count();
+                Log::info("Product {$product->id} has {$extraCount} extra images");
+            }
 
             $settings = Setting::getCompanyDetails();
             Log::info('Settings loaded');
 
+            // Prepare images for PDF (convert WebP/PNG to JPG)
+            Log::info('Preparing images for PDF...');
+            $this->prepareImagesForPdf($quotation);
+            Log::info('Images prepared');
+
             // Load the preview view and generate PDF from it
             Log::info('Rendering view...');
-            $html = view('quotation.preview', compact('quotation', 'settings', 'defaultAddress'))->render();
+            $html = view('quotation.preview', compact('quotation', 'settings', 'defaultAddress') + ['pdfMode' => true])->render();
             Log::info('View rendered, HTML length: ' . strlen($html));
 
             Log::info('Loading HTML to PDF...');
@@ -244,9 +255,12 @@ class QuotationController extends Controller
                     continue;
                 }
 
+                $filename = pathinfo($image->path, PATHINFO_FILENAME);
+                $extension = strtolower(pathinfo($image->path, PATHINFO_EXTENSION));
+
                 // Convert WebP to JPG
-                if (str_ends_with(strtolower($rawPath), '.webp')) {
-                    $jpgPath = $tempDir . '/' . basename($image->path, '.webp') . '.jpg';
+                if ($extension === 'webp') {
+                    $jpgPath = $tempDir . '/' . $filename . '.jpg';
 
                     if (!file_exists($jpgPath)) {
                         try {
@@ -256,14 +270,13 @@ class QuotationController extends Controller
 
                             Log::info("Converted WebP to JPG: $jpgPath");
                         } catch (\Exception $e) {
-                            Log::error("Image conversion failed: " . $e->getMessage());
+                            Log::error("Image conversion failed for $rawPath: " . $e->getMessage());
                         }
                     }
                 }
-
                 // Optimize PNG (remove transparency)
-                if (str_ends_with(strtolower($rawPath), '.png')) {
-                    $jpgPath = $tempDir . '/' . basename($image->path, '.png') . '.jpg';
+                elseif ($extension === 'png') {
+                    $jpgPath = $tempDir . '/' . $filename . '.jpg';
 
                     if (!file_exists($jpgPath)) {
                         try {
@@ -273,7 +286,7 @@ class QuotationController extends Controller
 
                             Log::info("Converted PNG to JPG: $jpgPath");
                         } catch (\Exception $e) {
-                            Log::error("Image conversion failed: " . $e->getMessage());
+                            Log::error("Image conversion failed for $rawPath: " . $e->getMessage());
                         }
                     }
                 }

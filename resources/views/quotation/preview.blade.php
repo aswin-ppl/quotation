@@ -2,25 +2,29 @@
 <html lang="en">
 
 <head>
+    @php
+        // Set default pdfMode if not provided
+        $pdfMode = $pdfMode ?? false;
+    @endphp
     <meta charset="UTF-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Quotation #{{ $quotation->quotation_number }}</title>
     <style type="text/css">
         @page {
             size: A4;
-            margin: 5mm 0mm;
+            margin: 2mm 0mm;
         }
 
         @page :first {
-            margin: 5mm 0mm;
+            margin: 2mm 0mm;
         }
 
         @page :left {
-            margin: 5mm 0mm;
+            margin: 2mm 0mm;
         }
 
         @page :right {
-            margin: 5mm 0mm;
+            margin: 2mm 0mm;
         }
 
         * {
@@ -40,7 +44,7 @@
 
         .page-container {
             background: white;
-            padding: 5mm 10mm;
+            padding: 2mm 5mm;
             margin: 0;
         }
 
@@ -75,14 +79,14 @@
         /* Professional Header */
         .header-wrapper {
             border-bottom: 3px solid #044b26;
-            padding-bottom: 20px;
-            margin-bottom: 25px;
+            padding-bottom: 6px;
+            margin-bottom: 8px;
         }
 
         .header-top {
             display: table;
             width: 100%;
-            margin-bottom: 15px;
+            margin-bottom: 8px;
         }
 
         .company-info {
@@ -94,20 +98,21 @@
         .company-info img {
             max-width: 150px;
             height: auto;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
         }
 
         .company-info h1 {
             font-size: 24px;
             color: #044b26;
             font-weight: bold;
-            margin-bottom: 5px;
+            margin-bottom: 2px;
         }
 
         .company-tagline {
-            font-size: 10px;
+            font-size: 9px;
             color: #64748b;
             font-style: italic;
+            margin: 0;
         }
 
         .quotation-info {
@@ -124,13 +129,13 @@
             padding: 5px 10px;
             font-size: 20px;
             font-weight: bold;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
             border-radius: 4px;
         }
 
         .quotation-meta {
             background: #f1f5f9;
-            padding: 10px 15px;
+            padding: 8px 12px;
             border-left: 4px solid #044b26;
             font-size: 10px;
             text-align: left;
@@ -138,7 +143,7 @@
         }
 
         .quotation-meta p {
-            margin: 4px 0;
+            margin: 2px 0;
         }
 
         .quotation-meta strong {
@@ -150,14 +155,14 @@
         .address-section {
             display: table;
             width: 100%;
-            margin-bottom: 25px;
+            margin-bottom: 8px;
             border: 1px solid #e2e8f0;
         }
 
         .address-box {
             display: table-cell;
             width: 50%;
-            padding: 18px;
+            padding: 8px;
             vertical-align: top;
         }
 
@@ -171,7 +176,7 @@
             color: #64748b;
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-bottom: 10px;
+            margin-bottom: 6px;
             font-weight: bold;
             border-bottom: 2px solid #044b26;
             padding-bottom: 5px;
@@ -189,12 +194,12 @@
         .address-box p {
             font-size: 10px;
             color: #475569;
-            line-height: 1.7;
+            line-height: 1.3;
         }
 
         /* Product Card */
         .product-card {
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             background: white;
         }
 
@@ -205,6 +210,10 @@
             font-size: 14px;
             font-weight: bold;
             text-align: center;
+        }
+
+        .product-content {
+            page-break-inside: avoid;
         }
 
         /* Image Gallery */
@@ -222,20 +231,20 @@
             text-transform: uppercase;
         }
 
-
         .gallery-grid {
             width: 100%;
             margin-top: 2%;
-            overflow: hidden;
-            /* Clear floats */
+            overflow: auto;
+            clear: both;
         }
 
         .gallery-item {
             float: left;
-            width: 33.33%;
+            width: 33.333%;
             text-align: center;
             padding: 5px;
             box-sizing: border-box;
+            font-size: 11px;
         }
 
         .gallery-item img {
@@ -252,6 +261,13 @@
             font-size: 9px;
             color: #64748b;
             margin-top: 5px;
+        }
+
+        /* Clearfix for gallery grid */
+        .gallery-grid::after {
+            content: "";
+            display: table;
+            clear: both;
         }
 
         /* Add clearfix after gallery */
@@ -339,6 +355,16 @@
             text-align: right;
             color: #044b26;
             font-weight: bold;
+        }
+
+        .totals-section {
+            page-break-before: auto;
+            /* Only break if content doesn't fit */
+            page-break-inside: avoid;
+            /* Keep totals together */
+            margin-top: 30px;
+            display: table;
+            width: 100%;
         }
 
         /* Footer */
@@ -484,8 +510,8 @@
         @endphp
 
         @forelse ($quotation->products as $index => $product)
-            <div class="product-card" style="page-break-inside: avoid; margin-bottom: 20px;">
-                <div class="product-content">
+            <div class="product-card" style="@if($index > 0) page-break-before: always; @endif margin-bottom: 10px;">
+                <div class="product-content" style="page-break-inside: avoid;">
                     <table
                         style="width: 100%; border-collapse: collapse; border: 1px solid #cbd5e1; table-layout: fixed;">
                         <thead>
@@ -613,49 +639,64 @@
 
                     <!-- Additional Images Gallery -->
                     @if ($product->images && $product->images->where('type', 'extras')->count())
-                        <div class="image-gallery" style="page-break-inside: avoid;">
+                        @php
+                            $extraImagesCount = $product->images->where('type', 'extras')->count();
+                        @endphp
+                        
+                        <!-- Add page break before extra images for the first product only if more than 3 images -->
+                        @if($index === 0 && $extraImagesCount > 3)
+                            <div style="page-break-before: always;"></div>
+                        @endif
+                        
+                        <div class="image-gallery">
                             <div class="gallery-title">Additional Images</div>
 
-                            <div class="gallery-grid">
-                                @foreach ($product->images->where('type', 'extras')->take(3) as $index => $img)
-                                    @php
-                                        $rawPath = storage_path('app/private/' . $img->path);
-                                        $extension = strtolower(pathinfo($rawPath, PATHINFO_EXTENSION));
+                            @php
+                                $extraImages = $product->images->where('type', 'extras')->values();
+                                $totalImages = $extraImages->count();
+                                $imageChunks = $extraImages->chunk(3); // Split into groups of 3
+                                $globalIndex = 0; // Track overall image index for labels
+                            @endphp
 
-                                        if ($pdfMode) {
-                                            if (in_array($extension, ['webp', 'png'])) {
-                                                $tempJpg = storage_path(
-                                                    'app/temp/' . pathinfo($img->path, PATHINFO_FILENAME) . '.jpg',
-                                                );
-                                                $src = file_exists($tempJpg)
-                                                    ? 'file://' . $tempJpg
-                                                    : 'file://' . $rawPath;
+                            <!-- Loop through each chunk/row of 3 images -->
+                            @foreach ($imageChunks as $chunk)
+                                <div class="gallery-grid">
+                                    @foreach ($chunk as $img)
+                                        @php
+                                            $globalIndex++;
+                                            $rawPath = storage_path('app/private/' . $img->path);
+                                            $extension = strtolower(pathinfo($rawPath, PATHINFO_EXTENSION));
+                                            $filename = pathinfo($img->path, PATHINFO_FILENAME);
+
+                                            if ($pdfMode) {
+                                                if (in_array($extension, ['webp', 'png'])) {
+                                                    $tempJpg = storage_path('app/temp/' . $filename . '.jpg');
+                                                    $src = file_exists($tempJpg)
+                                                        ? 'file://' . $tempJpg
+                                                        : 'file://' . $rawPath;
+                                                } else {
+                                                    $src = 'file://' . $rawPath;
+                                                }
                                             } else {
-                                                $src = 'file://' . $rawPath;
+                                                $src = url('/private-image/' . $img->path);
                                             }
-                                        } else {
-                                            $src = url('/private-image/' . $img->path);
-                                        }
 
-                                        // Generate alphabet label: a, b, c
-                                        $label = chr(96 + $index);
-                                    @endphp
+                                            $label = chr(96 + $globalIndex);
+                                        @endphp
 
-                                    <div class="gallery-item">
-                                        <div style="position: relative; display: inline-block;">
-                                            <img src="{{ $src }}" alt="Extra Image"
-                                                style="max-width: 100%; height: auto; max-height: 100px; border: 1px solid #e2e8f0; padding: 2px;">
-
-                                            <!-- Alphabet Label Overlay -->
-                                            <div
-                                                style="position: absolute; top: 2px; left: 2px; background: #044b26; color: white; 
-                                                padding: 2px 6px; font-size: 9px; font-weight: bold; border-radius: 2px;">
-                                                {{ $label }}
+                                        <div class="gallery-item">
+                                            <div style="position: relative; display: inline-block;">
+                                                <img src="{{ $src }}" alt="Extra Image {{ $label }}"
+                                                    style="max-width: 100%; height: auto; max-height: 100px; border: 1px solid #e2e8f0; padding: 2px;">
+                                                <div style="position: absolute; top: 2px; left: 2px; background: #044b26; color: white; 
+                                                    padding: 2px 6px; font-size: 9px; font-weight: bold; border-radius: 2px;">
+                                                    {{ $label }}
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                @endforeach
-                            </div>
+                                    @endforeach
+                                </div>
+                            @endforeach
                         </div>
                     @endif
                 </div>
@@ -668,22 +709,37 @@
                 </div>
             </div>
         @endforelse
-
         <!-- Page break AFTER all products (before totals) -->
-        <div class="page-break"></div>
+        @php
+            $productCount = $quotation->products->count();
+            $forceBreak = $productCount > 2; // Adjust threshold as needed
+        @endphp
 
-
+        @if ($forceBreak)
+            <div style="page-break-after: always; margin: 0; padding: 0; height: 0;"></div>
+        @endif
         <!-- Totals Section -->
-        <div class="totals-section">
+        <div class="totals-section" style="margin-top: 30px;">
             <div class="totals-left">
                 <div class="notes-box">
                     <h4>Terms & Conditions</h4>
                     <p>
-                        • This quotation is valid for 30 days from the date of issue.<br>
-                        • Prices are subject to change without prior notice.<br>
-                        • Payment terms: As per agreement.<br>
-                        • Delivery timeline will be confirmed upon order confirmation.<br>
-                        • All disputes subject to jurisdiction only.
+                        • Transportation charges extra.<br>
+                        • GST @18% will be extra.<br>
+                        • The quote is as per the Drawing received, in case the size varies as per site condition, the quote and
+invoice will vary.<br>
+                        • The price quoted are as per rates on the quotation date, and in case of any change in the rate of
+inputs, the quote May vary.<br>
+                        • Our quote is always on standard length and height, the standard measurements will apply for billing,
+Considering aluminum section length as 12 Feet.<br>
+                        • Kindly attach the Delivery & Billing address along with GST/PAN details with the order<br>
+                        • Electric supply for using electric power tools & scaffolding wherever found necessary, are to be
+Provided by you free of cost at site.<br>
+                        • SUPPLY: Minimum (Depending on quantity) Weeks after the order, advance & clear measurements
+after site Readiness is received.<br>
+                        • PAYMENT: 80% to be paid as advance along with order and 15% on delivery of the material and
+balance 5% on completion of the work.<br>
+                        • 18% interest will be charged if the payment is not received as per the terms from the due date.<br>
                     </p>
                 </div>
             </div>
