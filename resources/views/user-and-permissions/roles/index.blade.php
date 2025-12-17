@@ -27,7 +27,7 @@
             <div class="d-flex flex-row-reverse my-3">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     @can('create-roles-&-permission')
-                        <a href="{{ route('roles.create') }}" class="btn btn-sm btn-primary">Create New Role</a>
+                        <a href="{{ route('roles.create') }}" class="btn btn-primary">Create New Role</a>
                     @endcan
                 </div>
             </div>
@@ -53,13 +53,7 @@
                                 <td>
                                     <h6 class="fw-semibold mb-1">{{ $role->name }}</h6>
                                 </td>
-                                {{-- <td>
-                                    @foreach ($role->permissions as $perm)
-                                        <span class="mb-1 badge  bg-success-subtle text-success">{{ $perm->name }}</span>
-                                    @endforeach
-                                </td> --}}
                                 <td>
-
                                     @can('edit-roles-&-permission')
                                         <a href="{{ route('roles.edit', $role) }}"
                                             class="btn btn-sm bg-primary-subtle text-primary"> <svg
@@ -89,15 +83,6 @@
                                             </button>
                                         </form>
                                     @endcan
-
-                                    {{-- <a href="{{ route('roles.edit', $role) }}" class="btn btn-warning btn-sm">Edit</a>
-                                    <form action="{{ route('roles.destroy', $role) }}" method="POST"
-                                        style="display:inline-block;">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button class="btn btn-danger btn-sm"
-                                            onclick="return confirm('Delete this role?')">Delete</button>
-                                    </form> --}}
                                 </td>
                             </tr>
                         @endforeach
@@ -106,5 +91,48 @@
             </div>
         </div>
     </div>
+@endsection
+@section('scripts')
+    <script src="{{ asset('js/plugins/toastr-init.js') }}"></script>
+    <script src="{{ asset('libs/sweetalert2/dist/sweetalert2.min.js') }}"></script>
+    <script src="{{ asset('js/forms/sweet-alert.init.js') }}"></script>
 
+    <script>
+        // swal
+        $(document).on('click', '.btn-delete', function(e) {
+            e.preventDefault();
+
+            let form = $(this).closest('form');
+
+            Swal.fire({
+                title: "Are you sure?",
+                text: "This product will be permanently deleted!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#6c757d",
+                confirmButtonText: "Yes, delete it!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+        });
+
+        // toaster
+        toastr.options = {
+            "closeButton": true,
+            "progressBar": true,
+            "positionClass": "toast-top-right",
+            "timeOut": "3000"
+        };
+
+        @if (session('success'))
+            toastr.success("{{ session('success') }}", "Success");
+        @endif
+
+        @if (session('error'))
+            toastr.error("{{ session('error') }}", "Error");
+        @endif
+    </script>
 @endsection

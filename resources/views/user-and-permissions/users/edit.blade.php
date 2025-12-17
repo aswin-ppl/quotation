@@ -17,7 +17,7 @@
                         <a href="javascript:void(0)" class="text-primary">{{ $parent_title }}</a>
                     </li>
                     <li class="breadcrumb-item active text-primary " aria-current="page">
-                        {{ $page_title }}
+                        <a href="{{ route('users.index') }}" class="text-primary">{{ $page_title }}</a>
                     </li>
                     <li class="breadcrumb-item active text-primary " aria-current="page">
                         Edit
@@ -35,11 +35,11 @@
 
                             {{-- Name --}}
                             <div class="col-md-6">
-                                <div class="form-floating mb-3">
+                                <div class="mb-3">
+                                    <label for="name">Name <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control @error('name') is-invalid @enderror"
                                         id="name" name="name" value="{{ old('name', $user->name) }}" required
                                         autocomplete="name" autofocus>
-                                    <label for="name">Name</label>
                                     @error('name')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
@@ -50,11 +50,10 @@
 
                             {{-- Email --}}
                             <div class="col-md-6">
-                                <div class="form-floating mb-3">
+                                <div class="mb-3">
+                                    <label for="email">Email <span class="text-danger">*</span></label>
                                     <input type="email" class="form-control @error('email') is-invalid @enderror"
-                                        id="email" name="email" value="{{ old('email', $user->email) }}" required
-                                        autocomplete="email">
-                                    <label for="email">Email</label>
+                                        id="email" name="email" value="{{ old('email', $user->email) }}" autocomplete="email" required>
                                     @error('email')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
@@ -65,10 +64,10 @@
 
                             {{-- Password --}}
                             <div class="col-md-6">
-                                <div class="form-floating mb-3">
+                                <div class="mb-3">
+                                    <label for="password">Password <span class="text-danger">*</span></label>
                                     <input type="password" class="form-control @error('password') is-invalid @enderror"
                                         id="password" name="password" autocomplete="new-password">
-                                    <label for="password">Password</label>
                                     <small class="form-text text-muted">Leave blank to keep current password</small>
                                     @error('password')
                                         <span class="invalid-feedback" role="alert">
@@ -78,13 +77,12 @@
                                 </div>
                             </div>
 
-
                             {{-- Confirm Password --}}
                             <div class="col-md-6">
-                                <div class="form-floating mb-3">
+                                <div class="mb-3">
+                                    <label for="password-confirm">Confirm Password <span class="text-danger">*</span></label>
                                     <input type="password" class="form-control" id="password-confirm"
                                         name="password_confirmation" autocomplete="new-password">
-                                    <label for="password-confirm">Confirm Password</label>
                                 </div>
                             </div>
 
@@ -92,9 +90,9 @@
                             <div class="col-md-12 row justify-content-center">
                                 <div class="col-md-6">
                                     <div class="form-group mb-4">
-                                        <label class="mr-sm-2" for="inlineFormCustomSelect">Select</label>
+                                        <label class="mr-sm-2" for="inlineFormCustomSelect">Select <span class="text-danger">*</span></label>
                                         <select class="form-select mr-sm-2" name="roles" id="inlineFormCustomSelect">
-                                            <option selected="">Choose roles...</option>
+                                            <option selected="" value="">Choose roles...</option>
                                             @foreach ($roles as $role)
                                                 <option value="{{ $role->name }}"
                                                     {{ $user->hasRole($role->name) ? 'selected' : '' }}>

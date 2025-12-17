@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('styles')
-  <link rel="stylesheet" href="{{ asset('libs/sweetalert2/dist/sweetalert2.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('libs/sweetalert2/dist/sweetalert2.min.css') }}">
 @endsection
 @section('content')
     @php
@@ -19,7 +19,7 @@
                         <a href="javascript:void(0)" class="text-primary">{{ $parent_title }}</a>
                     </li>
                     <li class="breadcrumb-item active text-primary " aria-current="page">
-                        {{ $page_title }}
+                        <a href="{{ route('users.index') }}" class="text-primary">{{ $page_title }}</a>
                     </li>
                     <li class="breadcrumb-item active text-primary " aria-current="page">
                         Create
@@ -37,10 +37,11 @@
 
                             {{-- Name --}}
                             <div class="col-md-6">
-                                <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" id="name" name="name"
-                                        value="{{ old('name') }}" required autocomplete="name" autofocus>
-                                    <label for="name">Name</label>
+                                <div class="mb-3">
+                                    <label for="name">Name <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control @error('name') is-invalid @enderror"
+                                        id="name" name="name" value="{{ old('name') }}" autocomplete="name"
+                                        autofocus>
                                     @error('name')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
@@ -51,10 +52,10 @@
 
                             {{-- Email --}}
                             <div class="col-md-6">
-                                <div class="form-floating mb-3">
-                                    <input type="email" class="form-control" id="email" name="email"
-                                        value="{{ old('email') }}" required autocomplete="email">
-                                    <label for="email">Email</label>
+                                <div class="mb-3">
+                                    <label for="email">Email <span class="text-danger">*</span></label>
+                                    <input type="email" class="form-control @error('email') is-invalid @enderror"
+                                        id="email" name="email" value="{{ old('email') }}" autocomplete="email">
                                     @error('email')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
@@ -65,10 +66,10 @@
 
                             {{-- Password --}}
                             <div class="col-md-6">
-                                <div class="form-floating mb-3">
+                                <div class="mb-3">
+                                    <label for="password">Password <span class="text-danger">*</span></label>
                                     <input type="password" class="form-control @error('password') is-invalid @enderror"
-                                        id="password" name="password" required autocomplete="new-password">
-                                    <label for="password">Password</label>
+                                        id="password" name="password" autocomplete="new-password">
                                     @error('password')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
@@ -79,10 +80,10 @@
 
                             {{-- Confirm Password --}}
                             <div class="col-md-6">
-                                <div class="form-floating mb-3">
+                                <div class="mb-3">
+                                    <label for="password-confirm">Confirm Password <span class="text-danger">*</span></label>
                                     <input type="password" class="form-control" id="password-confirm"
-                                        name="password_confirmation" required autocomplete="new-password">
-                                    <label for="password-confirm">Confirm Password</label>
+                                        name="password_confirmation" autocomplete="new-password">
                                 </div>
                             </div>
 
@@ -90,22 +91,22 @@
                             <div class="col-md-12 row justify-content-center">
                                 <div class="col-md-6">
                                     <div class="form-group mb-4">
-                                        <label class="mr-sm-2" for="inlineFormCustomSelect">Select</label>
-                                        <select class="form-select mr-sm-2" name="roles" id="inlineFormCustomSelect">
-                                            <option selected="">Choose roles...</option>
+                                        <label class="mr-sm-2" for="inlineFormCustomSelect">Select <span class="text-danger">*</span></label>
+                                        <select class="form-select mr-sm-2" name="roles" id="inlineFormCustomSelect"
+                                            required>
+                                            <option selected="" value="">Choose roles...</option>
                                             @foreach ($roles as $role)
                                                 <option value="{{ $role->name }}"> {{ ucfirst($role->name) }}</option>
                                             @endforeach
                                         </select>
                                         @error('roles')
-                                            <span class="invalid-feedback d-block" role="alert">
+                                            <span class="invalid-feedback" role="alert">
                                                 <strong>{{ $message }}</strong>
                                             </span>
                                         @enderror
                                     </div>
                                 </div>
                             </div>
-
                             <div class="col-md-12">
                                 <div class="d-flex justify-content-between">
                                     <a href="{{ route('users.index') }}" class="btn btn-light">Cancel</a>
@@ -115,7 +116,6 @@
                                 </div>
                             </div>
                         </div>
-
                     </form>
                 </div>
             </div>
@@ -123,16 +123,22 @@
     </div>
 @endsection
 @section('scripts')
-<script>
-toastr.options = {
-    "closeButton": true,
-    "progressBar": true,
-    "positionClass": "toast-top-right",
-    "timeOut": "3000"
-};
+    <script src="{{ asset('js/plugins/toastr-init.js') }}"></script>
 
-@if (session('success'))
-    toastr.success("{{ session('success') }}", "Success");
-@endif
-</script>
+    <script>
+        toastr.options = {
+            "closeButton": true,
+            "progressBar": true,
+            "positionClass": "toast-top-right",
+            "timeOut": "3000"
+        };
+
+        @if (session('success'))
+            toastr.success("{{ session('success') }}", "Success");
+        @endif
+
+        @if (session('error'))
+            toastr.error("{{ session('error') }}", "Error");
+        @endif
+    </script>
 @endsection

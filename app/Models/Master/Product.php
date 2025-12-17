@@ -4,6 +4,10 @@ namespace App\Models\Master;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Master\ProductDescription;
+use App\Models\Master\ProductImage;
+use App\Models\Master\Customer;
+use App\Models\Master\CustomerAddress;
+use App\Models\Quotation;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -11,11 +15,31 @@ class Product extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['name', 'image', 'size_mm', 'r_units', 'qty', 'product_price'];
+    protected $fillable = ['name', 'image', 'size_mm', 'cost_per_units', 'quantity', 'product_price', 'customer_id', 'address_id', 'quotation_id'];
 
     public function descriptions()
     {
         return $this->hasMany(ProductDescription::class);
+    }
+
+    public function images()
+    {
+        return $this->hasMany(ProductImage::class);
+    }
+
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class);
+    }
+
+    public function address()
+    {
+        return $this->belongsTo(CustomerAddress::class, 'address_id');
+    }
+
+    public function quotation()
+    {
+        return $this->belongsTo(Quotation::class);
     }
 
     // Add this helper method
@@ -23,40 +47,4 @@ class Product extends Model
     {
         return $this->hasMany(ProductDescription::class)->withTrashed();
     }
-
-    // protected static function booted()
-    // {
-    //     static::deleting(function ($product) {
-    //         // Always force delete product descriptions
-    //         $product->descriptions()->forceDelete();
-    //     });
-    // }
-
-
-    // protected static function booted()
-    // {
-    //     static::deleting(function ($product) {
-    //         \Log::info('Deleting product: ' . $product->id);
-    //         if ($product->isForceDeleting()) {
-    //             \Log::info('Force deleting descriptions');
-    //             $product->descriptions()->forceDelete();
-    //         } else {
-    //             \Log::info('Soft deleting descriptions');
-    //             $product->descriptions()->delete();
-    //         }
-    //     });
-
-    //     static::restoring(function ($product) {
-    //         \Log::info('Restoring product: ' . $product->id);
-    //         $trashedDescriptions = $product->descriptions()->onlyTrashed()->get();
-    //         \Log::info('Found trashed descriptions: ' . $trashedDescriptions->count());
-
-    //         if ($trashedDescriptions->isNotEmpty()) {
-    //             foreach ($trashedDescriptions as $desc) {
-    //                 \Log::info('Restoring description ID: ' . $desc->id);
-    //                 $desc->restore();
-    //             }
-    //         }
-    //     });
-    // }
 }

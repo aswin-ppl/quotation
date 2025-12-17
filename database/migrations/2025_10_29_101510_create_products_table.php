@@ -15,7 +15,8 @@ return new class extends Migration
             $table->string('name')->nullable();
             $table->string('image')->nullable();
             $table->string('size_mm')->nullable();
-            $table->integer('r_units')->default(0);
+            $table->integer('cost_per_units')->default(0);
+            $table->integer('quantity')->default(0);
             $table->decimal('product_price', 10, 2)->default(0);
             $table->softDeletes();
             $table->timestamps();

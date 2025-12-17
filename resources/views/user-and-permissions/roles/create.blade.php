@@ -17,7 +17,7 @@
                         <a href="javascript:void(0)" class="text-primary">{{ $parent_title }}</a>
                     </li>
                     <li class="breadcrumb-item active text-primary " aria-current="page">
-                        {{ $page_title }}
+                        <a href="{{ route('roles.index') }}" class="text-primary">{{ $page_title }}</a>
                     </li>
                     <li class="breadcrumb-item active text-primary " aria-current="page">
                         Create
@@ -33,12 +33,22 @@
                         <div class="row">
                             <div class="col-md-12 row justify-content-center mb-3">
                                 <div class="col-md-6">
-                                    <label>Role Name</label>
-                                    <input type="text" name="name" class="form-control" required>
+                                    <label>Role Name <span class="text-danger">*</span></label>
+                                    <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}" required>
+                                    @error('name')
+                                        <div class="invalid-feedback d-block">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
                                 </div>
 
                                 <div class="mb-3">
-                                    <label class="fw-bold mb-2">Assign Permissions</label>
+                                    <label class="fw-bold mb-2">Assign Permissions <span class="text-danger">*</span></label>
+                                    @error('permissions')
+                                        <div class="invalid-feedback d-block">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
                                     @foreach ($permissions as $module => $modulePermissions)
                                         <div class="card mb-3 border shadow-sm">
                                             <div class="card-header bg-light py-2">

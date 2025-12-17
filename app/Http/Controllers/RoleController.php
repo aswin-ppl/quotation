@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
+use App\Http\Requests\StoreRoleRequest;
+use App\Http\Requests\UpdateRoleRequest;
 use Spatie\Permission\Models\Permission;
 
 class RoleController extends Controller
@@ -28,22 +30,16 @@ class RoleController extends Controller
         return view('user-and-permissions.roles.create', compact('permissions'));
     }
 
-    public function store(Request $request)
+    public function store(StoreRoleRequest $request)
     {
-        $this->authorize('create-roles-&-permission');
-
-        $request->validate([
-            'name' => 'required|unique:roles,name',
-            'permissions' => 'required|array',
-        ]);
 
         $role = Role::create(['name' => $request->name]);
 
-        // Convert permission IDs → names before syncing
         $permissions = Permission::whereIn('id', $request->permissions)->pluck('name')->toArray();
         $role->syncPermissions($permissions);
 
         return redirect()->route('roles.index')->with('success', 'Role created successfully!');
+    
     }
 
     public function edit(Role $role)
@@ -60,24 +56,15 @@ class RoleController extends Controller
         return view('user-and-permissions.roles.edit', compact('role', 'permissions', 'rolePermissions'));
     }
 
-    public function update(Request $request, Role $role)
+    public function update(UpdateRoleRequest $request, Role $role)
     {
-        $this->authorize('edit-roles-&-permission');
-
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'permissions' => 'array|required'
-        ]);
-
         $role->update(['name' => $request->name]);
 
-        // Convert permission IDs to names
         $permissionNames = Permission::whereIn('id', $request->permissions)->pluck('name')->toArray();
-
         $role->syncPermissions($permissionNames);
 
         return redirect()->route('roles.index')->with('success', 'Role updated successfully!');
-    }
+   }
 
     public function destroy(Role $role)
     {
