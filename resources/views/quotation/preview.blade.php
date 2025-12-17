@@ -423,6 +423,31 @@
         .text-center {
             text-align: center;
         }
+
+        /* Flowchart Image */
+        .flowchart-section {
+            page-break-before: always;
+            text-align: center;
+            margin: 0;
+            padding: 5mm;
+        }
+
+        .flowchart-section h3 {
+            font-size: 16px;
+            color: #044b26;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .flowchart-section img {
+            max-width: 100%;
+            height: auto;
+            max-height: 90mm;
+            display: block;
+            margin: 0 auto;
+        }
     </style>
 </head>
 
@@ -718,6 +743,20 @@
         @if ($forceBreak)
             <div style="page-break-after: always; margin: 0; padding: 0; height: 0;"></div>
         @endif
+        
+        <!-- Flowchart Section -->
+        @if ($pdfMode ?? false)
+        <div class="flowchart-section">
+            <h3>Process Flow</h3>
+            <img src="{{ public_path('images/flowchart.svg') }}" alt="Process Flowchart">
+        </div>
+        @else
+        <div class="flowchart-section">
+            <h3>Process Flow</h3>
+            <img src="{{ asset('images/flowchart.svg') }}" alt="Process Flowchart">
+        </div>
+        @endif
+        
         <!-- Totals Section -->
         <div class="totals-section" style="margin-top: 30px;">
             <div class="totals-left">

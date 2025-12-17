@@ -72,30 +72,30 @@
                     </div>
                 </label>
 
-                <input type="radio" class="btn-check" name="color-theme-layout" id="green-theme-layout"
+                <input type="radio" class="btn-check" name="color-theme-layout" id="Green_Theme"
                     autocomplete="off" />
                 <label class="btn p-9 btn-outline-primary rounded-2 d-flex align-items-center justify-content-center"
-                    onclick="handleColorTheme('Green_Theme')" for="green-theme-layout" data-bs-toggle="tooltip"
+                    onclick="handleColorTheme('Green_Theme')" for="Green_Theme" data-bs-toggle="tooltip"
                     data-bs-placement="top" data-bs-title="GREEN_THEME">
                     <div class="color-box rounded-circle d-flex align-items-center justify-content-center skin-4">
                         <i class="ti ti-check text-white d-flex icon fs-5"></i>
                     </div>
                 </label>
 
-                <input type="radio" class="btn-check" name="color-theme-layout" id="cyan-theme-layout"
+                <input type="radio" class="btn-check" name="color-theme-layout" id="Cyan_Theme"
                     autocomplete="off" />
                 <label class="btn p-9 btn-outline-primary rounded-2 d-flex align-items-center justify-content-center"
-                    onclick="handleColorTheme('Cyan_Theme')" for="cyan-theme-layout" data-bs-toggle="tooltip"
+                    onclick="handleColorTheme('Cyan_Theme')" for="Cyan_Theme" data-bs-toggle="tooltip"
                     data-bs-placement="top" data-bs-title="CYAN_THEME">
                     <div class="color-box rounded-circle d-flex align-items-center justify-content-center skin-5">
                         <i class="ti ti-check text-white d-flex icon fs-5"></i>
                     </div>
                 </label>
 
-                <input type="radio" class="btn-check" name="color-theme-layout" id="orange-theme-layout"
+                <input type="radio" class="btn-check" name="color-theme-layout" id="Orange_Theme"
                     autocomplete="off" />
                 <label class="btn p-9 btn-outline-primary rounded-2 d-flex align-items-center justify-content-center"
-                    onclick="handleColorTheme('Orange_Theme')" for="orange-theme-layout" data-bs-toggle="tooltip"
+                    onclick="handleColorTheme('Orange_Theme')" for="Orange_Theme" data-bs-toggle="tooltip"
                     data-bs-placement="top" data-bs-title="ORANGE_THEME">
                     <div class="color-box rounded-circle d-flex align-items-center justify-content-center skin-6">
                         <i class="ti ti-check text-white d-flex icon fs-5"></i>
@@ -173,71 +173,163 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            const moonBtn = document.querySelector(".dark-layout");
-            const moonBtnIcon = document.querySelector(".dark-layout").querySelector("iconify-icon");
-            const themeMoonBtn = document.querySelector("#theme-icon-moon");
+            const byId = id => document.getElementById(id);
+            const setAttr = (k, v) => document.documentElement.setAttribute(k, v);
+            const save = (k, v) => localStorage.setItem(k, v);
 
-            const sunBtn = document.querySelector(".light-layout");
-            const sunBtnIcon = document.querySelector(".light-layout").querySelector("iconify-icon");
-            const themeSunBtn = document.querySelector("#theme-icon-sun");
+            // Theme elements
+            const lightInput = byId('light-layout');
+            const darkInput = byId('dark-layout');
+            const themeSun = byId('theme-icon-sun');
+            const themeMoon = byId('theme-icon-moon');
 
-            const blueTheme = document.querySelector("label[for='Blue_Theme']");
-
-
-
-            // Set theme + save in localStorage
-            function setTheme(theme) {
-                document.documentElement.setAttribute("data-bs-theme", theme);
-                localStorage.setItem("theme", theme);
-
-                if (theme === "dark") {
-                    moonBtn.style.display = "none";
-                    moonBtnIcon.style.display = "none";
-                    themeMoonBtn.style.color = "var(--bs-primary)";
-                    themeSunBtn.style.color = "unset";
-
-                    sunBtn.style.display = "inline-flex";
-                    sunBtnIcon.style.display = "flex";
+            function applyTheme(theme) {
+                setAttr('data-bs-theme', theme);
+                save('theme', theme);
+                if (theme === 'dark') {
+                    if (darkInput) darkInput.checked = true;
+                    if (lightInput) lightInput.checked = false;
+                    if (themeMoon) themeMoon.style.color = 'var(--bs-primary)';
+                    if (themeSun) themeSun.style.color = 'unset';
                 } else {
-                    sunBtn.style.display = "none";
-                    sunBtnIcon.style.display = "none";
-                    themeSunBtn.style.color = "var(--bs-primary)";
-                    themeMoonBtn.style.color = "unset";
-
-                    moonBtn.style.display = "inline-flex";
-                    moonBtnIcon.style.display = "flex";
+                    if (lightInput) lightInput.checked = true;
+                    if (darkInput) darkInput.checked = false;
+                    if (themeSun) themeSun.style.color = 'var(--bs-primary)';
+                    if (themeMoon) themeMoon.style.color = 'unset';
                 }
             }
 
-            // Click handlers
-            moonBtn.addEventListener("click", () => setTheme("dark"));
-            sunBtn.addEventListener("click", () => setTheme("light"));
-            
-            blueTheme.addEventListener("click", () => function(){
-                console.log('asas');
-            });
+            if (lightInput) lightInput.addEventListener('change', () => applyTheme('light'));
+            if (darkInput) darkInput.addEventListener('change', () => applyTheme('dark'));
 
-            // On load — check saved theme
-            const savedTheme = localStorage.getItem("theme") || "light";
-            setTheme(savedTheme);
-            document.documentElement.setAttribute("data-color-theme", localStorage.getItem("data-color-theme"));
-            document.documentElement.setAttribute("data-layout", localStorage.getItem("data-layout"));
-        });
+            // Direction (ltr / rtl)
+            const ltrInput = byId('ltr-layout');
+            const rtlInput = byId('rtl-layout');
+            function applyDirection(dir) {
+                document.documentElement.setAttribute('dir', dir);
+                save('direction', dir);
+                if (dir === 'rtl') {
+                    if (rtlInput) rtlInput.checked = true;
+                    if (ltrInput) ltrInput.checked = false;
+                } else {
+                    if (ltrInput) ltrInput.checked = true;
+                    if (rtlInput) rtlInput.checked = false;
+                }
+            }
+            if (ltrInput) ltrInput.addEventListener('change', () => applyDirection('ltr'));
+            if (rtlInput) rtlInput.addEventListener('change', () => applyDirection('rtl'));
 
-        function handleColorTheme(e) {
-            localStorage.setItem("data-color-theme", e);
-            document.documentElement.setAttribute("data-color-theme", e);
-        }
+            // Color theme (skin)
+            const colorInputs = document.querySelectorAll("input[name='color-theme-layout']");
+            function applyColorTheme(key) {
+                if (!key) return;
+                setAttr('data-color-theme', key);
+                save('data-color-theme', key);
+                // Uncheck all color inputs first
+                colorInputs.forEach(i => i.checked = false);
+                // Then check the selected one
+                const inp = byId(key);
+                if (inp) inp.checked = true;
+            }
+            colorInputs.forEach(i => i.addEventListener('change', function() {
+                if (this.checked) applyColorTheme(this.id);
+            }));
 
-        // handle layout
+            // Page layout (vertical / horizontal) — uses data-layout
+            const verInput = byId('vertical-layout');
+            const horInput = byId('horizontal-layout');
+            function applyPageLayout(val) {
+                setAttr('data-layout', val);
+                save('data-layout', val);
+                if (val === 'horizontal') {
+                    if (horInput) horInput.checked = true;
+                    if (verInput) verInput.checked = false;
+                } else {
+                    if (verInput) verInput.checked = true;
+                    if (horInput) horInput.checked = false;
+                }
+            }
+            if (verInput) verInput.addEventListener('change', () => applyPageLayout('vertical'));
+            if (horInput) horInput.addEventListener('change', () => applyPageLayout('horizontal'));
 
-        const horizontalBtn = document.querySelector("label[for='horizontal-layout']");
-        const verticalBtn = document.querySelector("label[for='vertical-layout']");
-        
-        horizontalBtn.addEventListener("click", () => {
-            localStorage.setItem("data-layout", "horizontal");
-        });
-        verticalBtn.addEventListener("click", () => {
-            localStorage.setItem("data-layout", "vertical");
+            // Container option (boxed / full)
+            const boxedInput = byId('boxed-layout');
+            const fullInput = byId('full-layout');
+            function applyContainer(val) {
+                setAttr('data-container', val);
+                save('data-container', val);
+                if (val === 'boxed') {
+                    if (boxedInput) boxedInput.checked = true;
+                    if (fullInput) fullInput.checked = false;
+                } else {
+                    if (fullInput) fullInput.checked = true;
+                    if (boxedInput) boxedInput.checked = false;
+                }
+            }
+            if (boxedInput) boxedInput.addEventListener('change', () => applyContainer('boxed'));
+            if (fullInput) fullInput.addEventListener('change', () => applyContainer('full'));
+
+            // Sidebar type (full / mini)
+            const fullSidebar = byId('full-sidebar');
+            const miniSidebar = byId('mini-sidebar');
+            function applySidebar(val) {
+                setAttr('data-sidebar', val);
+                save('sidebar-type', val);
+                if (val === 'mini') {
+                    if (miniSidebar) miniSidebar.checked = true;
+                    if (fullSidebar) fullSidebar.checked = false;
+                } else {
+                    if (fullSidebar) fullSidebar.checked = true;
+                    if (miniSidebar) miniSidebar.checked = false;
+                }
+            }
+            if (fullSidebar) fullSidebar.addEventListener('change', () => applySidebar('full'));
+            if (miniSidebar) miniSidebar.addEventListener('change', () => applySidebar('mini'));
+
+            // Card layout (border / shadow)
+            const cardBorder = byId('card-with-border');
+            const cardShadow = byId('card-without-border');
+            function applyCard(val) {
+                setAttr('data-card', val);
+                save('card-layout', val);
+                if (val === 'border') {
+                    if (cardBorder) cardBorder.checked = true;
+                    if (cardShadow) cardShadow.checked = false;
+                } else {
+                    if (cardShadow) cardShadow.checked = true;
+                    if (cardBorder) cardBorder.checked = false;
+                }
+            }
+            if (cardBorder) cardBorder.addEventListener('change', () => applyCard('border'));
+            if (cardShadow) cardShadow.addEventListener('change', () => applyCard('shadow'));
+
+            // Restore saved values on load
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            applyTheme(savedTheme);
+
+            const savedDirection = localStorage.getItem('direction') || document.documentElement.getAttribute('dir') || 'ltr';
+            applyDirection(savedDirection);
+
+            const savedColor = localStorage.getItem('data-color-theme');
+            if (savedColor) {
+                setAttr('data-color-theme', savedColor);
+                const colorInput = byId(savedColor);
+                if (colorInput) colorInput.checked = true;
+            }
+
+            const savedPageLayout = localStorage.getItem('data-layout') || document.documentElement.getAttribute('data-layout');
+            if (savedPageLayout) applyPageLayout(savedPageLayout);
+
+            const savedContainer = localStorage.getItem('data-container');
+            if (savedContainer) applyContainer(savedContainer);
+
+            const savedSidebar = localStorage.getItem('sidebar-type');
+            if (savedSidebar) applySidebar(savedSidebar);
+
+            const savedCard = localStorage.getItem('card-layout');
+            if (savedCard) applyCard(savedCard);
+
+            // Expose handler for inline onclicks
+            window.handleColorTheme = applyColorTheme;
         });
     </script>
