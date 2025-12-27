@@ -43,12 +43,15 @@ class ProductController extends Controller
         // Get customer and address from the form (common for all products)
         $customerId = $request->input('customer');
         $addressId = $request->input('addressSelect');
+        $discount = $request->input('discount');
+        $remarks = $request->input('remarks');
         
         $quotationId = null;
 
-        DB::transaction(function () use ($request, $customerId, $addressId, &$quotationId) {
+        DB::transaction(function () use ($request, $customerId, $addressId, $discount, $remarks, &$quotationId) {
             $quotation = Quotation::create([
-                // quotation_number and user_id are auto-generated in the boot method
+                'discount' => $discount,
+                'remarks' => $remarks
             ]);
             $quotationId = $quotation->id;
 
@@ -59,6 +62,7 @@ class ProductController extends Controller
 
             foreach ($productsData as $productId => $productData) {
                 $product = Product::create([
+                    'name' => $productData['name'] ?? null,
                     'size_mm' => $productData['size_mm'] ?? null,
                     'cost_per_units' => $productData['cost_per_units'] ?? 0,
                     'quantity' => $productData['quantity'] ?? 0,

@@ -119,9 +119,21 @@ class QuotationController extends Controller
             // Generate file name + path
             $fileName = 'Quotation_' . $quotation->quotation_number . '_' . time() . '.pdf';
             $filePath = 'quotations/' . $fileName;
+            
+            // Ensure directory exists
+            $dirPath = storage_path('app/private/quotations');
+            if (!is_dir($dirPath)) {
+                mkdir($dirPath, 0755, true);
+            }
 
             // Save PDF to storage
-            Storage::put($filePath, $pdf->output());
+            Storage::disk('local')->put($filePath, $pdf->output());
+            
+            // Verify file was saved
+            $fullPath = storage_path('app/private/quotations/' . $fileName);
+            if (!file_exists($fullPath)) {
+                throw new \Exception('PDF file was not saved successfully');
+            }
 
             // Log download
             DownloadedQuotation::create([
@@ -135,16 +147,16 @@ class QuotationController extends Controller
                 'remarks' => 'Quotation downloaded'
             ]);
 
-            // Display PDF normally (no scrambled text)
+            // Stream PDF for download
             return response()->download(
-                storage_path('app/private/quotations/' . $fileName),
+                $fullPath,
                 $fileName,
                 ['Content-Type' => 'application/pdf']
             );
 
         } catch (\Exception $e) {
-            Log::error('PDF generation failed: ' . $e->getMessage());
-            return back()->with('error', 'PDF generation failed. Try again later.');
+            Log::error('PDF download failed: ' . $e->getMessage());
+            return back()->with('error', 'PDF download failed: ' . $e->getMessage());
         }
     }
 

@@ -78,7 +78,7 @@
 
         /* Professional Header */
         .header-wrapper {
-            border-bottom: 3px solid #044b26;
+            border-bottom: 3px solid #635bff;
             padding-bottom: 6px;
             margin-bottom: 8px;
         }
@@ -103,7 +103,7 @@
 
         .company-info h1 {
             font-size: 24px;
-            color: #044b26;
+            color: #635bff;
             font-weight: bold;
             margin-bottom: 2px;
         }
@@ -124,7 +124,7 @@
 
         .quotation-badge {
             display: inline-block;
-            background: #044b26;
+            background: #635bff;
             color: white;
             padding: 5px 10px;
             font-size: 20px;
@@ -136,7 +136,7 @@
         .quotation-meta {
             background: #f1f5f9;
             padding: 8px 12px;
-            border-left: 4px solid #044b26;
+            border-left: 4px solid #635bff;
             font-size: 10px;
             text-align: left;
             display: inline-block;
@@ -147,7 +147,7 @@
         }
 
         .quotation-meta strong {
-            color: #044b26;
+            color: #635bff;
             font-weight: bold;
         }
 
@@ -178,14 +178,14 @@
             letter-spacing: 1px;
             margin-bottom: 6px;
             font-weight: bold;
-            border-bottom: 2px solid #044b26;
+            border-bottom: 2px solid #635bff;
             padding-bottom: 5px;
             display: inline-block;
         }
 
         .address-box .company-name {
             font-size: 14px;
-            color: #044b26;
+            color: #635bff;
             font-weight: bold;
             margin-bottom: 8px;
             display: block;
@@ -204,7 +204,7 @@
         }
 
         .product-header {
-            background: #044b26;
+            background: #635bff;
             color: white;
             padding: 12px 15px;
             font-size: 14px;
@@ -226,16 +226,23 @@
         .gallery-title {
             font-size: 11px;
             font-weight: bold;
-            color: #044b26;
+            color: #635bff;
             margin-bottom: 10px;
             text-transform: uppercase;
         }
 
         .gallery-grid {
             width: 100%;
-            margin-top: 2%;
-            overflow: auto;
+            margin-top: 15px;
+            overflow: visible;
             clear: both;
+            display: block;
+            padding-top: 15px;
+        }
+        
+        .gallery-grid:first-of-type {
+            padding-top: 0;
+            margin-top: 0;
         }
 
         .gallery-item {
@@ -300,13 +307,13 @@
         .notes-box {
             background: #f8fafc;
             border: 1px solid #e2e8f0;
-            border-left: 4px solid #044b26;
+            border-left: 4px solid #635bff;
             padding: 15px;
         }
 
         .notes-box h4 {
             font-size: 11px;
-            color: #044b26;
+            color: #635bff;
             margin-bottom: 8px;
             font-weight: bold;
         }
@@ -328,7 +335,7 @@
         }
 
         .totals-table tr.grand-total {
-            background: #044b26;
+            background: #635bff;
             border: none;
         }
 
@@ -353,7 +360,7 @@
 
         .totals-table td:last-child {
             text-align: right;
-            color: #044b26;
+            color: #635bff;
             font-weight: bold;
         }
 
@@ -394,7 +401,7 @@
 
         .footer h4 {
             font-size: 10px;
-            color: #044b26;
+            color: #635bff;
             margin-bottom: 5px;
             font-weight: bold;
         }
@@ -407,7 +414,7 @@
 
         .signature-line {
             margin-top: 40px;
-            border-top: 2px solid #044b26;
+            border-top: 2px solid #635bff;
             width: 200px;
             padding-top: 5px;
             text-align: center;
@@ -434,7 +441,7 @@
 
         .flowchart-section h3 {
             font-size: 16px;
-            color: #044b26;
+            color: #635bff;
             font-weight: bold;
             margin-bottom: 15px;
             text-transform: uppercase;
@@ -474,8 +481,9 @@
                         @endif
                     @endif
 
-                    <h1>{{ $settings['company_name'] ?? 'Your Company' }}</h1>
-                    <p class="company-tagline">Your Trusted Business Partner</p>
+                    <h1 style="white-space: nowrap;">{{ $settings['company_name'] ?? 'Your Company' }}</h1>
+                    <p><strong>since 1985</strong></p>
+                    <p class="company-tagline">Your Trusted Business Partner.</p>
                 </div>
                 <div class="quotation-info">
                     <div class="quotation-badge">{{ $quotation->quotation_number }}</div>
@@ -492,7 +500,7 @@
         <!-- Address Section -->
         <div class="address-section">
             <div class="address-box">
-                <h3>Bill To</h3>
+                <h3>To</h3>
                 @php
                     $firstProduct = $quotation->products->first();
                     $customer = $firstProduct?->customer;
@@ -529,18 +537,22 @@
                 </p>
             </div>
         </div>
-        <!-- Products Section -->
+        <!-- Products Section - Tables Only -->
         @php
             $serialNumber = 1;
         @endphp
 
         @forelse ($quotation->products as $index => $product)
-            <div class="product-card" style="@if($index > 0) page-break-before: always; @endif margin-bottom: 10px;">
+            @if($index > 0)
+                <div class="product-card" style="page-break-before: always; margin-bottom: 10px;">
+            @else
+                <div class="product-card" style="margin-bottom: 10px;">
+            @endif
                 <div class="product-content" style="page-break-inside: avoid;">
                     <table
                         style="width: 100%; border-collapse: collapse; border: 1px solid #cbd5e1; table-layout: fixed;">
                         <thead>
-                            <tr style="background: #044b26; border-bottom: 2px solid #e2e8f0;">
+                            <tr style="background: #635bff; border-bottom: 2px solid #e2e8f0;">
                                 <th
                                     style="padding: 8px; text-align: center; font-weight: bold; color: #fff; font-size: 10px; border: 1px solid #e2e8f0; width: 4%;">
                                     S.No</th>
@@ -561,7 +573,7 @@
                                     Cost/Unit</th>
                                 <th
                                     style="padding: 8px; text-align: right; font-weight: bold; color: #fff; font-size: 10px; border: 1px solid #e2e8f0; width: 10%;">
-                                    Price</th>
+                                    Total</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -609,8 +621,9 @@
 
                                 <!-- Description Cell with Nested Table -->
                                 <td style="border: 1px solid #e2e8f0; vertical-align: top; word-wrap: break-word;">
-                                    <div style="font-weight: bold; color: #044b26; font-size: 11px;">
-                                        {{ $product->name }}
+                                    <div style="text-align:center; font-weight: bold; font-size: 11px;">
+                                        <span style="color: #546173">Product Name:</span>
+                                        <span style="color: #635bff; font-size: 11px;">{{ $product->name }}</span>
                                     </div>
 
                                     @if ($product->descriptions && $product->descriptions->count() > 0)
@@ -655,75 +668,12 @@
 
                                 <!-- Total Price -->
                                 <td
-                                    style="padding: 6px; text-align: right; font-weight: bold; color: #044b26; border: 1px solid #e2e8f0; vertical-align: top; font-size: 10px;">
+                                    style="padding: 6px; text-align: right; font-weight: bold; color: #635bff; border: 1px solid #e2e8f0; vertical-align: top; font-size: 10px;">
                                     ₹{{ number_format($product->product_price ?? 0, 2) }}
                                 </td>
                             </tr>
                         </tbody>
                     </table>
-
-                    <!-- Additional Images Gallery -->
-                    @if ($product->images && $product->images->where('type', 'extras')->count())
-                        @php
-                            $extraImagesCount = $product->images->where('type', 'extras')->count();
-                        @endphp
-                        
-                        <!-- Add page break before extra images for the first product only if more than 3 images -->
-                        @if($index === 0 && $extraImagesCount > 3)
-                            <div style="page-break-before: always;"></div>
-                        @endif
-                        
-                        <div class="image-gallery">
-                            <div class="gallery-title">Additional Images</div>
-
-                            @php
-                                $extraImages = $product->images->where('type', 'extras')->values();
-                                $totalImages = $extraImages->count();
-                                $imageChunks = $extraImages->chunk(3); // Split into groups of 3
-                                $globalIndex = 0; // Track overall image index for labels
-                            @endphp
-
-                            <!-- Loop through each chunk/row of 3 images -->
-                            @foreach ($imageChunks as $chunk)
-                                <div class="gallery-grid">
-                                    @foreach ($chunk as $img)
-                                        @php
-                                            $globalIndex++;
-                                            $rawPath = storage_path('app/private/' . $img->path);
-                                            $extension = strtolower(pathinfo($rawPath, PATHINFO_EXTENSION));
-                                            $filename = pathinfo($img->path, PATHINFO_FILENAME);
-
-                                            if ($pdfMode) {
-                                                if (in_array($extension, ['webp', 'png'])) {
-                                                    $tempJpg = storage_path('app/temp/' . $filename . '.jpg');
-                                                    $src = file_exists($tempJpg)
-                                                        ? 'file://' . $tempJpg
-                                                        : 'file://' . $rawPath;
-                                                } else {
-                                                    $src = 'file://' . $rawPath;
-                                                }
-                                            } else {
-                                                $src = url('/private-image/' . $img->path);
-                                            }
-
-                                            $label = chr(96 + $globalIndex);
-                                        @endphp
-
-                                        <div class="gallery-item">
-                                            <div style="position: relative; display: inline-block;">
-                                                <img src="{{ $src }}" alt="Extra Image {{ $label }}"
-                                                    style="max-width: 100%; height: auto; max-height: 100px; border: 1px solid #e2e8f0; padding: 2px;">
-                                                <div style="position: absolute; top: 2px; left: 2px; background: #044b26; color: white; 
-                                                    padding: 2px 6px; font-size: 9px; font-weight: bold; border-radius: 2px;">
-                                                    {{ $label }}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            @endforeach
-                        </div>
-                    @endif
                 </div>
             </div>
         @empty
@@ -734,93 +684,174 @@
                 </div>
             </div>
         @endforelse
-        <!-- Page break AFTER all products (before totals) -->
-        @php
-            $productCount = $quotation->products->count();
-            $forceBreak = $productCount > 2; // Adjust threshold as needed
-        @endphp
 
-        @if ($forceBreak)
-            <div style="page-break-after: always; margin: 0; padding: 0; height: 0;"></div>
-        @endif
-        
-        <!-- Flowchart Section -->
-        @if ($pdfMode ?? false)
-        <div class="flowchart-section">
-            <h3>Process Flow</h3>
-            <img src="{{ public_path('images/flowchart.svg') }}" alt="Process Flowchart">
+        <!-- Totals Table - Right Below Product Tables -->
+        <div style="margin-top: 20px; margin-bottom: 30px; float: right; clear: both;">
+            <table class="totals-table">
+                <tr>
+                    <td>Subtotal</td>
+                    <td>₹{{ number_format($quotation->products->sum(fn($p) => ($p->r_units ?? 1) * ($p->product_price ?? 0)), 2) }}
+                    </td>
+                </tr>
+                @if ($quotation->discount && $quotation->discount > 0)
+                <tr>
+                    <td>Discount ({{ $quotation->discount }}%)</td>
+                    <td>- ₹{{ number_format($quotation->products->sum(fn($p) => ($p->r_units ?? 1) * ($p->product_price ?? 0)) * ($quotation->discount / 100), 2) }}</td>
+                </tr>
+                @endif
+                <tr>
+                    <td>Tax (GST)</td>
+                    <td>+ ₹0.00</td>
+                </tr>
+                <tr class="grand-total">
+                    <td>GRAND TOTAL</td>
+                    <td>₹{{ number_format($quotation->products->sum(fn($p) => ($p->r_units ?? 1) * ($p->product_price ?? 0)) * (1 - ($quotation->discount > 0 ? $quotation->discount / 100 : 0)), 2) }}
+                    </td>
+                </tr>
+            </table>
         </div>
-        @else
-        <div class="flowchart-section">
-            <h3>Process Flow</h3>
-            <img src="{{ asset('images/flowchart.svg') }}" alt="Process Flowchart">
-        </div>
-        @endif
+
+        <div style="page-break-before: always;"></div>
         
-        <!-- Totals Section -->
-        <div class="totals-section" style="margin-top: 30px;">
-            <div class="totals-left">
-                <div class="notes-box">
-                    <h4>Terms & Conditions</h4>
-                    <p>
-                        • Transportation charges extra.<br>
-                        • GST @18% will be extra.<br>
-                        • The quote is as per the Drawing received, in case the size varies as per site condition, the quote and
-invoice will vary.<br>
-                        • The price quoted are as per rates on the quotation date, and in case of any change in the rate of
-inputs, the quote May vary.<br>
-                        • Our quote is always on standard length and height, the standard measurements will apply for billing,
-Considering aluminum section length as 12 Feet.<br>
-                        • Kindly attach the Delivery & Billing address along with GST/PAN details with the order<br>
-                        • Electric supply for using electric power tools & scaffolding wherever found necessary, are to be
-Provided by you free of cost at site.<br>
-                        • SUPPLY: Minimum (Depending on quantity) Weeks after the order, advance & clear measurements
-after site Readiness is received.<br>
-                        • PAYMENT: 80% to be paid as advance along with order and 15% on delivery of the material and
-balance 5% on completion of the work.<br>
-                        • 18% interest will be charged if the payment is not received as per the terms from the due date.<br>
-                    </p>
+        <!-- Clearfix for floated totals table -->
+        <div style="clear: both; margin-top: 20px;"></div>
+
+        <!-- Additional Images Section - All Products -->
+        @forelse ($quotation->products as $imgIndex => $product)
+            @if ($product->images && $product->images->where('type', 'extras')->count())
+
+                <div class="image-gallery">
+                    <!-- Product Heading for Images Section -->
+                    <div style="margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #635bff;">
+                        <h3 style="color: #635bff; margin: 0; font-size: 16px;">
+                            {{ $product->name }} - Additional Images
+                        </h3>
+                    </div>
+
+                    @php
+                        $extraImages = $product->images->where('type', 'extras')->values();
+                        $totalImages = $extraImages->count();
+                        $imageChunks = $extraImages->chunk(3); // Split into groups of 3
+                        $globalIndex = 0; // Track overall image index for labels
+                    @endphp
+
+                    <!-- Loop through each chunk/row of 3 images -->
+                    @foreach ($imageChunks as $chunk)
+                        <div class="gallery-grid">
+                            @foreach ($chunk as $img)
+                                @php
+                                    $globalIndex++;
+                                    $rawPath = storage_path('app/private/' . $img->path);
+                                    $extension = strtolower(pathinfo($rawPath, PATHINFO_EXTENSION));
+                                    $filename = pathinfo($img->path, PATHINFO_FILENAME);
+
+                                    if ($pdfMode) {
+                                        if (in_array($extension, ['webp', 'png'])) {
+                                            $tempJpg = storage_path('app/temp/' . $filename . '.jpg');
+                                            $src = file_exists($tempJpg)
+                                                ? 'file://' . $tempJpg
+                                                : 'file://' . $rawPath;
+                                        } else {
+                                            $src = 'file://' . $rawPath;
+                                        }
+                                    } else {
+                                        $src = url('/private-image/' . $img->path);
+                                    }
+
+                                    $label = chr(96 + $globalIndex);
+                                @endphp
+
+                                <div class="gallery-item">
+                                    <div style="position: relative; display: inline-block;">
+                                        <img src="{{ $src }}" alt="Extra Image {{ $label }}"
+                                            style="max-width: 100%; height: auto; max-height: 100px; border: 1px solid #e2e8f0; padding: 2px;">
+                                        <div style="position: absolute; top: 2px; left: 2px; background: #635bff; color: white; 
+                                            padding: 2px 6px; font-size: 9px; font-weight: bold; border-radius: 2px;">
+                                            {{ $label }}
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endforeach
                 </div>
-            </div>
-            <div class="totals-right">
-                <table class="totals-table">
-                    <tr>
-                        <td>Subtotal</td>
-                        <td>₹{{ number_format($quotation->products->sum(fn($p) => ($p->r_units ?? 1) * ($p->product_price ?? 0)), 2) }}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Discount</td>
-                        <td>- ₹0.00</td>
-                    </tr>
-                    <tr>
-                        <td>Tax (GST)</td>
-                        <td>+ ₹0.00</td>
-                    </tr>
-                    <tr class="grand-total">
-                        <td>GRAND TOTAL</td>
-                        <td>₹{{ number_format($quotation->products->sum(fn($p) => ($p->r_units ?? 1) * ($p->product_price ?? 0)), 2) }}
-                        </td>
-                    </tr>
-                </table>
-            </div>
+            @endif
+        @empty
+            <!-- No additional images -->
+        @endforelse
+
+        <!-- Flowchart Section -->
+        <div class="flowchart-section" style="page-break-before: always;">
+            <h3>Process Flow</h3>
+            @php
+                if ($pdfMode) {
+                    $flowchartSrc = 'file://' . public_path('images/flowchart.svg');
+                } else {
+                    $flowchartSrc = url('images/flowchart.svg');
+                }
+            @endphp
+            <img src="{{ $flowchartSrc }}" alt="Process Flow Diagram">
+        </div>
+
+        <!-- Terms & Conditions Section-->
+        <div class="notes-box" style="margin-top: 40px; page-break-inside: avoid;">
+            <h4>Terms & Conditions</h4>
+            <p>
+                @if ($quotation->remarks)
+                    {!! nl2br(e($quotation->remarks)) !!}<br><br>
+                @endif
+                • Transportation charges extra.<br>
+                • GST @18% will be extra.<br>
+                • The quote is as per the Drawing received, in case the size varies as per site condition, the quote and
+invoice will vary.<br>
+                • The price quoted are as per rates on the quotation date, and in case of any change in the rate of
+inputs, the quote May vary.<br>
+                • Our quote is always on standard length and height, the standard measurements will apply for billing,
+Considering aluminum section length as 12 Feet.<br>
+                • Kindly attach the Delivery & Billing address along with GST/PAN details with the order<br>
+                • Electric supply for using electric power tools & scaffolding wherever found necessary, are to be
+Provided by you free of cost at site.<br>
+                • SUPPLY: Minimum (Depending on quantity) Weeks after the order, advance & clear measurements
+after site Readiness is received.<br>
+                • PAYMENT: 80% to be paid as advance along with order and 15% on delivery of the material and
+balance 5% on completion of the work.<br>
+                • 18% interest will be charged if the payment is not received as per the terms from the due date.<br>
+            </p>
         </div>
 
         <!-- Professional Footer -->
         <div class="footer">
             <div class="footer-content">
-                <div class="footer-left">
-                    <h4>Payment Information</h4>
-                    <p>
-                        Bank Name: {{ config('app.bank_name', 'Your Bank Name') }}<br>
-                        Account Number: {{ config('app.account_number', 'XXXXXXXXXXXX') }}<br>
-                        IFSC Code: {{ config('app.ifsc_code', 'XXXXXX') }}<br>
-                        Account Name: {{ config('app.name') }}
-                    </p>
-                </div>
+                @php
+                    $hasBankInfo = !empty($settings['bank_name']) || 
+                                   !empty($settings['bank_account_number']) || 
+                                   !empty($settings['bank_ifsc_code']) || 
+                                   !empty($settings['bank_account_name']);
+                @endphp
+                
+                @if ($hasBankInfo)
+                    <div class="footer-left">
+                        <h4>Payment Information</h4>
+                        <p>
+                            @if (!empty($settings['bank_name']))
+                                Bank Name: {{ $settings['bank_name'] }}<br>
+                            @endif
+                            @if (!empty($settings['bank_account_number']))
+                                Account Number: {{ $settings['bank_account_number'] }}<br>
+                            @endif
+                            @if (!empty($settings['bank_ifsc_code']))
+                                IFSC Code: {{ $settings['bank_ifsc_code'] }}<br>
+                            @endif
+                            @if (!empty($settings['bank_account_name']))
+                                Account Name: {{ $settings['bank_account_name'] }}
+                            @endif
+                        </p>
+                    </div>
+                @endif
+                
                 <div class="footer-right" style="width:0px !important;">
                     <div class="signature-line">
-                        <p>Authorized Signature</p>
+                        <p>Customer Signature</p>
                     </div>
                 </div>
                 <div class="footer-right"></div>

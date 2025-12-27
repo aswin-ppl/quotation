@@ -189,6 +189,22 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="discount" class="form-label fw-semibold">Discount (%) <span class="text-muted">(Optional)</span></label>
+                                <input type="number" class="form-control" id="discount" name="discount" step="0.01" min="0" max="100" placeholder="Enter discount percentage">
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="remarks" class="form-label fw-semibold">Remarks <span class="text-muted">(Optional)</span></label>
+                                <textarea id="remarks" name="remarks" class="form-control" rows="3" placeholder="Enter any terms and conditions or remarks"></textarea>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -209,6 +225,8 @@
                     @csrf
                     <input type="hidden" id="hidden_customer" name="customer">
                     <input type="hidden" id="hidden_addressSelect" name="addressSelect">
+                    <input type="hidden" id="hidden_discount" name="discount">
+                    <input type="hidden" id="hidden_remarks" name="remarks">
                     <div id="stepsContainer"></div>
 
                     <!-- Navigation Buttons -->
@@ -286,6 +304,12 @@
             stepDiv.innerHTML = `
             <h4 class="mb-4">Product ${productId} Information</h4>
             <div class="row">
+                <div class="col-md-12">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" for="product_name_${productId}">Product Name <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="product_name_${productId}" name="products[${productId}][name]" required>
+                    </div>
+                </div>
                 <div class="col-md-3">
                     <div class="mb-3">
                         <label class="form-label fw-semibold" for="size_mm_${productId}">Size (mm) <span class="text-danger">*</span></label>
@@ -352,7 +376,7 @@
                             <table class="table align-middle" id="descriptionTable_${productId}">
                                 <thead class="table-primary">
                                     <tr>
-                                        <th style="width: 40%">Key</th>
+                                        <th style="width: 40%">Label</th>
                                         <th style="width: 50%">Value</th>
                                         <th style="width: 10%">Action</th>
                                     </tr>
@@ -371,7 +395,7 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td><input type="text" name="products[${productId}][descriptions][1][key]" tabindex="-1" class="form-control" value="BRAND" readonly></td>
+                                        <td><input type="text" name="products[${productId}][descriptions][1][key]" tabindex="-1" class="form-control" value="Design" readonly></td>
                                         <td><input type="text" name="products[${productId}][descriptions][1][value]" class="form-control" required></td>
                                         <td class="text-center">
                                             <button type="button" class="btn btn-danger btn-sm removeRow" tabindex="-1">
@@ -383,7 +407,7 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td><input type="text" name="products[${productId}][descriptions][2][key]" tabindex="-1" class="form-control" value="Material" readonly></td>
+                                        <td><input type="text" name="products[${productId}][descriptions][2][key]" tabindex="-1" class="form-control" value="Brand" readonly></td>
                                         <td><input type="text" name="products[${productId}][descriptions][2][value]" class="form-control" required></td>
                                         <td class="text-center">
                                             <button type="button" class="btn btn-danger btn-sm removeRow" tabindex="-1">
@@ -395,7 +419,7 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td><input type="text" name="products[${productId}][descriptions][3][key]" tabindex="-1" class="form-control" value="Design" readonly></td>
+                                        <td><input type="text" name="products[${productId}][descriptions][3][key]" tabindex="-1" class="form-control" value="Alloy- T6-6061" readonly></td>
                                         <td><input type="text" name="products[${productId}][descriptions][3][value]" class="form-control" required></td>
                                         <td class="text-center">
                                             <button type="button" class="btn btn-danger btn-sm removeRow" tabindex="-1">
@@ -407,7 +431,7 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td><input type="text" name="products[${productId}][descriptions][4][key]" tabindex="-1" class="form-control" value="Color" readonly></td>
+                                        <td><input type="text" name="products[${productId}][descriptions][4][key]" tabindex="-1" class="form-control" value="Aluminium Sections" readonly></td>
                                         <td><input type="text" name="products[${productId}][descriptions][4][value]" class="form-control" required></td>
                                         <td class="text-center">
                                             <button type="button" class="btn btn-danger btn-sm removeRow" tabindex="-1">
@@ -419,10 +443,7 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td class="bg-light" colspan="3"><strong>Sections</strong></td>
-                                    </tr>
-                                    <tr>
-                                        <td><input type="text" name="products[${productId}][descriptions][5][key]" tabindex="-1" class="form-control" value="Section Color" readonly></td>
+                                        <td><input type="text" name="products[${productId}][descriptions][5][key]" tabindex="-1" class="form-control" value="Glass Color" readonly></td>
                                         <td><input type="text" name="products[${productId}][descriptions][5][value]" class="form-control" required></td>
                                         <td class="text-center">
                                             <button type="button" class="btn btn-danger btn-sm removeRow" tabindex="-1">
@@ -434,10 +455,7 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td class="bg-light" colspan="3"><strong>Hardware</strong></td>
-                                    </tr>
-                                    <tr>
-                                        <td><input type="text" name="products[${productId}][descriptions][6][key]" tabindex="-1" class="form-control" value="Handle" readonly></td>
+                                        <td><input type="text" name="products[${productId}][descriptions][6][key]" tabindex="-1" class="form-control" value="Glass Size" readonly></td>
                                         <td><input type="text" name="products[${productId}][descriptions][6][value]" class="form-control" required></td>
                                         <td class="text-center">
                                             <button type="button" class="btn btn-danger btn-sm removeRow" tabindex="-1">
@@ -449,7 +467,7 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td><input type="text" name="products[${productId}][descriptions][7][key]" tabindex="-1" class="form-control" value="Handle Color" readonly></td>
+                                        <td><input type="text" name="products[${productId}][descriptions][7][key]" tabindex="-1" class="form-control" value="Coating" readonly></td>
                                         <td><input type="text" name="products[${productId}][descriptions][7][value]" class="form-control" required></td>
                                         <td class="text-center">
                                             <button type="button" class="btn btn-danger btn-sm removeRow" tabindex="-1">
@@ -461,7 +479,7 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td><input type="text" name="products[${productId}][descriptions][8][key]" tabindex="-1" class="form-control" value="Glass" readonly></td>
+                                        <td><input type="text" name="products[${productId}][descriptions][8][key]" tabindex="-1" class="form-control" value="Color" readonly></td>
                                         <td><input type="text" name="products[${productId}][descriptions][8][value]" class="form-control" required></td>
                                         <td class="text-center">
                                             <button type="button" class="btn btn-danger btn-sm removeRow" tabindex="-1">
@@ -485,8 +503,32 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td><input type="text" name="products[${productId}][descriptions][10][key]" tabindex="-1" class="form-control" value="Beadery" readonly></td>
+                                        <td><input type="text" name="products[${productId}][descriptions][10][key]" tabindex="-1" class="form-control" value="Handle" readonly></td>
                                         <td><input type="text" name="products[${productId}][descriptions][10][value]" class="form-control" required></td>
+                                        <td class="text-center">
+                                            <button type="button" class="btn btn-danger btn-sm removeRow" tabindex="-1">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                                    <path fill="currentColor" d="M2.75 6.167c0-.46.345-.834.771-.834h2.665c.529-.015.996-.378 1.176-.916l.03-.095l.115-.372c.07-.228.131-.427.217-.605c.338-.702.964-1.189 1.687-1.314c.184-.031.377-.031.6-.031h3.478c.223 0 .417 0 .6.031c.723.125 1.35.612 1.687 1.314c.086.178.147.377.217.605l.115.372l.03.095c.18.538.74.902 1.27.916h2.57c.427 0 .772.373.772.834S20.405 7 19.979 7H3.52c-.426 0-.771-.373-.771-.833"/>
+                                                    <path fill="currentColor" d="M11.607 22h.787c2.707 0 4.06 0 4.941-.863c.88-.864.97-2.28 1.15-5.111l.26-4.081c.098-1.537.147-2.305-.295-2.792s-1.187-.487-2.679-.487H8.23c-1.491 0-2.237 0-2.679.487s-.392 1.255-.295 2.792l.26 4.08c.18 2.833.27 4.248 1.15 5.112S8.9 22 11.607 22" opacity="0.5"/>
+                                                </svg>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="text" name="products[${productId}][descriptions][11][key]" tabindex="-1" class="form-control" value="Handle color" readonly></td>
+                                        <td><input type="text" name="products[${productId}][descriptions][11][value]" class="form-control" required></td>
+                                        <td class="text-center">
+                                            <button type="button" class="btn btn-danger btn-sm removeRow" tabindex="-1">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                                    <path fill="currentColor" d="M2.75 6.167c0-.46.345-.834.771-.834h2.665c.529-.015.996-.378 1.176-.916l.03-.095l.115-.372c.07-.228.131-.427.217-.605c.338-.702.964-1.189 1.687-1.314c.184-.031.377-.031.6-.031h3.478c.223 0 .417 0 .6.031c.723.125 1.35.612 1.687 1.314c.086.178.147.377.217.605l.115.372l.03.095c.18.538.74.902 1.27.916h2.57c.427 0 .772.373.772.834S20.405 7 19.979 7H3.52c-.426 0-.771-.373-.771-.833"/>
+                                                    <path fill="currentColor" d="M11.607 22h.787c2.707 0 4.06 0 4.941-.863c.88-.864.97-2.28 1.15-5.111l.26-4.081c.098-1.537.147-2.305-.295-2.792s-1.187-.487-2.679-.487H8.23c-1.491 0-2.237 0-2.679.487s-.392 1.255-.295 2.792l.26 4.08c.18 2.833.27 4.248 1.15 5.112S8.9 22 11.607 22" opacity="0.5"/>
+                                                </svg>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="text" name="products[${productId}][descriptions][12][key]" tabindex="-1" class="form-control" value="Hardwares" readonly></td>
+                                        <td><input type="text" name="products[${productId}][descriptions][12][value]" class="form-control" required></td>
                                         <td class="text-center">
                                             <button type="button" class="btn btn-danger btn-sm removeRow" tabindex="-1">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
@@ -763,6 +805,8 @@
             // Set hidden input values before submission
             document.getElementById('hidden_customer').value = customerId;
             document.getElementById('hidden_addressSelect').value = addressId;
+            document.getElementById('hidden_discount').value = document.getElementById('discount').value || '';
+            document.getElementById('hidden_remarks').value = document.getElementById('remarks').value || '';
 
             // Show SweetAlert confirmation
             const form = this;

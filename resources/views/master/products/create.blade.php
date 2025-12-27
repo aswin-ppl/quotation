@@ -351,7 +351,7 @@
                             <table class="table align-middle" id="descriptionTable_${productId}">
                                 <thead class="table-light">
                                     <tr>
-                                        <th style="width: 40%">Key</th>
+                                        <th style="width: 40%">Label</th>
                                         <th style="width: 50%">Value</th>
                                         <th style="width: 10%">Action</th>
                                     </tr>

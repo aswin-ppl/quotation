@@ -395,7 +395,7 @@
         <!-- Address Section -->
         <div class="address-section">
             <div class="address-box">
-                <h3>Bill To</h3>
+                <h3>To</h3>
                 @php
                     $firstProduct = $quotation->products->first();
                     $customer = $firstProduct?->customer;
@@ -449,7 +449,7 @@
                                 <th style="padding: 8px; text-align: center; font-weight: bold; color: #475569; font-size: 10px; border: 1px solid #e2e8f0; width: 50px;">Qty</th>
                                 <th style="padding: 8px; text-align: center; font-weight: bold; color: #475569; font-size: 10px; border: 1px solid #e2e8f0; width: 70px;">Size (mm)</th>
                                 <th style="padding: 8px; text-align: right; font-weight: bold; color: #475569; font-size: 10px; border: 1px solid #e2e8f0; width: 80px;">Cost/Unit</th>
-                                <th style="padding: 8px; text-align: right; font-weight: bold; color: #475569; font-size: 10px; border: 1px solid #e2e8f0; width: 90px;">Price</th>
+                                <th style="padding: 8px; text-align: right; font-weight: bold; color: #475569; font-size: 10px; border: 1px solid #e2e8f0; width: 90px;">Total</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -591,7 +591,7 @@
                 </div>
                 <div class="footer-right" style="width:0% !important">
                     <div class="signature-line">
-                        <p>Authorized Signature</p>
+                        <p>Customer Signature</p>
                     </div>
                 </div>
                 <div class="footer-right">

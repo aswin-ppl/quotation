@@ -48,7 +48,11 @@ class SettingController extends Controller
             'company_city',
             'company_district',
             'company_state',
-            'company_address'
+            'company_address',
+            'bank_name',
+            'bank_account_number',
+            'bank_ifsc_code',
+            'bank_account_name'
         ]);
 
         if ($request->hasFile('company_logo')) {

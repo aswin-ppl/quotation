@@ -179,6 +179,60 @@
                                 </div>
                             </div>
 
+                            <!-- Bank Information Section -->
+                            <div class="col-12 mt-5 mb-3">
+                                <h5 class="text-primary">Bank Information</h5>
+                                <hr>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="bank_name" class="form-label">Bank Name</label>
+                                <input type="text" name="bank_name" id="bank_name"
+                                    class="form-control @error('bank_name') is-invalid @enderror"
+                                    value="{{ $settings['bank_name'] ?? '' }}" placeholder="e.g. HDFC Bank">
+                                @error('bank_name')
+                                    <div class="invalid-feedback d-block">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="bank_account_number" class="form-label">Account Number</label>
+                                <input type="text" name="bank_account_number" id="bank_account_number"
+                                    class="form-control @error('bank_account_number') is-invalid @enderror"
+                                    value="{{ $settings['bank_account_number'] ?? '' }}" placeholder="Enter account number">
+                                @error('bank_account_number')
+                                    <div class="invalid-feedback d-block">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="bank_ifsc_code" class="form-label">IFSC Code</label>
+                                <input type="text" name="bank_ifsc_code" id="bank_ifsc_code"
+                                    class="form-control @error('bank_ifsc_code') is-invalid @enderror"
+                                    value="{{ $settings['bank_ifsc_code'] ?? '' }}" placeholder="e.g. HDFC0001234">
+                                @error('bank_ifsc_code')
+                                    <div class="invalid-feedback d-block">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="bank_account_name" class="form-label">Account Name</label>
+                                <input type="text" name="bank_account_name" id="bank_account_name"
+                                    class="form-control @error('bank_account_name') is-invalid @enderror"
+                                    value="{{ $settings['bank_account_name'] ?? '' }}" placeholder="Account holder name">
+                                @error('bank_account_name')
+                                    <div class="invalid-feedback d-block">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+
                             <div class="col-12 mt-5">
                                 <div class="d-md-flex justify-content-between align-items-center flex-row-reverse">
                                     <button type="submit" class="btn btn-primary hstack gap-6">Save Settings</button>
