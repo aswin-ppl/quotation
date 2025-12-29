@@ -13,7 +13,7 @@ class AddressDataSeeder extends Seeder
     {
         $path = database_path('sql_files');
 
-        $tablesToRun = ['states', 'districts', 'pincodes', 'cities1', 'cities2', 'cities3'];
+        $tablesToRun = ['states', 'districts', 'pincodes', 'cities'];
 
         foreach ($tablesToRun as $table) {
             $table = strtolower($table);
