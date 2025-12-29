@@ -13,10 +13,15 @@ use App\Http\Controllers\Master\ProductController;
 use App\Http\Controllers\Master\CustomerController;
 use App\Http\Controllers\TempUploadController;
 
+Route::get('/', function () {
+    return redirect()->route('login');
+});
+
+
 Route::middleware('auth')->group(function () {
 
     // dashboard
-    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     // AJAX partial for products on dashboard (used by live search)
     Route::get('/dashboard/products', [DashboardController::class, 'productsPartial'])->name('dashboard.products');
 
