@@ -61,7 +61,7 @@
                 </ul> --}}
                 <ul aria-expanded="false" class="collapse first-level">
                   <li class="sidebar-item">
-                    <a class="sidebar-link" href="/customers" aria-expanded="false">
+                    <a class="sidebar-link" href="{{ route('customers.index') }}" aria-expanded="false">
                       <span class="rounded-3">
                         <i class="ti ti-circle"></i>
                       </span>
@@ -87,13 +87,13 @@
                 </a>
                 <ul aria-expanded="false" class="collapse first-level">
                   <li class="sidebar-item">
-                    <a href="users" class="sidebar-link">
+                    <a href="{{ route('users.index') }}" class="sidebar-link">
                       <i class="ti ti-calendar"></i>
                       <span class="hide-menu">Users</span>
                     </a>
                   </li>
                   <li class="sidebar-item">
-                    <a href="roles" class="sidebar-link">
+                    <a href="{{ route('roles.index') }}" class="sidebar-link">
                       <i class="ti ti-layout-kanban"></i>
                       <span class="hide-menu">Roles & Permissions</span>
                     </a>
@@ -113,7 +113,7 @@
                 </a>
                 <ul aria-expanded="false" class="collapse first-level in">
                   <li class="sidebar-item">
-                    <a href="settings" class="sidebar-link">
+                    <a href="{{ route('settings.index') }}" class="sidebar-link">
                       <i class="ti ti-aperture"></i>
                       <span class="hide-menu">Settings</span>
                     </a>

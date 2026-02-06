@@ -26,6 +26,7 @@
                         <!-- --------------------------------------------------------------------------------------------------------- -->
                         <!-- Master -->
                         <!-- --------------------------------------------------------------------------------------------------------- -->
+                        @canany(['view-customers'])
                         <li class="mini-nav-item {{ ($parent_title ?? 'Dashboard') === 'Master' ? 'selected' : '' }}"
                             id="mini-2">
                             <a href="javascript:void(0)" data-bs-toggle="tooltip" data-bs-custom-class="custom-tooltip"
@@ -33,35 +34,39 @@
                                 <iconify-icon icon="solar:widget-6-line-duotone" class="fs-7"></iconify-icon>
                             </a>
                         </li>
+                        @endcanany
 
                         <!-- --------------------------------------------------------------------------------------------------------- -->
                         <!-- User & Permissions -->
                         <!-- --------------------------------------------------------------------------------------------------------- -->
-                        <li class="mini-nav-item {{ ($parent_title ?? 'Dashboard') === 'User & Permissions' ? 'selected' : '' }}"
-                            id="mini-3">
-                            <a href="javascript:void(0)" data-bs-toggle="tooltip" data-bs-custom-class="custom-tooltip"
-                                data-bs-placement="right" data-bs-title="User & Permissions">
-                                <iconify-icon icon="solar:shield-user-line-duotone" class="fs-7"></iconify-icon>
-                            </a>
-                        </li>
+                        @canany(['view-roles-&-permission', 'view-users'])
+                            <li class="mini-nav-item {{ ($parent_title ?? 'Dashboard') === 'User & Permissions' ? 'selected' : '' }}"
+                                id="mini-3">
+                                <a href="javascript:void(0)" data-bs-toggle="tooltip" data-bs-custom-class="custom-tooltip"
+                                    data-bs-placement="right" data-bs-title="User & Permissions">
+                                    <iconify-icon icon="solar:shield-user-line-duotone" class="fs-7"></iconify-icon>
+                                </a>
+                            </li>
+                        @endcanany
 
                         <!-- --------------------------------------------------------------------------------------------------------- -->
                         <!-- Settings -->
                         <!-- --------------------------------------------------------------------------------------------------------- -->
-                        <li class="mini-nav-item {{ ($parent_title ?? 'Dashboard') === 'Settings' ? 'selected' : '' }}"
-                            id="mini-4">
-                            <a href="javascript:void(0)" data-bs-toggle="tooltip" data-bs-custom-class="custom-tooltip"
-                                data-bs-placement="right" data-bs-title="Settings">
-                                <iconify-icon icon="solar:settings-minimalistic-outline" class="fs-7"></iconify-icon>
-                            </a>
-                        </li>
+                        @can('view-settings')
+                            <li class="mini-nav-item {{ ($parent_title ?? 'Dashboard') === 'Settings' ? 'selected' : '' }}"
+                                id="mini-4">
+                                <a href="javascript:void(0)" data-bs-toggle="tooltip" data-bs-custom-class="custom-tooltip"
+                                    data-bs-placement="right" data-bs-title="Settings">
+                                    <iconify-icon icon="solar:settings-minimalistic-outline" class="fs-7"></iconify-icon>
+                                </a>
+                            </li>
+                        @endcan
                 </div>
                 <div class="sidebarmenu">
                     <div class="brand-logo d-flex align-items-center nav-logo">
-                        <a href="/" class="text-nowrap logo-img">
+                        <a href="{{ route('dashboard') }}" class="text-nowrap logo-img">
                             <img src="{{ asset('images/logos/sherbrooke.png') }}" width="200" alt="Logo" />
                         </a>
-
                     </div>
                     <!-- ---------------------------------- -->
                     <!-- Dashboard -->
@@ -79,7 +84,7 @@
                             <!-- Side bar -->
                             <!-- ---------------------------------- -->
                             <li class="sidebar-item">
-                                <a href="/"
+                                <a href="{{ route('dashboard') }}"
                                     class="sidebar-link {{ ($parent_title ?? 'Dashboard') === 'Dashboard' ? 'active' : '' }}">
                                     <iconify-icon icon="solar:atom-line-duotone"></iconify-icon>
                                     <span class="hide-menu">Dashboard</span>
@@ -105,19 +110,21 @@
                             <!-- ---------------------------------- -->
 
                             {{-- <li class="sidebar-item">
-                                <a href="/products"
+                                <a href="{{ route('products.index') }}"
                                     class="sidebar-link {{ ($page_title ?? 'Dashboard') === 'Product' ? 'active' : '' }}">
                                     <iconify-icon icon="solar:waterdrops-line-duotone"></iconify-icon>
                                     <span class="hide-menu">Products</span>
                                 </a>
                             </li> --}}
-                            <li class="sidebar-item">
-                                <a href="/customers"
-                                    class="sidebar-link {{ ($page_title ?? 'Dashboard') === 'Customers' ? 'active' : '' }}">
-                                    <iconify-icon icon="solar:users-group-rounded-bold-duotone"></iconify-icon>
-                                    <span class="hide-menu">Customers</span>
-                                </a>
-                            </li>
+                            @can('view-customers')
+                                <li class="sidebar-item">
+                                    <a href="{{ route('customers.index') }}"
+                                        class="sidebar-link {{ ($page_title ?? 'Dashboard') === 'Customers' ? 'active' : '' }}">
+                                        <iconify-icon icon="solar:users-group-rounded-bold-duotone"></iconify-icon>
+                                        <span class="hide-menu">Customers</span>
+                                    </a>
+                                </li>
+                            @endcan
                         </ul>
                     </nav>
 
@@ -137,20 +144,24 @@
                             <!-- Side bar -->
                             <!-- ---------------------------------- -->
 
-                            <li class="sidebar-item">
-                                <a href="/users"
-                                    class="sidebar-link {{ ($page_title ?? 'Dashboard') === 'Users' ? 'active' : '' }}">
-                                    <iconify-icon icon="solar:user-bold-duotone"></iconify-icon>
-                                    <span class="hide-menu">Users</span>
-                                </a>
-                            </li>
-                            <li class="sidebar-item">
-                                <a href="/roles"
-                                    class="sidebar-link {{ ($page_title ?? 'Dashboard') === 'Roles & Permission' ? 'active' : '' }}">
-                                    <iconify-icon icon="solar:clipboard-text-bold-duotone"></iconify-icon>
-                                    <span class="hide-menu">Roles & Permissions</span>
-                                </a>
-                            </li>
+                            @can('view-users')
+                                <li class="sidebar-item">
+                                    <a href="{{ route('users.index') }}"
+                                        class="sidebar-link {{ ($page_title ?? 'Dashboard') === 'Users' ? 'active' : '' }}">
+                                        <iconify-icon icon="solar:user-bold-duotone"></iconify-icon>
+                                        <span class="hide-menu">Users</span>
+                                    </a>
+                                </li>
+                            @endcan
+                            @can('view-roles-&-permission')
+                                <li class="sidebar-item">
+                                    <a href="{{ route('roles.index') }}"
+                                        class="sidebar-link {{ ($page_title ?? 'Dashboard') === 'Roles & Permission' ? 'active' : '' }}">
+                                        <iconify-icon icon="solar:clipboard-text-bold-duotone"></iconify-icon>
+                                        <span class="hide-menu">Roles & Permissions</span>
+                                    </a>
+                                </li>
+                            @endcan
                         </ul>
                     </nav>
 
@@ -171,13 +182,15 @@
                             <!-- Side bar -->
                             <!-- ---------------------------------- -->
 
-                            <li class="sidebar-item">
-                                <a href="/settings"
-                                    class="sidebar-link {{ ($page_title ?? 'Dashboard') === 'Settings' ? 'active' : '' }}">
-                                    <iconify-icon icon="solar:settings-bold-duotone"></iconify-icon>
-                                    <span class="hide-menu">Settings</span>
-                                </a>
-                            </li>
+                            @can('view-settings')
+                                <li class="sidebar-item">
+                                    <a href="{{ route('settings.index') }}"
+                                        class="sidebar-link {{ ($page_title ?? 'Dashboard') === 'Settings' ? 'active' : '' }}">
+                                        <iconify-icon icon="solar:settings-bold-duotone"></iconify-icon>
+                                        <span class="hide-menu">Settings</span>
+                                    </a>
+                                </li>
+                            @endcan
                         </ul>
                     </nav>
                 </div>

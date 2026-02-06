@@ -8,6 +8,7 @@ use App\Models\Master\Product;
 use App\Models\Master\ProductImage;
 use App\Models\Master\Customer;
 use App\Models\Quotation;
+use App\Http\Requests\StoreProductRequest;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
@@ -29,26 +30,28 @@ class ProductController extends Controller
         return view('master.products.create', compact('customers'));
     }
 
-    public function store(Request $request)
+    public function store(StoreProductRequest $request)
     {
         $this->authorize('create-products');
 
+        // Validation is automatically handled by StoreProductRequest
+        $validated = $request->validated();
+
         // Log incoming data for debugging
         Log::info('Product store request received', [
-            'customer' => $request->input('customer'),
-            'addressSelect' => $request->input('addressSelect'),
-            'products_count' => count($request->input('products', [])),
+            'customer' => $validated['customer'],
+            'products_count' => count($validated['products']),
         ]);
 
         // Get customer and address from the form (common for all products)
-        $customerId = $request->input('customer');
-        $addressId = $request->input('addressSelect');
-        $discount = $request->input('discount');
-        $remarks = $request->input('remarks');
+        $customerId = $validated['customer'];
+        $addressId = $validated['addressSelect'] ?? null;
+        $discount = $validated['discount'] ?? null;
+        $remarks = $validated['remarks'] ?? null;
         
         $quotationId = null;
 
-        DB::transaction(function () use ($request, $customerId, $addressId, $discount, $remarks, &$quotationId) {
+        DB::transaction(function () use ($validated, $customerId, $addressId, $discount, $remarks, &$quotationId) {
             $quotation = Quotation::create([
                 'discount' => $discount,
                 'remarks' => $remarks
@@ -57,8 +60,8 @@ class ProductController extends Controller
 
             Log::info('Quotation created', ['id' => $quotation->id, 'number' => $quotation->quotation_number]);
 
-            // Get the products array from the form
-            $productsData = $request->input('products', []);
+            // Get the products array from the validated data
+            $productsData = $validated['products'];
 
             foreach ($productsData as $productId => $productData) {
                 $product = Product::create([

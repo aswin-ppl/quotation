@@ -61,7 +61,7 @@ class CustomerController extends Controller
 
             DB::commit();
 
-            return redirect()->route('customers.index')
+            return redirect()->route('customers.create')
                 ->with('success', 'Customer created successfully with ' . count($validated['addresses']) . ' address(es)!');
 
         } catch (\Exception $e) {

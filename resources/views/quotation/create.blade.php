@@ -159,30 +159,57 @@
                 </ol>
             </nav>
 
+            @if ($errors->any())
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <h5 class="alert-heading"><i class="ti ti-alert-circle"></i> Validation Errors</h5>
+                    <ul class="mb-0">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
+
             <div class="card p-5">
                 <div class="card-body p-0">
                     <div class="row">
                         <div class="col-md-6">
-                            <label for="customer">Customer</label>
-                            <select id="customer" name="customer" class="form-select">
+                            <label for="customer">Customer <span class="text-danger">*</span></label>
+                            <select id="customer" name="customer" class="form-select @error('customer') is-invalid @enderror">
                                 <option value="">Select a customer</option>
                                 @foreach ($customers as $data)
-                                    <option value="{{ $data->id }}">{{ $data->name }}</option>
+                                    <option value="{{ $data->id }}" {{ old('customer') == $data->id ? 'selected' : '' }}>{{ $data->name }}</option>
                                 @endforeach
                             </select>
+                            @error('customer')
+                                <div class="invalid-feedback d-block">
+                                    {{ $message }}
+                                </div>
+                            @enderror
                         </div>
 
                         <div class="col-md-6">
                             <div id="address-container">
-                                <label for="to-address">Enter To Address</label>
+                                <label for="to-address">Enter To Address <span class="text-danger">*</span></label>
                                 {{-- optional address dropdown (shown only if >1 address) --}}
                                 <div id="address-select-wrapper" class="mb-3 d-none">
-                                    <select id="addressSelect" class="form-select"></select>
+                                    <select id="addressSelect" class="form-select @error('addressSelect') is-invalid @enderror"></select>
+                                    @error('addressSelect')
+                                        <div class="invalid-feedback d-block">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
                                 </div>
 
                                 {{-- textarea that will be filled automatically --}}
                                 <div class="form-group">
-                                    <textarea id="to-address" class="form-control" rows="3" placeholder="To," readonly></textarea>
+                                    <textarea id="to-address" name="to-address" class="form-control @error('to-address') is-invalid @enderror" rows="3" placeholder="To," readonly>{{ old('to-address') }}</textarea>
+                                    @error('to-address')
+                                        <div class="invalid-feedback d-block">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
                                 </div>
                                 <span class="text-danger d-none txt-to-error">Please enter the recipient’s
                                     address.</span>
@@ -194,14 +221,24 @@
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="discount" class="form-label fw-semibold">Discount (%) <span class="text-muted">(Optional)</span></label>
-                                <input type="number" class="form-control" id="discount" name="discount" step="0.01" min="0" max="100" placeholder="Enter discount percentage">
+                                <input type="number" class="form-control @error('discount') is-invalid @enderror" id="discount" name="discount" step="0.01" min="0" max="100" placeholder="Enter discount percentage" value="{{ old('discount') }}">
+                                @error('discount')
+                                    <div class="invalid-feedback d-block">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
                             </div>
                         </div>
 
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="remarks" class="form-label fw-semibold">Remarks <span class="text-muted">(Optional)</span></label>
-                                <textarea id="remarks" name="remarks" class="form-control" rows="3" placeholder="Enter any terms and conditions or remarks"></textarea>
+                                <textarea id="remarks" name="remarks" class="form-control @error('remarks') is-invalid @enderror" rows="3" placeholder="Enter any terms and conditions or remarks">{{ old('remarks') }}</textarea>
+                                @error('remarks')
+                                    <div class="invalid-feedback d-block">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
                             </div>
                         </div>
                     </div>
@@ -219,6 +256,21 @@
                         </div>
                     </div>
                 </div>
+
+                {{-- Display product-specific errors --}}
+                @if ($errors->has('products'))
+                    <div class="alert alert-warning alert-dismissible fade show mb-4" role="alert">
+                        <h6 class="alert-heading"><i class="ti ti-alert-triangle"></i> Product Errors</h6>
+                        <ul class="mb-0 small">
+                            @foreach ($errors->get('products.*') as $productErrors)
+                                @foreach ($productErrors as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            @endforeach
+                        </ul>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                @endif
 
                 <form id="wizardForm" action="{{ route('products.store') }}" method="POST"
                     class="validation-wizard wizard-circle">
@@ -336,7 +388,7 @@
                 <div class="col-md-3">
                     <div class="mb-3">
                         <label class="form-label fw-semibold" for="product_price_${productId}">Product Amount <span class="text-danger">*</span></label>
-                        <input type="number" class="form-control price-output" id="product_price_${productId}" 
+                        <input type="number" class="form-control price-output bg-light" id="product_price_${productId}" 
                                name="products[${productId}][product_price]" step="0.01" min="0" readonly required>
                     </div>
                 </div>
@@ -345,7 +397,7 @@
                     <div class="mb-3">
                         <label for="autocad_image_${productId}" class="form-label fw-semibold">AutoCAD Image <span class="text-danger">*</span></label>
                         <input type="file" name="products[${productId}][autocad_image]" id="autocad_image_${productId}"
-                               class="form-control autocad-input" accept="image/*" data-product-id="${productId}" required>
+                               class="form-control autocad-input" accept=".jpg,.jpeg,.png,.webp" data-product-id="${productId}" required>
                         <div id="autocad_preview_${productId}" class="mt-3" style="display: none;">
                             <div class="card bg-light">
                                 <div class="card-body p-3 text-center">
@@ -362,7 +414,7 @@
                     <div class="mb-3">
                         <label for="extra_images_${productId}" class="form-label fw-semibold">Extra Images</label>
                         <input type="file" name="products[${productId}][extra_images][]" id="extra_images_${productId}" 
-                               class="form-control extra-images-input" multiple accept="image/*" data-product-id="${productId}">
+                               class="form-control extra-images-input" multiple accept=".jpg,.jpeg,.png,.webp" data-product-id="${productId}">
                         <div id="extra_images_preview_${productId}" class="mt-3" style="display: none;">
                             <div class="row g-2" id="extra_images_list_${productId}"></div>
                         </div>
@@ -383,7 +435,7 @@
                                 </thead>
                                 <tbody id="descBody_${productId}">
                                     <tr>
-                                        <td><input type="text" name="products[${productId}][descriptions][0][key]" tabindex="-1" class="form-control" value="Series" readonly></td>
+                                        <td><input type="text" name="products[${productId}][descriptions][0][key]" tabindex="-1" class="form-control bg-light" value="Series" readonly></td>
                                         <td><input type="text" name="products[${productId}][descriptions][0][value]" class="form-control" required></td>
                                         <td class="text-center">
                                             <button type="button" class="btn btn-danger btn-sm removeRow" tabindex="-1">
@@ -395,7 +447,7 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td><input type="text" name="products[${productId}][descriptions][1][key]" tabindex="-1" class="form-control" value="Design" readonly></td>
+                                        <td><input type="text" name="products[${productId}][descriptions][1][key]" tabindex="-1" class="form-control bg-light" value="Design" readonly></td>
                                         <td><input type="text" name="products[${productId}][descriptions][1][value]" class="form-control" required></td>
                                         <td class="text-center">
                                             <button type="button" class="btn btn-danger btn-sm removeRow" tabindex="-1">
@@ -407,7 +459,7 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td><input type="text" name="products[${productId}][descriptions][2][key]" tabindex="-1" class="form-control" value="Brand" readonly></td>
+                                        <td><input type="text" name="products[${productId}][descriptions][2][key]" tabindex="-1" class="form-control bg-light" value="Brand" readonly></td>
                                         <td><input type="text" name="products[${productId}][descriptions][2][value]" class="form-control" required></td>
                                         <td class="text-center">
                                             <button type="button" class="btn btn-danger btn-sm removeRow" tabindex="-1">
@@ -419,7 +471,7 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td><input type="text" name="products[${productId}][descriptions][3][key]" tabindex="-1" class="form-control" value="Alloy- T6-6061" readonly></td>
+                                        <td><input type="text" name="products[${productId}][descriptions][3][key]" tabindex="-1" class="form-control bg-light" value="Alloy- T6-6061" readonly></td>
                                         <td><input type="text" name="products[${productId}][descriptions][3][value]" class="form-control" required></td>
                                         <td class="text-center">
                                             <button type="button" class="btn btn-danger btn-sm removeRow" tabindex="-1">
@@ -431,7 +483,7 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td><input type="text" name="products[${productId}][descriptions][4][key]" tabindex="-1" class="form-control" value="Aluminium Sections" readonly></td>
+                                        <td><input type="text" name="products[${productId}][descriptions][4][key]" tabindex="-1" class="form-control bg-light" value="Aluminium Sections" readonly></td>
                                         <td><input type="text" name="products[${productId}][descriptions][4][value]" class="form-control" required></td>
                                         <td class="text-center">
                                             <button type="button" class="btn btn-danger btn-sm removeRow" tabindex="-1">
@@ -443,7 +495,7 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td><input type="text" name="products[${productId}][descriptions][5][key]" tabindex="-1" class="form-control" value="Glass Color" readonly></td>
+                                        <td><input type="text" name="products[${productId}][descriptions][5][key]" tabindex="-1" class="form-control bg-light" value="Glass Color" readonly></td>
                                         <td><input type="text" name="products[${productId}][descriptions][5][value]" class="form-control" required></td>
                                         <td class="text-center">
                                             <button type="button" class="btn btn-danger btn-sm removeRow" tabindex="-1">
@@ -455,7 +507,7 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td><input type="text" name="products[${productId}][descriptions][6][key]" tabindex="-1" class="form-control" value="Glass Size" readonly></td>
+                                        <td><input type="text" name="products[${productId}][descriptions][6][key]" tabindex="-1" class="form-control bg-light" value="Glass Size" readonly></td>
                                         <td><input type="text" name="products[${productId}][descriptions][6][value]" class="form-control" required></td>
                                         <td class="text-center">
                                             <button type="button" class="btn btn-danger btn-sm removeRow" tabindex="-1">
@@ -467,7 +519,7 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td><input type="text" name="products[${productId}][descriptions][7][key]" tabindex="-1" class="form-control" value="Coating" readonly></td>
+                                        <td><input type="text" name="products[${productId}][descriptions][7][key]" tabindex="-1" class="form-control bg-light" value="Coating" readonly></td>
                                         <td><input type="text" name="products[${productId}][descriptions][7][value]" class="form-control" required></td>
                                         <td class="text-center">
                                             <button type="button" class="btn btn-danger btn-sm removeRow" tabindex="-1">
@@ -479,7 +531,7 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td><input type="text" name="products[${productId}][descriptions][8][key]" tabindex="-1" class="form-control" value="Color" readonly></td>
+                                        <td><input type="text" name="products[${productId}][descriptions][8][key]" tabindex="-1" class="form-control bg-light" value="Color" readonly></td>
                                         <td><input type="text" name="products[${productId}][descriptions][8][value]" class="form-control" required></td>
                                         <td class="text-center">
                                             <button type="button" class="btn btn-danger btn-sm removeRow" tabindex="-1">
@@ -491,7 +543,7 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td><input type="text" name="products[${productId}][descriptions][9][key]" tabindex="-1" class="form-control" value="Sealant" readonly></td>
+                                        <td><input type="text" name="products[${productId}][descriptions][9][key]" tabindex="-1" class="form-control bg-light" value="Sealant" readonly></td>
                                         <td><input type="text" name="products[${productId}][descriptions][9][value]" class="form-control" required></td>
                                         <td class="text-center">
                                             <button type="button" class="btn btn-danger btn-sm removeRow" tabindex="-1">
@@ -503,7 +555,7 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td><input type="text" name="products[${productId}][descriptions][10][key]" tabindex="-1" class="form-control" value="Handle" readonly></td>
+                                        <td><input type="text" name="products[${productId}][descriptions][10][key]" tabindex="-1" class="form-control bg-light" value="Handle" readonly></td>
                                         <td><input type="text" name="products[${productId}][descriptions][10][value]" class="form-control" required></td>
                                         <td class="text-center">
                                             <button type="button" class="btn btn-danger btn-sm removeRow" tabindex="-1">
@@ -515,7 +567,7 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td><input type="text" name="products[${productId}][descriptions][11][key]" tabindex="-1" class="form-control" value="Handle color" readonly></td>
+                                        <td><input type="text" name="products[${productId}][descriptions][11][key]" tabindex="-1" class="form-control bg-light" value="Handle color" readonly></td>
                                         <td><input type="text" name="products[${productId}][descriptions][11][value]" class="form-control" required></td>
                                         <td class="text-center">
                                             <button type="button" class="btn btn-danger btn-sm removeRow" tabindex="-1">
@@ -527,7 +579,7 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td><input type="text" name="products[${productId}][descriptions][12][key]" tabindex="-1" class="form-control" value="Hardwares" readonly></td>
+                                        <td><input type="text" name="products[${productId}][descriptions][12][key]" tabindex="-1" class="form-control bg-light" value="Hardwares" readonly></td>
                                         <td><input type="text" name="products[${productId}][descriptions][12][value]" class="form-control" required></td>
                                         <td class="text-center">
                                             <button type="button" class="btn btn-danger btn-sm removeRow" tabindex="-1">
@@ -776,12 +828,19 @@
             }
 
             // Validate address selection
-            const addressId = document.getElementById('addressSelect').value;
             const addressWrapper = document.getElementById('address-select-wrapper');
+            const addressId = document.getElementById('addressSelect').value;
+            const addressTextarea = document.getElementById('to-address').value;
 
-            // If address dropdown is visible, ensure an address is selected
+            // Ensure an address is selected - either via dropdown or textarea
+            if (!addressId && !addressTextarea.trim()) {
+                toastr.error('Please select a delivery address before submitting.');
+                return;
+            }
+
+            // If address dropdown is visible, ensure an address is selected from it
             if (!addressWrapper.classList.contains('d-none') && !addressId) {
-                toastr.error('Please select an address before submitting.');
+                toastr.error('Please select a delivery address from the dropdown.');
                 return;
             }
 
@@ -870,7 +929,7 @@
                 fd.append('productId', productId);
                 fd.append('type', type);
 
-                return fetch('/uploads/temp-image', {
+                return fetch('{{ route('temp.upload') }}', {
                     method: 'POST',
                     credentials: 'same-origin',
                     headers: {
@@ -890,7 +949,7 @@
             }
 
             function deleteTempFile(filename) {
-                return fetch('/uploads/temp-image', {
+                return fetch('{{ route('temp.delete') }}', {
                     method: 'DELETE',
                     credentials: 'same-origin',
                     headers: {
@@ -1097,12 +1156,20 @@
                     return;
                 }
 
-                // Initialize counter if doesn't exist
-                if (!rowIdxCounters[productId]) {
-                    rowIdxCounters[productId] = 10; // Start after predefined rows
-                }
+                // Find the highest index currently in the table for this product
+                let maxIdx = 9; // Start after predefined rows (0-9)
+                tbody.find('input[name*="descriptions"]').each(function() {
+                    const name = $(this).attr('name');
+                    const match = name.match(/descriptions\]\[(\d+)\]/);
+                    if (match) {
+                        const idx = parseInt(match[1]);
+                        if (idx > maxIdx) {
+                            maxIdx = idx;
+                        }
+                    }
+                });
 
-                const rowIdx = rowIdxCounters[productId]++;
+                const rowIdx = maxIdx + 1;
 
                 tbody.append(`
                     <tr>
@@ -1159,7 +1226,9 @@
 
                     if (!customerId) return;
 
-                    $.get(`/customers/${customerId}/addresses`, function(addresses) {
+                    let url = "{{ route('customers.getAddresses', ':id') }}";
+                    url = url.replace(':id', customerId);
+                    $.get(url, function(addresses) {
                         if (!addresses || addresses.length === 0) {
                             $textarea.val('No address found.');
                             return;
@@ -1274,6 +1343,44 @@
                     return formattedAddress;
                 }
             }
+
+            // ========================================
+            // ERROR HIGHLIGHTING FOR PRODUCT FIELDS
+            // ========================================
+            function highlightProductErrors() {
+                // Get all validation errors from server response
+                const errorAlerts = document.querySelectorAll('[class*="alert-danger"]');
+                
+                errorAlerts.forEach(alert => {
+                    const errorText = alert.innerText;
+                    
+                    // Match pattern: "products.0.name", "products.1.quantity", etc.
+                    const productErrorPattern = /products\.(\d+)\.(\w+)/g;
+                    let match;
+                    
+                    while ((match = productErrorPattern.exec(errorText)) !== null) {
+                        const productId = parseInt(match[1]) + 1; // Convert to 1-indexed product ID
+                        const fieldName = match[2];
+                        
+                        // Find the corresponding form control
+                        const selector = `#${fieldName}_${productId}`;
+                        const $control = $(selector);
+                        
+                        if ($control.length) {
+                            $control.addClass('is-invalid');
+                            $control.closest('.form-group, .mb-3').find('.invalid-feedback').remove();
+                            $control.after(`<div class="invalid-feedback d-block">This field has a validation error</div>`);
+                        }
+                    }
+                });
+            }
+            
+            // Run on page load if there are validation errors
+            $(document).ready(function() {
+                if ($('.alert-danger').length > 0) {
+                    setTimeout(highlightProductErrors, 500);
+                }
+            });
 
             // ========================================
             // TOASTER NOTIFICATIONS

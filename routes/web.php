@@ -14,9 +14,10 @@ use App\Http\Controllers\Master\CustomerController;
 use App\Http\Controllers\TempUploadController;
 
 Route::get('/', function () {
-    return redirect()->route('login');
+    return auth()->check()
+        ? redirect()->route('dashboard')
+        : redirect('/login');
 });
-
 
 Route::middleware('auth')->group(function () {
 
@@ -24,6 +25,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     // AJAX partial for products on dashboard (used by live search)
     Route::get('/dashboard/products', [DashboardController::class, 'productsPartial'])->name('dashboard.products');
+
+    // Company logo endpoint (accessible to all authenticated users)
+    Route::get('/company-logo', [QuotationController::class, 'getCompanyLogo'])->name('company.logo');
 
     // User and Roles
     // Data endpoint for DataTables AJAX loading (place before resource to avoid wildcard capture)
@@ -49,7 +53,7 @@ Route::middleware('auth')->group(function () {
     // Special customer routes (place before resource to avoid wildcard capture)
     Route::get('customers/data', [CustomerController::class, 'data'])->name('customers.data');
     Route::get('customers/restore/{id}', [CustomerController::class, 'restore'])->name('customers.restore');
-    Route::get('/customers/{id}/addresses', [CustomerController::class, 'getAddresses']);
+    Route::get('/customers/{id}/addresses', [CustomerController::class, 'getAddresses'])->name('customers.getAddresses');
     Route::resource('customers', CustomerController::class);
 
     //Search Locations
@@ -58,13 +62,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/pincodes/search', [LocationController::class, 'searchPincodes']);
 
     // Locations
-    Route::get('/states', [LocationController::class, 'getStates']);
-    Route::get('/districts/{state}', [LocationController::class, 'getDistricts']);
-    Route::get('/cities/{district}', [LocationController::class, 'getCities']);
-    Route::get('/pincodes/district/{district}', [LocationController::class, 'getPincodesByDitrict']);
-    Route::get('/pincodes/{city}', [LocationController::class, 'getPincodes']);
-    Route::get('/pincode/search', [LocationController::class, 'searchPincode']);
-    Route::get('/pincode/{pincode}', [LocationController::class, 'getPincodeDetails']);
+    Route::get('/states', [LocationController::class, 'getStates'])->name('getStates');
+    Route::get('/districts/{state}', [LocationController::class, 'getDistricts'])->name('getDistricts');
+    Route::get('/cities/{district}', [LocationController::class, 'getCities'])->name('getCities');
+    Route::get('/pincodes/district/{district}', [LocationController::class, 'getPincodesByDitrict'])->name('getPincodesByDitrict');
+    Route::get('/pincodes/{city}', [LocationController::class, 'getPincodes'])->name('getPincodes');
+    Route::get('/pincode/search', [LocationController::class, 'searchPincode'])->name('searchPincode');
+    Route::get('/pincode/{pincode}', [LocationController::class, 'getPincodeDetails'])->name('getPincodeDetails');
 
     //Settings
     Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');

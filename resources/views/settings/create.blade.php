@@ -201,7 +201,8 @@
                                 <label for="bank_account_number" class="form-label">Account Number</label>
                                 <input type="text" name="bank_account_number" id="bank_account_number"
                                     class="form-control @error('bank_account_number') is-invalid @enderror"
-                                    value="{{ $settings['bank_account_number'] ?? '' }}" placeholder="Enter account number">
+                                    value="{{ $settings['bank_account_number'] ?? '' }}"
+                                    placeholder="Enter account number">
                                 @error('bank_account_number')
                                     <div class="invalid-feedback d-block">
                                         {{ $message }}
@@ -248,6 +249,7 @@
 @section('scripts')
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="{{ asset('js/plugins/toastr-init.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
         $(document).ready(function() {
@@ -262,7 +264,7 @@
             // --- Load States ---
             const savedStateId = "{{ $settings['company_state'] ?? '' }}";
 
-            $.get('/states', function(states) {
+            $.get('{{ route('getStates') }}', function(states) {
                 const $state = $('#state');
                 $state.empty().append('<option></option>');
 
@@ -282,9 +284,13 @@
                 resetBelow('#state');
                 if (!id) return;
 
-                $.get(`/districts/${id}`, function(districts) {
+                let url = "{{ route('getDistricts', ':state') }}";
+                url = url.replace(':state', id);
+
+                $.get(url, function(districts) {
                     fillSelect('#district', districts);
                 });
+
             });
 
             // --- District -> City ---
@@ -293,7 +299,10 @@
                 resetBelow('#district');
                 if (!id) return;
 
-                $.get(`/cities/${id}`, function(cities) {
+                let url = "{{ route('getCities', ':district') }}";
+                url = url.replace(':district', id);
+
+                $.get(url, function(cities) {
                     fillSelect('#city', cities);
                 });
             });
@@ -304,7 +313,10 @@
                 resetBelow('#city');
                 if (!id) return;
 
-                $.get(`/pincodes/${id}`, function(pincodes) {
+                let url = "{{ route('getPincodes', ':city') }}";
+                url = url.replace(':city', id);
+
+                $.get(url, function(pincodes) {
                     fillSelect('#pincode', pincodes, 'code');
 
                     // auto-select first pincode if available
@@ -321,7 +333,7 @@
                 placeholder: 'Type or select a pincode',
                 allowClear: true,
                 ajax: {
-                    url: '/pincode/search',
+                    url: "{{ route('searchPincode') }}",
                     dataType: 'json',
                     delay: 300,
                     data: params => ({
@@ -368,7 +380,10 @@
                 const stateId = $('#state').val();
                 if (!stateId) return;
 
-                $.get(`/districts/${stateId}`, function(districts) {
+                let url = "{{ route('getDistricts', ':state') }}";
+                url = url.replace(':state', stateId);
+
+                $.get(url, function(districts) {
                     fillSelect('#district', districts);
                 });
             });
@@ -379,7 +394,10 @@
                 const pincodeId = e.params.data.id;
                 console.log('Selected pincode:', pincodeId);
 
-                $.get(`/pincode/${pincodeId}`, function(response) {
+                let url = "{{ route('getPincodeDetails', ':pincode') }}";
+                url = url.replace(':pincode', pincodeId);
+
+                $.get(url, function(response) {
                     const cities = response.cities || [];
 
                     // Update District + State immediately
@@ -414,9 +432,6 @@
                     }
                 });
             });
-
-
-
 
 
             // --- Helper: fill Select2 dropdown ---
@@ -462,6 +477,27 @@
             @if (session('error'))
                 toastr.error("{{ session('error') }}", "Error");
             @endif
+
+            // Form submission with SweetAlert
+            $('form').on('submit', function(e) {
+                e.preventDefault();
+
+                Swal.fire({
+                    title: 'Save Settings?',
+                    text: 'Are you sure you want to save these settings?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#0d6efd',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, Save',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Submit the form
+                        this.submit();
+                    }
+                });
+            });
         });
     </script>
 @endsection

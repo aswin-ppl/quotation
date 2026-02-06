@@ -78,7 +78,7 @@
 
         /* Professional Header */
         .header-wrapper {
-            border-bottom: 3px solid #635bff;
+            border-bottom: 3px solid #0101fd;
             padding-bottom: 6px;
             margin-bottom: 8px;
         }
@@ -103,7 +103,7 @@
 
         .company-info h1 {
             font-size: 24px;
-            color: #635bff;
+            color: #0101fd;
             font-weight: bold;
             margin-bottom: 2px;
         }
@@ -124,7 +124,7 @@
 
         .quotation-badge {
             display: inline-block;
-            background: #635bff;
+            background: #0101fd;
             color: white;
             padding: 5px 10px;
             font-size: 20px;
@@ -136,7 +136,7 @@
         .quotation-meta {
             background: #f1f5f9;
             padding: 8px 12px;
-            border-left: 4px solid #635bff;
+            border-left: 4px solid #0101fd;
             font-size: 10px;
             text-align: left;
             display: inline-block;
@@ -147,7 +147,7 @@
         }
 
         .quotation-meta strong {
-            color: #635bff;
+            color: #0101fd;
             font-weight: bold;
         }
 
@@ -178,14 +178,14 @@
             letter-spacing: 1px;
             margin-bottom: 6px;
             font-weight: bold;
-            border-bottom: 2px solid #635bff;
+            border-bottom: 2px solid #0101fd;
             padding-bottom: 5px;
             display: inline-block;
         }
 
         .address-box .company-name {
             font-size: 14px;
-            color: #635bff;
+            color: #0101fd;
             font-weight: bold;
             margin-bottom: 8px;
             display: block;
@@ -204,7 +204,7 @@
         }
 
         .product-header {
-            background: #635bff;
+            background: #0101fd;
             color: white;
             padding: 12px 15px;
             font-size: 14px;
@@ -226,7 +226,7 @@
         .gallery-title {
             font-size: 11px;
             font-weight: bold;
-            color: #635bff;
+            color: #0101fd;
             margin-bottom: 10px;
             text-transform: uppercase;
         }
@@ -239,7 +239,7 @@
             display: block;
             padding-top: 15px;
         }
-        
+
         .gallery-grid:first-of-type {
             padding-top: 0;
             margin-top: 0;
@@ -307,13 +307,13 @@
         .notes-box {
             background: #f8fafc;
             border: 1px solid #e2e8f0;
-            border-left: 4px solid #635bff;
+            border-left: 4px solid #0101fd;
             padding: 15px;
         }
 
         .notes-box h4 {
             font-size: 11px;
-            color: #635bff;
+            color: #0101fd;
             margin-bottom: 8px;
             font-weight: bold;
         }
@@ -335,7 +335,7 @@
         }
 
         .totals-table tr.grand-total {
-            background: #635bff;
+            background: #0101fd;
             border: none;
         }
 
@@ -360,7 +360,7 @@
 
         .totals-table td:last-child {
             text-align: right;
-            color: #635bff;
+            color: #0101fd;
             font-weight: bold;
         }
 
@@ -401,7 +401,7 @@
 
         .footer h4 {
             font-size: 10px;
-            color: #635bff;
+            color: #0101fd;
             margin-bottom: 5px;
             font-weight: bold;
         }
@@ -414,7 +414,7 @@
 
         .signature-line {
             margin-top: 40px;
-            border-top: 2px solid #635bff;
+            border-top: 2px solid #0101fd;
             width: 200px;
             padding-top: 5px;
             text-align: center;
@@ -441,7 +441,7 @@
 
         .flowchart-section h3 {
             font-size: 16px;
-            color: #635bff;
+            color: #0101fd;
             font-weight: bold;
             margin-bottom: 15px;
             text-transform: uppercase;
@@ -466,13 +466,12 @@
                 <div class="company-info">
                     @if ($settings && isset($settings['company_logo']) && $settings['company_logo'])
                         @php
-                            if ($pdfMode) {
-                                // For PDF: use absolute file path
-                                $logoPath = public_path('storage/' . $settings['company_logo']);
-                                $logoSrc = file_exists($logoPath) ? $logoPath : '';
+                            if ($pdfMode && isset($imageMap) && isset($imageMap['company_logo'])) {
+                                // Use base64 encoded logo for PDF
+                                $logoSrc = $imageMap['company_logo'];
                             } else {
-                                // For browser preview: use URL
-                                $logoSrc = url('/storage/' . $settings['company_logo']);
+                                // For browser preview: use dedicated controller route
+                                $logoSrc = route('company.logo');
                             }
                         @endphp
 
@@ -543,187 +542,186 @@
         @endphp
 
         @forelse ($quotation->products as $index => $product)
-            @if($index > 0)
+            @if ($index > 0)
                 <div class="product-card" style="page-break-before: always; margin-bottom: 10px;">
-            @else
-                <div class="product-card" style="margin-bottom: 10px;">
+                @else
+                    <div class="product-card" style="margin-bottom: 10px;">
             @endif
-                <div class="product-content" style="page-break-inside: avoid;">
-                    <table
-                        style="width: 100%; border-collapse: collapse; border: 1px solid #cbd5e1; table-layout: fixed;">
-                        <thead>
-                            <tr style="background: #635bff; border-bottom: 2px solid #e2e8f0;">
-                                <th
-                                    style="padding: 8px; text-align: center; font-weight: bold; color: #fff; font-size: 10px; border: 1px solid #e2e8f0; width: 4%;">
-                                    S.No</th>
-                                <th
-                                    style="padding: 8px; text-align: center; font-weight: bold; color: #fff; font-size: 10px; border: 1px solid #e2e8f0; width: 25%;">
-                                    CAD Image</th>
-                                <th
-                                    style="padding: 8px; text-align: left; font-weight: bold; color: #fff; font-size: 10px; border: 1px solid #e2e8f0; width: 35%;">
-                                    Description</th>
-                                <th
-                                    style="padding: 8px; text-align: center; font-weight: bold; color: #fff; font-size: 10px; border: 1px solid #e2e8f0; width: 4%;">
-                                    Qty</th>
-                                <th
-                                    style="padding: 8px; text-align: center; font-weight: bold; color: #fff; font-size: 10px; border: 1px solid #e2e8f0; width: 10%;">
-                                    Size (mm)</th>
-                                <th
-                                    style="padding: 8px; text-align: right; font-weight: bold; color: #fff; font-size: 10px; border: 1px solid #e2e8f0; width: 8%;">
-                                    Cost/Unit</th>
-                                <th
-                                    style="padding: 8px; text-align: right; font-weight: bold; color: #fff; font-size: 10px; border: 1px solid #e2e8f0; width: 10%;">
-                                    Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr style="border: 1px solid #e2e8f0;">
-                                <!-- Serial Number -->
-                                <td
-                                    style="padding: 8px; text-align: center; border: 1px solid #e2e8f0; vertical-align: top; font-size: 10px;">
-                                    {{ $serialNumber++ }}
-                                </td>
+            <div class="product-content" style="page-break-inside: avoid;">
+                <table style="width: 100%; border-collapse: collapse; border: 1px solid #cbd5e1; table-layout: fixed;">
+                    <thead>
+                        <tr style="background: #0101fd; border-bottom: 2px solid #e2e8f0;">
+                            <th
+                                style="padding: 8px; text-align: center; font-weight: bold; color: #fff; font-size: 10px; border: 1px solid #e2e8f0; width: 4%;">
+                                S.No</th>
+                            <th
+                                style="padding: 8px; text-align: center; font-weight: bold; color: #fff; font-size: 10px; border: 1px solid #e2e8f0; width: 25%;">
+                                CAD Image</th>
+                            <th
+                                style="padding: 8px; text-align: left; font-weight: bold; color: #fff; font-size: 10px; border: 1px solid #e2e8f0; width: 35%;">
+                                Description</th>
+                            <th
+                                style="padding: 8px; text-align: right; font-weight: bold; color: #fff; font-size: 10px; border: 1px solid #e2e8f0; width: 4%;">
+                                Qty</th>
+                            <th
+                                style="padding: 8px; text-align: right; font-weight: bold; color: #fff; font-size: 10px; border: 1px solid #e2e8f0; width: 10%;">
+                                Size (mm)</th>
+                            <th
+                                style="padding: 8px; text-align: right; font-weight: bold; color: #fff; font-size: 10px; border: 1px solid #e2e8f0; width: 8%;">
+                                Cost/Unit</th>
+                            <th
+                                style="padding: 8px; text-align: right; font-weight: bold; color: #fff; font-size: 10px; border: 1px solid #e2e8f0; width: 10%;">
+                                Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border: 1px solid #e2e8f0;">
+                            <!-- Serial Number -->
+                            <td
+                                style="padding: 8px; text-align: center; border: 1px solid #e2e8f0; vertical-align: top; font-size: 10px;">
+                                {{ $serialNumber++ }}
+                            </td>
 
-                                <!-- Image Cell -->
-                                <td
-                                    style="padding: 8px; text-align: center; border: 1px solid #e2e8f0; vertical-align: top;">
+                            <!-- Image Cell -->
+                            <td
+                                style="padding: 8px; text-align: center; border: 1px solid #e2e8f0; vertical-align: top;">
+                                @php
+                                    $cadImage = $product->images?->where('type', 'cad')->first();
+                                @endphp
+
+                                @if ($cadImage)
                                     @php
-                                        $cadImage = $product->images?->where('type', 'cad')->first();
+                                        if ($pdfMode && isset($imageMap) && isset($imageMap[$cadImage->path])) {
+                                            // Use base64 encoded image
+                                            $src = $imageMap[$cadImage->path];
+                                        } else {
+                                            // For browser preview: use URL
+                                            $src = url('/private-image/' . $cadImage->path);
+                                        }
                                     @endphp
 
-                                    @if ($cadImage)
-                                        @php
-                                            $rawPath = storage_path('app/private/' . $cadImage->path);
-                                            $extension = strtolower(pathinfo($rawPath, PATHINFO_EXTENSION));
-
-                                            if ($pdfMode) {
-                                                if (in_array($extension, ['webp', 'png'])) {
-                                                    $tempJpg = storage_path(
-                                                        'app/temp/' .
-                                                            pathinfo($cadImage->path, PATHINFO_FILENAME) .
-                                                            '.jpg',
-                                                    );
-                                                    $src = file_exists($tempJpg)
-                                                        ? 'file://' . $tempJpg
-                                                        : 'file://' . $rawPath;
-                                                } else {
-                                                    $src = 'file://' . $rawPath;
-                                                }
-                                            } else {
-                                                $src = url('/private-image/' . $cadImage->path);
-                                            }
-                                        @endphp
-
+                                    @if ($src)
                                         <img src="{{ $src }}" alt="CAD Image"
                                             style="max-width: 100%; height: auto; max-height: 250px; border: 1px solid #e2e8f0; padding: 2px;">
                                     @endif
-                                </td>
+                                @endif
+                            </td>
 
-                                <!-- Description Cell with Nested Table -->
-                                <td style="border: 1px solid #e2e8f0; vertical-align: top; word-wrap: break-word;">
-                                    <div style="text-align:center; font-weight: bold; font-size: 11px;">
-                                        <span style="color: #546173">Product Name:</span>
-                                        <span style="color: #635bff; font-size: 11px;">{{ $product->name }}</span>
-                                    </div>
+                            <!-- Description Cell with Nested Table -->
+                            <td style="border: 1px solid #e2e8f0; vertical-align: top; word-wrap: break-word;">
+                                <div
+                                    style="display:inline-flex; justify-content:center; align-items: center; text-align:center; font-weight: bold; font-size: 11px;width: 100%;">
+                                    <span style="color: #546173">Product Name:</span>
+                                    <span style="color: #0101fd; font-size: 11px;">{{ $product->name }}</span>
+                                </div>
 
-                                    @if ($product->descriptions && $product->descriptions->count() > 0)
-                                        <!-- Nested Sub-Table for Specifications -->
-                                        <table
-                                            style="width: 100%; border-collapse: collapse; border: 1px solid #cbd5e1;">
-                                            <tbody>
-                                                @foreach ($product->descriptions as $desc)
-                                                    <tr>
-                                                        <td
-                                                            style="padding: 4px 6px; font-size: 8px; color: #475569; font-weight: bold; border: 1px solid #e2e8f0; background: #fafafa; width: 40%;">
-                                                            {{ ucfirst(str_replace('_', ' ', $desc->key)) }}
-                                                        </td>
-                                                        <td
-                                                            style="padding: 4px 6px; font-size: 8px; color: #334155; border: 1px solid #e2e8f0; width: 60%; word-wrap: break-word;">
-                                                            {{ $desc->value }}
-                                                        </td>
-                                                    </tr>
-                                                @endforeach
-                                            </tbody>
-                                        </table>
-                                    @endif
-                                </td>
+                                @if ($product->descriptions && $product->descriptions->count() > 0)
+                                    <!-- Nested Sub-Table for Specifications -->
+                                    <table style="width: 100%; border-collapse: collapse; border: 1px solid #cbd5e1;">
+                                        <tbody>
+                                            @foreach ($product->descriptions as $desc)
+                                                <tr>
+                                                    <td
+                                                        style="padding: 4px 6px; font-size: 8px; color: #475569; font-weight: bold; border: 1px solid #e2e8f0; background: #fafafa; width: 40%;">
+                                                        {{ ucfirst(str_replace('_', ' ', $desc->key)) }}
+                                                    </td>
+                                                    <td
+                                                        style="padding: 4px 6px; font-size: 8px; color: #334155; border: 1px solid #e2e8f0; width: 60%; word-wrap: break-word;">
+                                                        {{ $desc->value }}
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                @endif
+                            </td>
 
-                                <!-- Quantity -->
-                                <td
-                                    style="padding: 6px; text-align: center; font-weight: bold; border: 1px solid #e2e8f0; vertical-align: top; font-size: 10px;">
-                                    {{ $product->quantity ?? ($product->r_units ?? 1) }}
-                                </td>
+                            <!-- Quantity -->
+                            <td
+                                style="padding: 6px; text-align: right; font-weight: bold; border: 1px solid #e2e8f0; vertical-align: top; font-size: 10px;">
+                                {{ $product->quantity ?? ($product->r_units ?? 1) }}
+                            </td>
 
-                                <!-- Size -->
-                                <td
-                                    style="padding: 6px; text-align: center; font-weight: bold; border: 1px solid #e2e8f0; vertical-align: top; font-size: 9px; word-wrap: break-word;">
-                                    {{ $product->size_mm ?? '-' }}
-                                </td>
+                            <!-- Size -->
+                            <td
+                                style="padding: 6px; text-align: right; font-weight: bold; border: 1px solid #e2e8f0; vertical-align: top; font-size: 9px; word-wrap: break-word;">
+                                {{ $product->size_mm ?? '-' }}
+                            </td>
 
-                                <!-- Cost per Unit -->
-                                <td
-                                    style="padding: 6px; text-align: right; font-weight: bold; border: 1px solid #e2e8f0; vertical-align: top; font-size: 9px;">
-                                    ₹{{ number_format($product->cost_per_units ?? 0, 2) }}
-                                </td>
+                            <!-- Cost per Unit -->
+                            <td
+                                style="padding: 6px; text-align: right; font-weight: bold; border: 1px solid #e2e8f0; vertical-align: top; font-size: 9px;">
+                                ₹{{ number_format($product->cost_per_units ?? 0, 2) }}
+                            </td>
 
-                                <!-- Total Price -->
-                                <td
-                                    style="padding: 6px; text-align: right; font-weight: bold; color: #635bff; border: 1px solid #e2e8f0; vertical-align: top; font-size: 10px;">
-                                    ₹{{ number_format($product->product_price ?? 0, 2) }}
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                            <!-- Total Price -->
+                            <td
+                                style="padding: 6px; text-align: right; font-weight: bold; color: #0101fd; border: 1px solid #e2e8f0; vertical-align: top; font-size: 10px;">
+                                ₹{{ number_format($product->product_price ?? 0, 2) }}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-        @empty
-            <div class="product-card">
-                <div class="product-header">NO PRODUCTS</div>
-                <div class="product-content">
-                    <p class="text-center" style="color: #94a3b8;">No products found for this quotation</p>
-                </div>
-            </div>
-        @endforelse
+    </div>
+@empty
+    <div class="product-card">
+        <div class="product-header">NO PRODUCTS</div>
+        <div class="product-content">
+            <p class="text-center" style="color: #94a3b8;">No products found for this quotation</p>
+        </div>
+    </div>
+    @endforelse
 
-        <!-- Totals Table - Right Below Product Tables -->
-        <div style="margin-top: 20px; margin-bottom: 30px; float: right; clear: both;">
-            <table class="totals-table">
-                <tr>
-                    <td>Subtotal</td>
-                    <td>₹{{ number_format($quotation->products->sum(fn($p) => ($p->r_units ?? 1) * ($p->product_price ?? 0)), 2) }}
-                    </td>
-                </tr>
-                @if ($quotation->discount && $quotation->discount > 0)
+    <!-- Totals Table - Right Below Product Tables -->
+    <div style="margin-top: 20px; margin-bottom: 30px; float: right; clear: both;">
+        <table class="totals-table">
+            <tr>
+                <td>Subtotal</td>
+                <td>₹{{ number_format($quotation->products->sum(fn($p) => ($p->r_units ?? 1) * ($p->product_price ?? 0)), 2) }}
+                </td>
+            </tr>
+            @if ($quotation->discount && $quotation->discount > 0)
                 <tr>
                     <td>Discount ({{ $quotation->discount }}%)</td>
-                    <td>- ₹{{ number_format($quotation->products->sum(fn($p) => ($p->r_units ?? 1) * ($p->product_price ?? 0)) * ($quotation->discount / 100), 2) }}</td>
-                </tr>
-                @endif
-                <tr>
-                    <td>Tax (GST)</td>
-                    <td>+ ₹0.00</td>
-                </tr>
-                <tr class="grand-total">
-                    <td>GRAND TOTAL</td>
-                    <td>₹{{ number_format($quotation->products->sum(fn($p) => ($p->r_units ?? 1) * ($p->product_price ?? 0)) * (1 - ($quotation->discount > 0 ? $quotation->discount / 100 : 0)), 2) }}
+                    <td>-
+                        ₹{{ number_format($quotation->products->sum(fn($p) => ($p->r_units ?? 1) * ($p->product_price ?? 0)) * ($quotation->discount / 100), 2) }}
                     </td>
                 </tr>
-            </table>
-        </div>
+            @endif
+            <tr>
+                <td>Tax (GST)</td>
+                <td>+ ₹0.00</td>
+            </tr>
+            <tr class="grand-total">
+                <td>GRAND TOTAL</td>
+                <td>₹{{ number_format($quotation->products->sum(fn($p) => ($p->r_units ?? 1) * ($p->product_price ?? 0)) * (1 - ($quotation->discount > 0 ? $quotation->discount / 100 : 0)), 2) }}
+                </td>
+            </tr>
+        </table>
+    </div>
 
+    <div style="clear: both; margin-top: 20px;"></div>
+
+
+    @php
+        $hasExtraImages = $quotation->products->some(function ($product) {
+            return $product->images && $product->images->where('type', 'extras')->count() > 0;
+        });
+    @endphp
+
+    @if ($hasExtraImages)
         <div style="page-break-before: always;"></div>
-        
+
         <!-- Clearfix for floated totals table -->
-        <div style="clear: both; margin-top: 20px;"></div>
 
         <!-- Additional Images Section - All Products -->
         @forelse ($quotation->products as $imgIndex => $product)
             @if ($product->images && $product->images->where('type', 'extras')->count())
-
                 <div class="image-gallery">
                     <!-- Product Heading for Images Section -->
-                    <div style="margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #635bff;">
-                        <h3 style="color: #635bff; margin: 0; font-size: 16px;">
+                    <div style="margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #0101fd;">
+                        <h3 style="color: #0101fd; margin: 0; font-size: 16px;">
                             {{ $product->name }} - Additional Images
                         </h3>
                     </div>
@@ -741,36 +739,31 @@
                             @foreach ($chunk as $img)
                                 @php
                                     $globalIndex++;
-                                    $rawPath = storage_path('app/private/' . $img->path);
-                                    $extension = strtolower(pathinfo($rawPath, PATHINFO_EXTENSION));
-                                    $filename = pathinfo($img->path, PATHINFO_FILENAME);
 
-                                    if ($pdfMode) {
-                                        if (in_array($extension, ['webp', 'png'])) {
-                                            $tempJpg = storage_path('app/temp/' . $filename . '.jpg');
-                                            $src = file_exists($tempJpg)
-                                                ? 'file://' . $tempJpg
-                                                : 'file://' . $rawPath;
-                                        } else {
-                                            $src = 'file://' . $rawPath;
-                                        }
+                                    if ($pdfMode && isset($imageMap) && isset($imageMap[$img->path])) {
+                                        // Use base64 encoded image
+                                        $src = $imageMap[$img->path];
                                     } else {
+                                        // For browser preview
                                         $src = url('/private-image/' . $img->path);
                                     }
 
                                     $label = chr(96 + $globalIndex);
                                 @endphp
 
-                                <div class="gallery-item">
-                                    <div style="position: relative; display: inline-block;">
-                                        <img src="{{ $src }}" alt="Extra Image {{ $label }}"
-                                            style="max-width: 100%; height: auto; max-height: 100px; border: 1px solid #e2e8f0; padding: 2px;">
-                                        <div style="position: absolute; top: 2px; left: 2px; background: #635bff; color: white; 
-                                            padding: 2px 6px; font-size: 9px; font-weight: bold; border-radius: 2px;">
-                                            {{ $label }}
+                                @if ($src)
+                                    <div class="gallery-item">
+                                        <div style="position: relative; display: inline-block;">
+                                            <img src="{{ $src }}" alt="Extra Image {{ $label }}"
+                                                style="max-width: 100%; height: auto; max-height: 100px; border: 1px solid #e2e8f0; padding: 2px;">
+                                            <div
+                                                style="position: absolute; top: 2px; left: 2px; background: #0101fd; color: white; 
+                                                padding: 2px 6px; font-size: 9px; font-weight: bold; border-radius: 2px;">
+                                                {{ $label }}
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                @endif
                             @endforeach
                         </div>
                     @endforeach
@@ -779,92 +772,102 @@
         @empty
             <!-- No additional images -->
         @endforelse
+    @endif
 
-        <!-- Flowchart Section -->
-        <div class="flowchart-section" style="page-break-before: always;">
-            <h3>Process Flow</h3>
-            @php
-                if ($pdfMode) {
-                    $flowchartSrc = 'file://' . public_path('images/flowchart.svg');
-                } else {
-                    $flowchartSrc = url('images/flowchart.svg');
-                }
-            @endphp
+    <!-- Flowchart Section -->
+    <div class="flowchart-section" style="page-break-before: always;">
+        <h3>Process Flow</h3>
+        @php
+            if ($pdfMode) {
+                // Use absolute file path for DomPDF
+                $flowchartPath = public_path('images/flowchart.svg');
+                $flowchartSrc = file_exists($flowchartPath) ? 'file://' . $flowchartPath : '';
+            } else {
+                // For browser preview
+                $flowchartSrc = url('images/flowchart.svg');
+            }
+        @endphp
+        @if ($flowchartSrc)
             <img src="{{ $flowchartSrc }}" alt="Process Flow Diagram">
-        </div>
+        @endif
+    </div>
 
-        <!-- Terms & Conditions Section-->
-        <div class="notes-box" style="margin-top: 40px; page-break-inside: avoid;">
-            <h4>Terms & Conditions</h4>
-            <p>
-                @if ($quotation->remarks)
-                    {!! nl2br(e($quotation->remarks)) !!}<br><br>
-                @endif
-                • Transportation charges extra.<br>
-                • GST @18% will be extra.<br>
-                • The quote is as per the Drawing received, in case the size varies as per site condition, the quote and
-invoice will vary.<br>
-                • The price quoted are as per rates on the quotation date, and in case of any change in the rate of
-inputs, the quote May vary.<br>
-                • Our quote is always on standard length and height, the standard measurements will apply for billing,
-Considering aluminum section length as 12 Feet.<br>
-                • Kindly attach the Delivery & Billing address along with GST/PAN details with the order<br>
-                • Electric supply for using electric power tools & scaffolding wherever found necessary, are to be
-Provided by you free of cost at site.<br>
-                • SUPPLY: Minimum (Depending on quantity) Weeks after the order, advance & clear measurements
-after site Readiness is received.<br>
-                • PAYMENT: 80% to be paid as advance along with order and 15% on delivery of the material and
-balance 5% on completion of the work.<br>
-                • 18% interest will be charged if the payment is not received as per the terms from the due date.<br>
-            </p>
-        </div>
+    <!-- Terms & Conditions Section-->
+    <div class="notes-box" style="margin-top: 40px; page-break-inside: avoid;">
+        <h4>Terms & Conditions</h4>
+        <p>
+            @if ($quotation->remarks)
+                {!! nl2br(e($quotation->remarks)) !!}<br><br>
+            @endif
+            <strong>TRANSPORT:</strong> Charges will be extra.<br>
+            <strong>VALIDITY:</strong> This quotation will be valid up to two weeks from the date of our quote.<br>
+            <strong>TAXES:</strong> GST @18% will be extra.<br>
+            <strong>QUOTE:</strong> The quote is as per the drawing received from you. In case the size varies as per
+            site condition, the quote and invoice will vary.
+            The price quoted is as per rates on the quotation date, and in case of any change in the rate of inputs, the
+            quote may vary.
+            Our quote is always on standard length and height; hence the standard measurements will apply for billing,
+            considering aluminium section length as 12 feet.<br>
+            <strong>YOUR ORDER:</strong> Please attach the delivery &amp; billing address along with GST/PAN details
+            with the order.<br>
+            <strong>IN YOUR COST:</strong> Electric supply for using electric power tools and scaffolding wherever found
+            necessary are to be provided by you free of cost at site.<br>
+            <strong>SUPPLY:</strong> Minimum 6 to 7 weeks after the order, advance, and clear measurements after site
+            readiness is received.<br>
+            <strong>PAYMENT:</strong> 80% to be paid as advance along with the order, 15% on delivery of the material,
+            and the balance 5% on completion of the work.
+            18% interest will be charged if the payment is not received as per the terms from the due date.
+        </p>
 
-        <!-- Professional Footer -->
-        <div class="footer">
-            <div class="footer-content">
-                @php
-                    $hasBankInfo = !empty($settings['bank_name']) || 
-                                   !empty($settings['bank_account_number']) || 
-                                   !empty($settings['bank_ifsc_code']) || 
-                                   !empty($settings['bank_account_name']);
-                @endphp
-                
-                @if ($hasBankInfo)
-                    <div class="footer-left">
-                        <h4>Payment Information</h4>
-                        <p>
-                            @if (!empty($settings['bank_name']))
-                                Bank Name: {{ $settings['bank_name'] }}<br>
-                            @endif
-                            @if (!empty($settings['bank_account_number']))
-                                Account Number: {{ $settings['bank_account_number'] }}<br>
-                            @endif
-                            @if (!empty($settings['bank_ifsc_code']))
-                                IFSC Code: {{ $settings['bank_ifsc_code'] }}<br>
-                            @endif
-                            @if (!empty($settings['bank_account_name']))
-                                Account Name: {{ $settings['bank_account_name'] }}
-                            @endif
-                        </p>
-                    </div>
-                @endif
-                
-                <div class="footer-right" style="width:0px !important;">
-                    <div class="signature-line">
-                        <p>Customer Signature</p>
-                    </div>
+    </div>
+
+    <!-- Professional Footer -->
+    <div class="footer">
+        <div class="footer-content">
+            @php
+                $hasBankInfo =
+                    !empty($settings['bank_name']) ||
+                    !empty($settings['bank_account_number']) ||
+                    !empty($settings['bank_ifsc_code']) ||
+                    !empty($settings['bank_account_name']);
+            @endphp
+
+            @if ($hasBankInfo)
+                <div class="footer-left">
+                    <h4>Payment Information</h4>
+                    <p>
+                        @if (!empty($settings['bank_name']))
+                            Bank Name: {{ $settings['bank_name'] }}<br>
+                        @endif
+                        @if (!empty($settings['bank_account_number']))
+                            Account Number: {{ $settings['bank_account_number'] }}<br>
+                        @endif
+                        @if (!empty($settings['bank_ifsc_code']))
+                            IFSC Code: {{ $settings['bank_ifsc_code'] }}<br>
+                        @endif
+                        @if (!empty($settings['bank_account_name']))
+                            Account Name: {{ $settings['bank_account_name'] }}
+                        @endif
+                    </p>
                 </div>
-                <div class="footer-right"></div>
-                <div class="footer-right">
-                    <div class="signature-line">
-                        <p>Authorized Signature</p>
-                    </div>
+            @endif
+
+            <div class="footer-right" style="width:0px !important;">
+                <div class="signature-line">
+                    <p>Customer Signature</p>
                 </div>
             </div>
-            <p class="text-center" style="margin-top: 20px; font-size: 9px; color: #94a3b8; font-style: italic;">
-                Thank you for your business! For any queries, please contact us.
-            </p>
+            <div class="footer-right"></div>
+            <div class="footer-right">
+                <div class="signature-line">
+                    <p>Authorized Signature</p>
+                </div>
+            </div>
         </div>
+        <p class="text-center" style="margin-top: 20px; font-size: 9px; color: #94a3b8; font-style: italic;">
+            Thank you for your business! For any queries, please contact us.
+        </p>
+    </div>
     </div>
 </body>
 

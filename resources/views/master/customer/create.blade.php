@@ -86,7 +86,7 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="mobile">Mobile <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control @error('mobile') is-invalid @enderror"
+                                    <input type="number" class="form-control @error('mobile') is-invalid @enderror"
                                         id="mobile" name="mobile" value="{{ old('mobile') }}" required>
                                     @error('mobile')
                                         <div class="invalid-feedback d-block">{{ $message }}</div>
@@ -194,6 +194,7 @@
 @section('scripts')
     <script src="{{ asset('js/plugins/toastr-init.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
         $(document).ready(function() {
@@ -208,7 +209,7 @@
             });
 
             // Load States
-            $.get('/states', function(states) {
+            $.get('{{ route('getStates') }}', function(states) {
                 $('#state').empty().append('<option></option>');
 
                 states.forEach(s => {
@@ -229,7 +230,9 @@
                 $('#district, #city, #pincode').empty().append('<option></option>').val(null).trigger(
                     'change.select2');
                 if (id) {
-                    $.get(`/districts/${id}`, function(districts) {
+                    let url = "{{ route('getDistricts', ':state') }}";
+                    url = url.replace(':state', id);
+                    $.get(url, function(districts) {
                         fillSelect('#district', districts);
                     });
                 }
@@ -241,7 +244,9 @@
                 $('#city, #pincode').empty().append('<option></option>').val(null).trigger(
                     'change.select2');
                 if (id) {
-                    $.get(`/cities/${id}`, function(cities) {
+                    let url = "{{ route('getCities', ':district') }}";
+                    url = url.replace(':district', id);
+                    $.get(url, function(cities) {
                         fillSelect('#city', cities);
                     });
                 }
@@ -252,7 +257,9 @@
                 const id = $(this).val();
                 $('#pincode').empty().append('<option></option>').val(null).trigger('change.select2');
                 if (id) {
-                    $.get(`/pincodes/${id}`, function(pincodes) {
+                    let url = "{{ route('getPincodes', ':city') }}";
+                    url = url.replace(':city', id);
+                    $.get(url, function(pincodes) {
                         fillSelect('#pincode', pincodes, 'code');
                         if (pincodes.length > 0) {
                             $('#pincode').val(pincodes[0].id).trigger('change.select2');
@@ -267,7 +274,7 @@
                 placeholder: 'Type or select a pincode',
                 allowClear: true,
                 ajax: {
-                    url: '/pincode/search',
+                    url: '{{ route('searchPincode') }}',
                     dataType: 'json',
                     delay: 300,
                     data: params => ({
@@ -287,7 +294,9 @@
                 const stateId = $('#state').val();
                 if (!stateId) return;
 
-                $.get(`/districts/${stateId}`, function(districts) {
+                let url = "{{ route('getDistricts', ':state') }}";
+                url = url.replace(':state', stateId);
+                $.get(url, function(districts) {
                     fillSelect('#district', districts);
                 });
             });
@@ -295,7 +304,9 @@
             // Pincode reverse lookup
             $('#pincode').on('select2:select', function(e) {
                 const pincodeId = e.params.data.id;
-                $.get(`/pincode/${pincodeId}`, function(response) {
+                let url = "{{ route('getPincodeDetails', ':pincode') }}";
+                url = url.replace(':pincode', pincodeId);
+                $.get(url, function(response) {
                     if (response.state && response.district) {
                         $('#state').empty().append(new Option(response.state, response.state_id,
                             true, true)).trigger('change.select2');
@@ -434,11 +445,29 @@
 
             // Form submission validation
             $('#customerForm').on('submit', function(e) {
+                e.preventDefault();
+                
                 if (addresses.length === 0) {
-                    e.preventDefault();
                     toastr.error('Please add at least one address', 'Error');
                     return false;
                 }
+
+                // Show SweetAlert confirmation
+                Swal.fire({
+                    title: 'Create Customer?',
+                    text: 'Are you sure you want to create this customer?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#0d6efd',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, Create',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Submit the form
+                        document.getElementById('customerForm').submit();
+                    }
+                });
             });
 
             // Helper function

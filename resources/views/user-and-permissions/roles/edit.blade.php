@@ -1,4 +1,7 @@
 @extends('layouts.app')
+@section('styles')
+    <link rel="stylesheet" href="{{ asset('libs/sweetalert2/dist/sweetalert2.min.css') }}">
+@endsection
 @section('content')
     @php
         $parent_title = 'User & Permissions';
@@ -93,4 +96,47 @@
             </div>
         </div>
     </div>
+@endsection
+@section('scripts')
+    <script src="{{ asset('libs/sweetalert2/dist/sweetalert2.min.js') }}"></script>
+    <script src="{{ asset('js/plugins/toastr-init.js') }}"></script>
+
+    <script>
+        toastr.options = {
+            "closeButton": true,
+            "progressBar": true,
+            "positionClass": "toast-top-right",
+            "timeOut": "3000"
+        };
+
+        @if (session('success'))
+            toastr.success("{{ session('success') }}", "Success");
+        @endif
+
+        @if (session('error'))
+            toastr.error("{{ session('error') }}", "Error");
+        @endif
+
+        // Form submission with SweetAlert
+        $('form').on('submit', function(e) {
+            e.preventDefault();
+            const form = this;
+
+            Swal.fire({
+                title: 'Update Role?',
+                text: 'Are you sure you want to update this role?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#0d6efd',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, Update',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Submit the form
+                    form.submit();
+                }
+            });
+        });
+    </script>
 @endsection

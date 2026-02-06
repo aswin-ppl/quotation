@@ -123,6 +123,7 @@
     </div>
 @endsection
 @section('scripts')
+    <script src="{{ asset('libs/sweetalert2/dist/sweetalert2.min.js') }}"></script>
     <script src="{{ asset('js/plugins/toastr-init.js') }}"></script>
 
     <script>
@@ -140,5 +141,26 @@
         @if (session('error'))
             toastr.error("{{ session('error') }}", "Error");
         @endif
+
+        // Form submission with SweetAlert
+        $('form').on('submit', function(e) {
+            e.preventDefault();
+
+            Swal.fire({
+                title: 'Create User?',
+                text: 'Are you sure you want to create this user?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#0d6efd',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, Create',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Submit the form
+                    this.submit();
+                }
+            });
+        });
     </script>
 @endsection

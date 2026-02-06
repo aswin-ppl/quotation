@@ -20,6 +20,36 @@ class QuotationController extends Controller
         return view('quotation.view', compact('customers'));
     }
 
+    /**
+     * Serve company logo image
+     */
+    public function getCompanyLogo()
+    {
+        try {
+            $settings = Setting::getCompanyDetails();
+            
+            if (!$settings || !isset($settings['company_logo']) || !$settings['company_logo']) {
+                return response()->noContent(404);
+            }
+
+            $logoPath = public_path('storage/' . $settings['company_logo']);
+            
+            if (!file_exists($logoPath)) {
+                return response()->noContent(404);
+            }
+
+            $mimeType = mime_content_type($logoPath);
+            $imageData = file_get_contents($logoPath);
+
+            return response($imageData)
+                ->header('Content-Type', $mimeType)
+                ->header('Cache-Control', 'public, max-age=86400');
+        } catch (\Exception $e) {
+            Log::error('Error serving company logo: ' . $e->getMessage());
+            return response()->noContent(500);
+        }
+    }
+
     public function show($id)
     {
         Log::info('Loading quotation: ' . $id);
@@ -61,12 +91,12 @@ class QuotationController extends Controller
 
             // Prepare images for PDF (convert WebP/PNG to JPG)
             Log::info('Preparing images for PDF...');
-            $this->prepareImagesForPdf($quotation);
-            Log::info('Images prepared');
+            $imageMap = $this->prepareImagesForPdf($quotation, $settings);
+            Log::info('Images prepared: ' . json_encode($imageMap));
 
             // Load the preview view and generate PDF from it
             Log::info('Rendering view...');
-            $html = view('quotation.preview', compact('quotation', 'settings', 'defaultAddress') + ['pdfMode' => true])->render();
+            $html = view('quotation.preview', compact('quotation', 'settings', 'defaultAddress', 'imageMap') + ['pdfMode' => true])->render();
             Log::info('View rendered, HTML length: ' . strlen($html));
 
             Log::info('Loading HTML to PDF...');
@@ -77,7 +107,8 @@ class QuotationController extends Controller
                 ->setOption('margin-top', 10)
                 ->setOption('margin-right', 15)
                 ->setOption('margin-bottom', 10)
-                ->setOption('margin-left', 15);
+                ->setOption('margin-left', 15)
+                ->setOption('isRemoteEnabled', true);
 
             Log::info('Streaming PDF...');
             return $pdf->stream('Quotation_' . $quotation->quotation_number . '.pdf');
@@ -101,13 +132,14 @@ class QuotationController extends Controller
             ])->findOrFail($id);
 
             $settings = Setting::getCompanyDetails();
-            $this->prepareImagesForPdf($quotation);
+            $imageMap = $this->prepareImagesForPdf($quotation, $settings);
 
             // Render view to HTML
             $html = view('quotation.preview', [
                 'quotation' => $quotation,
                 'settings' => $settings,
                 'defaultAddress' => $defaultAddress,
+                'imageMap' => $imageMap,
                 'pdfMode' => true
             ])->render();
 
@@ -173,24 +205,49 @@ class QuotationController extends Controller
         ])->findOrFail($id);
 
         $settings = Setting::getCompanyDetails();
+        
+        // For preview, we don't need imageMap since we're using URLs
+        $imageMap = [];
 
         return view('quotation.preview', [
             'quotation' => $quotation,
             'settings' => $settings,
             'defaultAddress' => $defaultAddress,
+            'imageMap' => $imageMap,
             'pdfMode' => false,
         ]);
     }
 
     /**
      * Pre-convert WebP images to JPG for faster PDF rendering
+     * Returns a map of original image paths to their base64 encoded data URLs
      */
-    private function prepareImagesForPdf($quotation)
+    private function prepareImagesForPdf($quotation, $settings = null)
     {
         $tempDir = storage_path('app/temp');
 
         if (!file_exists($tempDir)) {
             mkdir($tempDir, 0755, true);
+        }
+
+        $imageMap = []; // Map of original paths to base64 data URLs
+
+        // Process company logo first if available
+        if ($settings && isset($settings['company_logo']) && $settings['company_logo']) {
+            $logoPath = public_path('storage/' . $settings['company_logo']);
+            if (file_exists($logoPath)) {
+                try {
+                    $imageData = file_get_contents($logoPath);
+                    $mimeType = mime_content_type($logoPath);
+                    $base64 = base64_encode($imageData);
+                    $imageMap['company_logo'] = "data:{$mimeType};base64,{$base64}";
+                    Log::info("Encoded company logo to base64 for PDF");
+                } catch (\Exception $e) {
+                    Log::error("Failed to encode company logo to base64: " . $e->getMessage());
+                }
+            } else {
+                Log::warning("Company logo file not found: $logoPath");
+            }
         }
 
         foreach ($quotation->products as $product) {
@@ -202,11 +259,13 @@ class QuotationController extends Controller
 
                 if (!file_exists($rawPath)) {
                     Log::warning("Image not found: $rawPath");
+                    $imageMap[$image->path] = null;
                     continue;
                 }
 
                 $filename = pathinfo($image->path, PATHINFO_FILENAME);
                 $extension = strtolower(pathinfo($image->path, PATHINFO_EXTENSION));
+                $finalPath = $rawPath;
 
                 // Convert WebP to JPG
                 if ($extension === 'webp') {
@@ -215,13 +274,16 @@ class QuotationController extends Controller
                     if (!file_exists($jpgPath)) {
                         try {
                             \Intervention\Image\Facades\Image::make($rawPath)
-                                ->encode('jpg', 85) // Lower quality = faster
+                                ->encode('jpg', 85)
                                 ->save($jpgPath);
 
                             Log::info("Converted WebP to JPG: $jpgPath");
+                            $finalPath = $jpgPath;
                         } catch (\Exception $e) {
                             Log::error("Image conversion failed for $rawPath: " . $e->getMessage());
                         }
+                    } else {
+                        $finalPath = $jpgPath;
                     }
                 }
                 // Optimize PNG (remove transparency)
@@ -235,12 +297,31 @@ class QuotationController extends Controller
                                 ->save($jpgPath);
 
                             Log::info("Converted PNG to JPG: $jpgPath");
+                            $finalPath = $jpgPath;
                         } catch (\Exception $e) {
                             Log::error("Image conversion failed for $rawPath: " . $e->getMessage());
                         }
+                    } else {
+                        $finalPath = $jpgPath;
                     }
+                }
+
+                // Convert final image to base64 data URL for PDF
+                try {
+                    if (file_exists($finalPath)) {
+                        $imageData = file_get_contents($finalPath);
+                        $mimeType = mime_content_type($finalPath);
+                        $base64 = base64_encode($imageData);
+                        $imageMap[$image->path] = "data:{$mimeType};base64,{$base64}";
+                        Log::info("Encoded image to base64 for PDF: " . $image->path);
+                    }
+                } catch (\Exception $e) {
+                    Log::error("Failed to encode image to base64: " . $e->getMessage());
+                    $imageMap[$image->path] = null;
                 }
             }
         }
+        
+        return $imageMap;
     }
 }

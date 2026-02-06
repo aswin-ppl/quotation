@@ -103,7 +103,7 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="mobile">Mobile <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control @error('mobile') is-invalid @enderror"
+                                    <input type="number" class="form-control @error('mobile') is-invalid @enderror"
                                         id="mobile" name="mobile" value="{{ old('mobile', $customer->mobile) }}"
                                         required>
                                     @error('mobile')
@@ -236,6 +236,7 @@
 @section('scripts')
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="{{ asset('js/plugins/toastr-init.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
         $(document).ready(function() {
@@ -250,7 +251,7 @@
             });
 
             // Load States
-            $.get('/states', function(states) {
+            $.get('{{ route('getStates') }}', function(states) {
                 $('#state').empty().append('<option></option>');
 
                 states.forEach(s => {
@@ -270,7 +271,9 @@
                 $('#district, #city, #pincode').empty().append('<option></option>').val(null).trigger(
                     'change.select2');
                 if (id) {
-                    $.get(`/districts/${id}`, function(districts) {
+                    let url = "{{ route('getDistricts', ':state') }}";
+                    url = url.replace(':state', id);
+                    $.get(url, function(districts) {
                         fillSelect('#district', districts);
                     });
                 }
@@ -282,7 +285,9 @@
                 $('#city, #pincode').empty().append('<option></option>').val(null).trigger(
                     'change.select2');
                 if (id) {
-                    $.get(`/cities/${id}`, function(cities) {
+                    let url = "{{ route('getCities', ':district') }}";
+                    url = url.replace(':district', id);
+                    $.get(url, function(cities) {
                         fillSelect('#city', cities);
                     });
                 }
@@ -293,7 +298,9 @@
                 const id = $(this).val();
                 $('#pincode').empty().append('<option></option>').val(null).trigger('change.select2');
                 if (id) {
-                    $.get(`/pincodes/${id}`, function(pincodes) {
+                    let url = "{{ route('getPincodes', ':city') }}";
+                    url = url.replace(':city', id);
+                    $.get(url, function(pincodes) {
                         fillSelect('#pincode', pincodes, 'code');
                         if (pincodes.length > 0) {
                             $('#pincode').val(pincodes[0].id).trigger('change.select2');
@@ -308,7 +315,7 @@
                 placeholder: 'Type or select a pincode',
                 allowClear: true,
                 ajax: {
-                    url: '/pincode/search',
+                    url: '{{ route('searchPincode') }}',
                     dataType: 'json',
                     delay: 300,
                     data: params => ({
@@ -327,7 +334,9 @@
             // Pincode reverse lookup
             $('#pincode').on('select2:select', function(e) {
                 const pincodeId = e.params.data.id;
-                $.get(`/pincode/${pincodeId}`, function(response) {
+                let url = "{{ route('getPincodeDetails', ':pincode') }}";
+                url = url.replace(':pincode', pincodeId);
+                $.get(url, function(response) {
                     if (response.state && response.district) {
                         $('#state').empty().append(new Option(response.state, response.state_id,
                             true, true)).trigger('change.select2');
@@ -346,7 +355,9 @@
                 const stateId = $('#state').val();
                 if (!stateId) return;
 
-                $.get(`/districts/${stateId}`, function(districts) {
+                let url = "{{ route('getDistricts', ':state') }}";
+                url = url.replace(':state', stateId);
+                $.get(url, function(districts) {
                     fillSelect('#district', districts);
                 });
             });
@@ -480,10 +491,11 @@
 
             // Form validation before submit
             $('#customerForm').on('submit', function(e) {
+                e.preventDefault();
+                
                 const visibleAddresses = $('.address-item:visible').length;
 
                 if (visibleAddresses === 0) {
-                    e.preventDefault();
                     toastr.error('At least one address is required');
                     return false;
                 }
@@ -491,10 +503,26 @@
                 // Check if a default is selected
                 const hasDefaultSelected = $('input[name="default_address"]:checked').length > 0;
                 if (!hasDefaultSelected) {
-                    e.preventDefault();
                     toastr.error('Please select a default address');
                     return false;
                 }
+
+                // Show SweetAlert confirmation
+                Swal.fire({
+                    title: 'Update Customer?',
+                    text: 'Are you sure you want to update this customer?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#0d6efd',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, Update',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Submit the form
+                        document.getElementById('customerForm').submit();
+                    }
+                });
             });
 
             function clearAddressForm() {
@@ -515,195 +543,3 @@
         });
     </script>
 @endsection
-
-
-{{-- @section('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            let newAddressIndex = 0;
-            let newAddresses = [];
-
-            // Initialize Select2
-            $('#state, #district, #city, #pincode').select2({
-                width: '100%',
-                placeholder: 'Select an option',
-                allowClear: true
-            });
-
-            // Load States
-            $.get('/states', function(states) {
-                $('#state').empty().append('<option></option>');
-                states.forEach(s => $('#state').append(new Option(s.name, s.id)));
-            });
-
-            // State -> District
-            $('#state').on('change', function() {
-                const id = $(this).val();
-                $('#district, #city, #pincode').empty().append('<option></option>').val(null).trigger('change.select2');
-                if (id) {
-                    $.get(`/districts/${id}`, function(districts) {
-                        fillSelect('#district', districts);
-                    });
-                }
-            });
-
-            // District -> City
-            $('#district').on('change', function() {
-                const id = $(this).val();
-                $('#city, #pincode').empty().append('<option></option>').val(null).trigger('change.select2');
-                if (id) {
-                    $.get(`/cities/${id}`, function(cities) {
-                        fillSelect('#city', cities);
-                    });
-                }
-            });
-
-            // City -> Pincode
-            $('#city').on('change', function() {
-                const id = $(this).val();
-                $('#pincode').empty().append('<option></option>').val(null).trigger('change.select2');
-                if (id) {
-                    $.get(`/pincodes/${id}`, function(pincodes) {
-                        fillSelect('#pincode', pincodes, 'code');
-                        if (pincodes.length > 0) {
-                            $('#pincode').val(pincodes[0].id).trigger('change.select2');
-                        }
-                    });
-                }
-            });
-
-            // Pincode async search
-            $('#pincode').select2({
-                width: '100%',
-                placeholder: 'Type or select a pincode',
-                allowClear: true,
-                ajax: {
-                    url: '/pincode/search',
-                    dataType: 'json',
-                    delay: 300,
-                    data: params => ({ q: params.term }),
-                    processResults: data => ({
-                        results: data.map(item => ({ id: item.id, text: item.code }))
-                    })
-                }
-            });
-
-            // Pincode reverse lookup
-            $('#pincode').on('select2:select', function(e) {
-                const pincodeId = e.params.data.id;
-                $.get(`/pincode/${pincodeId}`, function(response) {
-                    if (response.state && response.district) {
-                        $('#state').empty().append(new Option(response.state, response.state_id, true, true)).trigger('change.select2');
-                        $('#district').empty().append(new Option(response.district, response.district_id, true, true)).trigger('change.select2');
-                    }
-                    const cities = response.cities || [];
-                    fillSelect('#city', cities);
-                    if (cities.length === 1) {
-                        $('#city').val(cities[0].id).trigger('change.select2');
-                    }
-                });
-            });
-
-            // Add New Address
-            $('#add-address-btn').on('click', function() {
-                const addressLine = $('#address_line').val().trim();
-                const stateId = $('#state').val();
-                const stateName = $('#state option:selected').text();
-                const districtId = $('#district').val();
-                const districtName = $('#district option:selected').text();
-                const cityId = $('#city').val();
-                const cityName = $('#city option:selected').text();
-                const pincodeId = $('#pincode').val();
-                const pincodeCode = $('#pincode option:selected').text();
-                const addressType = $('#address_type').val();
-
-                if (!addressLine || !stateId || !districtId || !cityId || !pincodeId) {
-                    toastr.error('Please fill all address fields');
-                    return;
-                }
-
-                const address = {
-                    index: newAddressIndex,
-                    address_line: addressLine,
-                    state_id: stateId,
-                    state_name: stateName,
-                    district_id: districtId,
-                    district_name: districtName,
-                    city_id: cityId,
-                    city_name: cityName,
-                    pincode_id: pincodeId,
-                    pincode_code: pincodeCode,
-                    type: addressType
-                };
-
-                newAddresses.push(address);
-                renderNewAddresses();
-                clearAddressForm();
-                $('#new-addresses-container').show();
-                newAddressIndex++;
-            });
-
-            // Render new addresses
-            function renderNewAddresses() {
-                $('#new-address-list').empty();
-
-                newAddresses.forEach((addr) => {
-                    const formattedAddress = `${addr.address_line}, ${addr.city_name}, ${addr.district_name}, ${addr.state_name} - ${addr.pincode_code} <small class="text-muted">(${addr.type})</small>`;
-
-                    const addressHtml = `
-                        <div class="address-item" data-new-index="${addr.index}">
-                            <span class="address-text">${formattedAddress}</span>
-                            
-                            <button type="button" class="btn btn-danger btn-sm remove-new-address" data-index="${addr.index}">
-                                <i class="ti ti-trash"></i> Delete
-                            </button>
-
-                            <input type="hidden" name="new_addresses[${addr.index}][address_line_1]" value="${addr.address_line}">
-                            <input type="hidden" name="new_addresses[${addr.index}][state_id]" value="${addr.state_id}">
-                            <input type="hidden" name="new_addresses[${addr.index}][district_id]" value="${addr.district_id}">
-                            <input type="hidden" name="new_addresses[${addr.index}][city_id]" value="${addr.city_id}">
-                            <input type="hidden" name="new_addresses[${addr.index}][pincode_id]" value="${addr.pincode_id}">
-                            <input type="hidden" name="new_addresses[${addr.index}][type]" value="${addr.type}">
-                        </div>
-                    `;
-
-                    $('#new-address-list').append(addressHtml);
-                });
-            }
-
-            // Remove existing address
-            $(document).on('click', '.remove-existing-address', function() {
-                const $item = $(this).closest('.address-item');
-                $item.find('.keep-address').val('0');
-                $item.hide();
-            });
-
-            // Remove new address
-            $(document).on('click', '.remove-new-address', function() {
-                const indexToRemove = $(this).data('index');
-                newAddresses = newAddresses.filter(addr => addr.index !== indexToRemove);
-                renderNewAddresses();
-                if (newAddresses.length === 0) {
-                    $('#new-addresses-container').hide();
-                }
-            });
-
-            function clearAddressForm() {
-                $('#address_line').val('');
-                $('#state').val(null).trigger('change.select2');
-                $('#district').empty().append('<option></option>').val(null).trigger('change.select2');
-                $('#city').empty().append('<option></option>').val(null).trigger('change.select2');
-                $('#pincode').empty().append('<option></option>').val(null).trigger('change.select2');
-                $('#address_type').val('home');
-            }
-
-            function fillSelect(selector, data, textKey = 'name') {
-                const $el = $(selector);
-                $el.empty().append('<option></option>');
-                data.forEach(d => $el.append(new Option(d[textKey] || d.name, d.id)));
-                $el.trigger('change.select2');
-            }
-        });
-    </script>
-@endsection --}}

@@ -135,7 +135,8 @@
                 .html('<span class="spinner-border spinner-border-sm me-2"></span>Loading Preview...');
 
             try {
-                const previewUrl = `/quotations/${quotationId}/preview`;
+                let previewUrl = "{{ route('quotation.preview', ':id') }}";
+                previewUrl = previewUrl.replace(':id', quotationId);
 
                 document.getElementById('downloadPdf').setAttribute('data-id', quotationId);
                 document.getElementById('quotation-preview-container').src = previewUrl;
@@ -160,7 +161,10 @@
                     );
 
             // Open download in new tab to prevent page blocking
-            window.open(`/quotations/${id}/download/${address}`, '_blank');
+            let downloadUrl = "{{ route('quotation.download', [':id', ':address']) }}";
+            downloadUrl = downloadUrl.replace(':id', id);
+            downloadUrl = downloadUrl.replace(':address', address);
+            window.open(downloadUrl, '_blank');
 
             // Re-enable button after delay
             setTimeout(() => {
